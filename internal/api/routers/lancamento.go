@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"strconv"
 
-	e "github.com/duartqx/livro-razao/internal/application/services/executores"
-	"github.com/duartqx/livro-razao/internal/application/services/visualizadores"
-	"github.com/duartqx/livro-razao/internal/common"
-	c "github.com/duartqx/livro-razao/internal/domain/comandos"
-	i "github.com/duartqx/livro-razao/internal/infra"
+	e "github.com/duartqx/livredger/internal/application/services/executores"
+	"github.com/duartqx/livredger/internal/application/services/visualizadores"
+	"github.com/duartqx/livredger/internal/common"
+	c "github.com/duartqx/livredger/internal/domain/comandos"
+	i "github.com/duartqx/livredger/internal/infra"
 )
 
 func writeJsonResponseError(w http.ResponseWriter, err error, statusCode int) {

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/duartqx/livro-razao/internal/common"
-	e "github.com/duartqx/livro-razao/internal/domain/entidade"
+	"github.com/duartqx/livredger/internal/common"
+	e "github.com/duartqx/livredger/internal/domain/entidade"
 )
 
 type RepositorioDeConsultaLancamentos struct{}

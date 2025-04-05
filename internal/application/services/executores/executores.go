@@ -1,9 +1,9 @@
 package executores
 
 import (
-	c "github.com/duartqx/livro-razao/internal/domain/comandos"
-	i "github.com/duartqx/livro-razao/internal/infra"
-	r "github.com/duartqx/livro-razao/internal/infra/repositorios/sqlite/comandos"
+	c "github.com/duartqx/livredger/internal/domain/comandos"
+	i "github.com/duartqx/livredger/internal/infra"
+	r "github.com/duartqx/livredger/internal/infra/repositorios/sqlite/comandos"
 )
 
 func CriarLancamento(uow *i.UnidadeDeTrabalho, comando *c.CriarLancamento) error {

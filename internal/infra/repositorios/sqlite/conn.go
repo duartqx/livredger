@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/duartqx/livro-razao/internal/common"
+	"github.com/duartqx/livredger/internal/common"
 	_ "github.com/tursodatabase/go-libsql"
 )
 

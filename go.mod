@@ -1,4 +1,4 @@
-module github.com/duartqx/livro-razao
+module github.com/duartqx/livredger
 
 go 1.24.1
 

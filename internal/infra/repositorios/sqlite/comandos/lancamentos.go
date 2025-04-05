@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/duartqx/livro-razao/internal/domain/comandos"
+	"github.com/duartqx/livredger/internal/domain/comandos"
 )
 
 type RepositorioDeComandoLancamentos struct{}
@@ -12,6 +12,8 @@ type RepositorioDeComandoLancamentos struct{}
 func NewRepositorioDeComandoLancamentos() *RepositorioDeComandoLancamentos {
 	return &RepositorioDeComandoLancamentos{}
 }
+
+// TODO: REFATORAR PARA EVENTOS DE DOMINIO
 
 func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *comandos.CriarLancamento) error {
 

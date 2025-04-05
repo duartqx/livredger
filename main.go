@@ -13,7 +13,7 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/duartqx/livro-razao/internal/api/routers"
+	"github.com/duartqx/livredger/internal/api/routers"
 )
 
 var (

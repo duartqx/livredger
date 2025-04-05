@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/duartqx/livro-razao/internal/common"
-	r "github.com/duartqx/livro-razao/internal/infra/repositorios/sqlite"
+	"github.com/duartqx/livredger/internal/common"
+	r "github.com/duartqx/livredger/internal/infra/repositorios/sqlite"
 )
 
 type Repositorio interface {
