@@ -15,6 +15,15 @@ import (
 	i "github.com/duartqx/livredger/internal/infra"
 )
 
+// Comando:
+//
+//	{
+//		"evento": One of [LancamentoCriado, LancamentoAtualizado, LancamentoPago, LancamentoRecebido, LancamentoCancelado]
+//		"chave": uuid
+//		"versao": int
+//		"vencimento": time.Time
+//		"descr": string[500]
+//	}
 func post(w http.ResponseWriter, r *http.Request) {
 	var comando c.CriarLancamento
 
@@ -45,6 +54,12 @@ func post(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Params
+//
+//	chave: uuid
+//	somente_versao_mais_recente: true
+//	intervalo.inicio: time.Time
+//	intervalo.final: time.Time
 func get(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		h.JsonErrorResponse(w, err, http.StatusBadRequest)
