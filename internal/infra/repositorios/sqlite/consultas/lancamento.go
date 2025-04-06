@@ -5,7 +5,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/duartqx/livredger/internal/common"
+	"github.com/google/uuid"
+
+	t "github.com/duartqx/livredger/internal/common/types"
+	c "github.com/duartqx/livredger/internal/domain/consultas"
 	e "github.com/duartqx/livredger/internal/domain/entidade"
 )
 
@@ -15,48 +18,77 @@ func NewRepositorioDeConsultaLancamentos() *RepositorioDeConsultaLancamentos {
 	return &RepositorioDeConsultaLancamentos{}
 }
 
-func (r RepositorioDeConsultaLancamentos) BuscarPorId(db *sql.DB, id int) (*e.Lancamento, error) {
-	row := db.QueryRow(
-		`
+func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.ConsultaLancamentos) (*[]*e.Lancamento, error) {
+	base := `
 		SELECT
 			id,
-			data_de_criacao,
-			data_de_modificacao,
-			valor,
-			descr,
-			data_de_pagamento,
-			data_de_vencimento,
-			tipo
+			evento,
+			timestamp,
+			chave,
+			versao,
+			valores,
+			vencimento,
+			descr
 		FROM lancamentos
-		WHERE id = :id
-		LIMIT 1
-		`,
-		sql.Named("id", id),
+		%s
+	`
+
+	if consulta.SomenteVersaoMaisRecente {
+		base += `
+			GROUP BY chave HAVING max(versao)
+		`
+	}
+
+	var (
+		condicoes  string
+		argumentos []any
 	)
 
-	var lancamento e.Lancamento
+	if consulta.Chave != uuid.Nil {
+		condicoes = `WHERE chave = :chave`
 
-	err := row.Scan(
-		&lancamento.Id,
-		&lancamento.DataDeCriacao,
-		&lancamento.DataDeModificacao,
-		&lancamento.Valor,
-		&lancamento.Descr,
-		&lancamento.DataDePagamento,
-		&lancamento.DataDeVencimento,
-		&lancamento.Tipo,
-	)
+		argumentos = []any{sql.Named("chave", consulta.Chave)}
+	} else {
+		condicoes = "WHERE timestamp BETWEEN :inicio AND :final "
+
+		argumentos = []any{
+			sql.Named("inicio", consulta.Intervalo.Inicio),
+			sql.Named("final", consulta.Intervalo.Final),
+		}
+	}
+
+	rows, err := db.Query(fmt.Sprintf(base, condicoes), argumentos...)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("%w: Lançamento não encontrado com id {%d}", common.NotFoundError, id)
+			return nil, fmt.Errorf("%w: Lançamentos não encontrados", t.NotFoundError)
 		}
-		return nil, fmt.Errorf("Não foi possível mapear lançamento: %w", err)
+		return nil, err
 	}
 
-	return &lancamento, nil
-}
+	var lancamentos []*e.Lancamento
 
-func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB) (*[]e.Lancamento, error) {
-	return nil, nil
+	for rows.Next() {
+
+		var lancamento e.Lancamento
+
+		err := rows.Scan(
+			&lancamento.Id,
+			&lancamento.Evento,
+			&lancamento.Timestamp,
+			&lancamento.Chave,
+			&lancamento.Versao,
+			&lancamento.Valores,
+			&lancamento.Vencimento,
+			&lancamento.Descr,
+		)
+
+		if err != nil {
+			return nil, fmt.Errorf("Não foi possível mapear lançamento: %w", err)
+		}
+
+		lancamentos = append(lancamentos, &lancamento)
+	}
+
+	return &lancamentos, nil
 }

@@ -5,41 +5,57 @@ import (
 	"embed"
 	"fmt"
 	"os"
+	"strings"
 
-	"github.com/duartqx/livredger/internal/common"
 	_ "github.com/tursodatabase/go-libsql"
+
+	t "github.com/duartqx/livredger/internal/common/types"
 )
 
 //go:embed modelagem/*
 var migracoes embed.FS
 
-func executarMigracoes(tx *sql.Tx) error {
+func executarMigracoes(db *sql.DB) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+
 	modelagem, err := migracoes.ReadDir("modelagem")
 	if err != nil {
 		return err
 	}
 
-	for _, migracao := range modelagem {
+	for _, arquivo := range modelagem {
 
-		if migracao.IsDir() {
+		if arquivo.IsDir() {
 			continue
 		}
 
-		sql, err := migracoes.ReadFile(fmt.Sprintf("modelagem/%s", migracao.Name()))
+		sql, err := migracoes.ReadFile(fmt.Sprintf("modelagem/%s", arquivo.Name()))
 
 		if err != nil {
 			return err
 		}
 
-		_, err = tx.Exec(string(sql))
-		if err != nil {
-			return err
+		for _, stmt := range strings.Split(string(sql), ";") {
+			stmt = strings.Trim(stmt, "\n")
+
+			if stmt == "" {
+				continue
+			}
+
+			_, err = tx.Exec(stmt + ";")
+
+			if err != nil {
+				return err
+			}
 		}
 	}
-	return nil
+	return tx.Commit()
 }
 
-func dbFilename(usuario *common.Usuario) string {
+func dbFilename(usuario *t.Usuario) string {
 	if usuario != nil && usuario.Id != 0 {
 		return fmt.Sprintf("./%d.db", usuario.Id)
 	}
@@ -47,7 +63,7 @@ func dbFilename(usuario *common.Usuario) string {
 	return "./local.db"
 }
 
-func Connect(usuario *common.Usuario) (db *sql.DB) {
+func Connect(usuario *t.Usuario) (db *sql.DB) {
 
 	dbFilenameStr := dbFilename(usuario)
 
@@ -60,16 +76,7 @@ func Connect(usuario *common.Usuario) (db *sql.DB) {
 	}
 
 	if os.IsNotExist(errDbFileExists) {
-		tx, err := db.Begin()
-		if err != nil {
-			panic(err.Error())
-		}
-
-		if err := executarMigracoes(tx); err != nil {
-			panic(err.Error())
-		}
-
-		if err := tx.Commit(); err != nil {
+		if err := executarMigracoes(db); err != nil {
 			panic(err.Error())
 		}
 	}

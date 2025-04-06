@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/duartqx/livredger/internal/common"
+	t "github.com/duartqx/livredger/internal/common/types"
 	r "github.com/duartqx/livredger/internal/infra/repositorios/sqlite"
 )
 
@@ -13,7 +13,7 @@ type Repositorio interface {
 }
 
 type UnidadeDeTrabalho struct {
-	Usuario *common.Usuario
+	Usuario *t.Usuario
 	DB      *sql.DB
 	Tx      *sql.Tx
 }
@@ -58,7 +58,7 @@ func (u *UnidadeDeTrabalho) Close() {
 	}
 }
 
-func Bootstrap(usuario *common.Usuario) *UnidadeDeTrabalho {
+func Bootstrap(usuario *t.Usuario) *UnidadeDeTrabalho {
 
 	conn := r.Connect(usuario)
 
