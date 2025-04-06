@@ -19,7 +19,7 @@ func post(w http.ResponseWriter, r *http.Request) {
 	var comando c.CriarLancamento
 
 	if err := json.NewDecoder(r.Body).Decode(&comando); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		h.JsonErrorResponse(w, err, http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
@@ -27,18 +27,22 @@ func post(w http.ResponseWriter, r *http.Request) {
 	var usuario *t.Usuario
 
 	uow := i.Bootstrap(usuario)
+	defer uow.Close()
 
-	if err := e.CriarLancamento(uow, &comando); err != nil {
+	resultado, err := e.CriarLancamento(uow, &comando)
+
+	if err != nil {
 		h.JsonErrorResponse(w, err, http.StatusBadRequest)
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-}
 
-type Resultado[T any] struct {
-	Itens *[]*T `json:"itens"`
-	Total int   `json:"total"`
+	if err := json.NewEncoder(w).Encode(map[string]any{"resultado": resultado}); err != nil {
+		h.JsonErrorResponse(w, err, http.StatusInternalServerError)
+		return
+	}
 }
 
 func get(w http.ResponseWriter, r *http.Request) {
@@ -50,6 +54,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 	var usuario *t.Usuario
 
 	uow := i.Bootstrap(usuario)
+	defer uow.Close()
 
 	consulta, err := consultas.ParsearStringsParaConsultaLancamentos(
 		r.FormValue("chave"),
@@ -72,13 +77,13 @@ func get(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	resultado := Resultado[entidade.Lancamento]{
+	resultado := h.Resultado[entidade.Lancamento]{
 		Itens: lancamentos,
 		Total: len(*lancamentos),
 	}
 
 	if err := json.NewEncoder(w).Encode(resultado); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		h.JsonErrorResponse(w, err, http.StatusInternalServerError)
 		return
 	}
 }

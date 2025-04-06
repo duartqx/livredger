@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/duartqx/livredger/internal/domain/comandos"
+	e "github.com/duartqx/livredger/internal/domain/entidade"
 )
 
 type RepositorioDeComandoLancamentos struct{}
@@ -19,9 +20,16 @@ type LancamentoCriado struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *comandos.CriarLancamento) (*LancamentoCriado, error) {
+func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *comandos.CriarLancamento) (*e.Lancamento, error) {
 
-	var lancamento LancamentoCriado
+	lancamento := e.Lancamento{
+		Evento:     comando.Evento,
+		Chave:      *comando.Chave,
+		Versao:     comando.Versao,
+		Valores:    comando.Valores,
+		Vencimento: comando.Vencimento,
+		Descr:      comando.Descr,
+	}
 
 	row := tx.QueryRow(
 		`

@@ -8,6 +8,11 @@ import (
 	t "github.com/duartqx/livredger/internal/common/types"
 )
 
+type Resultado[T any] struct {
+	Itens *[]*T `json:"itens"`
+	Total int   `json:"total"`
+}
+
 func JsonErrorResponse(w http.ResponseWriter, err error, statusCode int) {
 	res, errMarshal := json.Marshal(map[string]string{"error": err.Error()})
 

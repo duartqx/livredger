@@ -8,14 +8,11 @@ import (
 	r "github.com/duartqx/livredger/internal/infra/repositorios/sqlite"
 )
 
-type Repositorio interface {
-	GetById(id int) any
-}
-
 type UnidadeDeTrabalho struct {
-	Usuario *t.Usuario
-	DB      *sql.DB
-	Tx      *sql.Tx
+	Usuario      *t.Usuario
+	DB           *sql.DB
+	Tx           *sql.Tx
+	Repositorios *Repositorios
 }
 
 func (u *UnidadeDeTrabalho) Transaction() (tx *sql.Tx, err error) {
@@ -54,7 +51,7 @@ func (u *UnidadeDeTrabalho) Rollback() error {
 
 func (u *UnidadeDeTrabalho) Close() {
 	if u.DB != nil {
-		u.Close()
+		u.DB.Close()
 	}
 }
 
@@ -63,7 +60,8 @@ func Bootstrap(usuario *t.Usuario) *UnidadeDeTrabalho {
 	conn := r.Connect(usuario)
 
 	return &UnidadeDeTrabalho{
-		Usuario: usuario,
-		DB:      conn,
+		Usuario:      usuario,
+		DB:           conn,
+		Repositorios: FabricaDeRepositorios(),
 	}
 }
