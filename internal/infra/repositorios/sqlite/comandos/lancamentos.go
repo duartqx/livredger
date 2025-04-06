@@ -3,6 +3,7 @@ package comandos
 import (
 	"database/sql"
 	"fmt"
+	"regexp"
 	"time"
 
 	"github.com/duartqx/livredger/internal/domain/comandos"
@@ -33,9 +34,6 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *comandos.Cri
 
 	row := tx.QueryRow(
 		`
-		-- Chave deve existir para poder criar versao > 1
-		-- Só permitir criar nova chave se versao = 1
-		-- Se versao != 1 só permitir criar se existir versao = :versao - 1
 		INSERT INTO lancamentos (
 			evento,
 			chave,
@@ -43,23 +41,13 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *comandos.Cri
 			valores,
 			vencimento,
 			descr
-		) 
-		SELECT
+		) VALUES (
 			:evento,
 			:chave,
 			:versao,
 			:valores,
 			:vencimento,
 			:descr
-		WHERE (
-			SELECT
-				-- Só permite criar se não existir versão com o
-				-- mesmo valor e que existe uma versão anterior
-				COUNT(*) FILTER (WHERE versao = :versao) = 0
-				AND
-				(COUNT(*) filter (WHERE versao = :versao - 1) = 1 OR :versao = 1)
-			FROM lancamentos
-			WHERE chave = :chave
 		)
 		RETURNING id, timestamp
 		`,
@@ -72,6 +60,12 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *comandos.Cri
 	)
 
 	if err := row.Scan(&lancamento.Id, &lancamento.Timestamp); err != nil {
+		re := regexp.MustCompile("failed to get next row\nerror code = 1: Error fetching next row: SQLite failure: `(.*?)`")
+
+		if match := re.FindStringSubmatch(err.Error()); len(match) > 1 {
+			return nil, fmt.Errorf("Integridade: %s", match[1])
+		}
+
 		return nil, fmt.Errorf("%w: Não foi possível inserir novo lançamento", err)
 	}
 

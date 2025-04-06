@@ -5,6 +5,7 @@ import (
 	"embed"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	_ "github.com/tursodatabase/go-libsql"
@@ -26,6 +27,8 @@ func executarMigracoes(db *sql.DB) error {
 		return err
 	}
 
+	re := regexp.MustCompile(`(?m)^-- sql: .*$`)
+
 	for _, arquivo := range modelagem {
 
 		if arquivo.IsDir() {
@@ -38,7 +41,7 @@ func executarMigracoes(db *sql.DB) error {
 			return err
 		}
 
-		for _, stmt := range strings.Split(string(sql), ";") {
+		for _, stmt := range re.Split(string(sql), -1) {
 			stmt = strings.Trim(stmt, "\n")
 
 			if stmt == "" {
