@@ -66,7 +66,7 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 		return nil, err
 	}
 
-	var lancamentos []*e.Lancamento
+	lancamentos := make([]*e.Lancamento, 0)
 
 	for rows.Next() {
 

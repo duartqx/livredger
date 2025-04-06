@@ -11,6 +11,7 @@ import (
 	t "github.com/duartqx/livredger/internal/common/types"
 	c "github.com/duartqx/livredger/internal/domain/comandos"
 	"github.com/duartqx/livredger/internal/domain/consultas"
+	"github.com/duartqx/livredger/internal/domain/entidade"
 	i "github.com/duartqx/livredger/internal/infra"
 )
 
@@ -35,8 +36,8 @@ func post(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-type Resultado struct {
-	Itens []any `json:"itens"`
+type Resultado[T any] struct {
+	Itens *[]*T `json:"itens"`
 	Total int   `json:"total"`
 }
 
@@ -69,15 +70,14 @@ func get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	itens := make([]interface{}, 0)
-
-	for _, item := range *lancamentos {
-		itens = append(itens, item)
-	}
-
 	w.Header().Set("Content-Type", "application/json")
 
-	if err := json.NewEncoder(w).Encode(Resultado{Itens: itens, Total: len(itens)}); err != nil {
+	resultado := Resultado[entidade.Lancamento]{
+		Itens: lancamentos,
+		Total: len(*lancamentos),
+	}
+
+	if err := json.NewEncoder(w).Encode(resultado); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
