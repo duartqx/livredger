@@ -3,23 +3,30 @@ package comandos
 import (
 	"fmt"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type CriarLancamento struct {
-	Valor            float64   `json:"valor"`
-	Descricao        string    `json:"descricao"`
-	DataDePagamento  time.Time `json:"data_de_pagamento"`
-	DataDeVencimento time.Time `json:"data_de_vencimento"`
-	Tipo             string    `json:"tipo"`
+	Evento     string     `json:"evento"`
+	Chave      *uuid.UUID `json:"chave"`
+	Versao     int        `json:"versao"`
+	Valores    float64    `json:"valores"`
+	Vencimento time.Time  `json:"vencimento"`
+	Descr      string     `json:"descr"`
 }
 
 func (c CriarLancamento) Validar() error {
-	if c.Descricao == "" {
+	if c.Descr == "" {
 		return fmt.Errorf("Descrição é obrigatória")
 	}
 
-	if c.Tipo == "" {
+	if c.Evento == "" {
 		return fmt.Errorf("Tipo inválido")
+	}
+
+	if c.Versao == 0 {
+		return fmt.Errorf("Versão não pode ser igual a 0")
 	}
 
 	return nil

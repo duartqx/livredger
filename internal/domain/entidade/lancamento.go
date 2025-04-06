@@ -1,22 +1,26 @@
 package entidade
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Lancamento struct {
-	Id int64 `json:"id"`
+	Id        int       `json:"id"`
+	Evento    string    `json:"evento"`
+	Timestamp time.Time `json:"timestamp"`
 
-	DataDeCriacao     time.Time  `json:"data_de_criacao"`
-	DataDeModificacao *time.Time `json:"data_de_modificacao"`
+	Chave  uuid.UUID `json:"chave"`
+	Versao int       `json:"versao"`
 
-	Valor            float64    `json:"valor"`
-	Descr            string     `json:"description"`
-	DataDePagamento  *time.Time `json:"data_de_pagamento"`
-	DataDeVencimento *time.Time `json:"data_de_vencimento"`
-	Tipo             string     `json:"tipo"`
+	Valores    float64   `json:"valores"`
+	Vencimento time.Time `json:"vencimento"`
+	Descr      string    `json:"description"`
 }
 
-func NewLancamento() *Lancamento {
+func NovoLancamento() *Lancamento {
 	return &Lancamento{
-		DataDeCriacao: time.Now(),
+		Timestamp: time.Now(),
 	}
 }
