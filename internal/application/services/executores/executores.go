@@ -20,8 +20,11 @@ func CriarLancamento(uow *i.UnidadeDeTrabalho, comando *c.CriarLancamento) error
 
 	repo := r.NewRepositorioDeComandoLancamentos()
 
-	if err := repo.Criar(tx, comando); err != nil {
-		return uow.Rollback()
+	_, err = repo.Criar(tx, comando)
+
+	if err != nil {
+		uow.Rollback()
+		return err
 	}
 
 	return uow.Commit()
