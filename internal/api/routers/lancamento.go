@@ -2,40 +2,19 @@ package routers
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
+
 	"net/http"
-	"strconv"
 
 	e "github.com/duartqx/livredger/internal/application/services/executores"
-	"github.com/duartqx/livredger/internal/application/services/visualizadores"
-	"github.com/duartqx/livredger/internal/common"
+	v "github.com/duartqx/livredger/internal/application/services/visualizadores"
+	h "github.com/duartqx/livredger/internal/common/http"
+	t "github.com/duartqx/livredger/internal/common/types"
 	c "github.com/duartqx/livredger/internal/domain/comandos"
+	"github.com/duartqx/livredger/internal/domain/consultas"
 	i "github.com/duartqx/livredger/internal/infra"
 )
 
-func writeJsonResponseError(w http.ResponseWriter, err error, statusCode int) {
-	res, errMarshal := json.Marshal(map[string]string{"error": err.Error()})
-
-	if errMarshal != nil {
-		http.Error(w, errMarshal.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-
-	if errors.Is(err, common.NotFoundError) {
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(res)
-		return
-	}
-
-	w.WriteHeader(statusCode)
-
-	w.Write(res)
-}
-
-func criarLancamento(w http.ResponseWriter, r *http.Request) {
+func post(w http.ResponseWriter, r *http.Request) {
 	var comando c.CriarLancamento
 
 	if err := json.NewDecoder(r.Body).Decode(&comando); err != nil {
@@ -44,40 +23,61 @@ func criarLancamento(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	var usuario *common.Usuario
+	var usuario *t.Usuario
 
 	uow := i.Bootstrap(usuario)
 
 	if err := e.CriarLancamento(uow, &comando); err != nil {
-		writeJsonResponseError(w, err, http.StatusBadRequest)
+		h.JsonErrorResponse(w, err, http.StatusBadRequest)
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
 }
 
-func pegarLancamentoPorId(w http.ResponseWriter, r *http.Request) {
-	idStr := r.PathValue("id")
+type Resultado struct {
+	Itens []any `json:"itens"`
+	Total int   `json:"total"`
+}
 
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Valor não é um número inteiro válido: %s", idStr), http.StatusBadRequest)
+func get(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		h.JsonErrorResponse(w, err, http.StatusBadRequest)
 		return
 	}
 
-	var usuario *common.Usuario
+	var usuario *t.Usuario
 
 	uow := i.Bootstrap(usuario)
 
-	lancamento, err := visualizadores.BuscarLancamentoPorId(uow, id)
+	consulta, err := consultas.ParsearStringsParaConsultaLancamentos(
+		r.FormValue("chave"),
+		r.FormValue("somente_versao_mais_recente"),
+		r.FormValue("intervalo.inicio"),
+		r.FormValue("intervalo.final"),
+	)
 
 	if err != nil {
-		writeJsonResponseError(w, err, http.StatusInternalServerError)
+		h.JsonErrorResponse(w, err, http.StatusBadRequest)
 		return
 	}
 
-	if err := json.NewEncoder(w).Encode(lancamento); err != nil {
+	lancamentos, err := v.BuscarLancamentos(uow, consulta)
+
+	if err != nil {
+		h.JsonErrorResponse(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	itens := make([]interface{}, 0)
+
+	for _, item := range *lancamentos {
+		itens = append(itens, item)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	if err := json.NewEncoder(w).Encode(Resultado{Itens: itens, Total: len(itens)}); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -85,7 +85,7 @@ func pegarLancamentoPorId(w http.ResponseWriter, r *http.Request) {
 
 func LancamentosRouter() *map[string]http.HandlerFunc {
 	return &map[string]http.HandlerFunc{
-		"GET /lancamento/{id}": pegarLancamentoPorId,
-		"POST /lancamento":     criarLancamento,
+		"GET /lancamentos":  get,
+		"POST /lancamentos": post,
 	}
 }
