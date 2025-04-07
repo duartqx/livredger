@@ -27,6 +27,8 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 			chave,
 			versao,
 			valores,
+			natureza,
+			meio,
 			vencimento,
 			descr
 		FROM lancamentos
@@ -45,7 +47,7 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 	)
 
 	if consulta.Chave != uuid.Nil {
-		condicoes = `WHERE chave = :chave`
+		condicoes = "WHERE chave = :chave"
 
 		argumentos = []any{sql.Named("chave", consulta.Chave)}
 	} else {
@@ -79,6 +81,8 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 			&lancamento.Chave,
 			&lancamento.Versao,
 			&lancamento.Valores,
+			&lancamento.Natureza,
+			&lancamento.Meio,
 			&lancamento.Vencimento,
 			&lancamento.Descr,
 		)

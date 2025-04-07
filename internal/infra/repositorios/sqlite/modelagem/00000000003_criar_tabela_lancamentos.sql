@@ -1,13 +1,23 @@
 -- sql: Cria a tabela de lançamentos
 CREATE TABLE IF NOT EXISTS lancamentos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    evento VARCHAR(128) NOT NULL,
+    evento VARCHAR(128) NOT NULL CHECK(
+        evento IN (
+            'LancamentoCriado',
+            'LancamentoAtualizado',
+            'LancamentoPago',
+            'LancamentoRecebido',
+            'LancamentoCancelado'
+        )
+    ),
     timestamp DATETIME DEFAULT (datetime('now')),
 
     chave VARCHAR(36) NOT NULL,
     versao INTEGER NOT NULL CHECK(versao > 0),
 
     valores REAL NOT NULL,
+    natureza VARCHAR(128) NOT NULL REFERENCES naturezas(nome),
+    meio VARCHAR(128) NOT NULL REFERENCES meios(nome),
     vencimento DATETIME,
 
     descr VARCHAR(500) NOT NULL CHECK(TRIM(descr) != ''),

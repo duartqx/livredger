@@ -15,6 +15,8 @@ type Lancamento struct {
 	Versao int       `json:"versao"`
 
 	Valores    float64   `json:"valores"`
+	Natureza   string    `json:"natureza"`
+	Meio       string    `json:"meio"`
 	Vencimento time.Time `json:"vencimento"`
 	Descr      string    `json:"description"`
 }

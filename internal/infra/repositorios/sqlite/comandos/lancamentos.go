@@ -28,6 +28,8 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *comandos.Cri
 		Chave:      *comando.Chave,
 		Versao:     comando.Versao,
 		Valores:    comando.Valores,
+		Natureza:   comando.Natureza,
+		Meio:       comando.Meio,
 		Vencimento: comando.Vencimento,
 		Descr:      comando.Descr,
 	}
@@ -39,6 +41,8 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *comandos.Cri
 			chave,
 			versao,
 			valores,
+			natureza,
+			meio,
 			vencimento,
 			descr
 		) VALUES (
@@ -46,6 +50,8 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *comandos.Cri
 			:chave,
 			:versao,
 			:valores,
+			:natureza,
+			:meio,
 			:vencimento,
 			:descr
 		)
@@ -55,6 +61,8 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *comandos.Cri
 		sql.Named("chave", comando.Chave.String()),
 		sql.Named("versao", comando.Versao),
 		sql.Named("valores", comando.Valores),
+		sql.Named("natureza", comando.Natureza),
+		sql.Named("meio", comando.Meio),
 		sql.Named("vencimento", comando.Vencimento),
 		sql.Named("descr", comando.Descr),
 	)
