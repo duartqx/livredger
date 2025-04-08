@@ -18,7 +18,13 @@ import (
 // Comando:
 //
 //	{
-//		"evento": One of [LancamentoCriado, LancamentoAtualizado, LancamentoPago, LancamentoRecebido, LancamentoCancelado]
+//		"evento": One of [
+//			LancamentoCriado,
+//			LancamentoAtualizado,
+//			LancamentoPago,
+//			LancamentoRecebido,
+//			LancamentoCancelado
+//		]
 //		"chave": uuid
 //		"versao": int
 //		"vencimento": time.Time
@@ -105,7 +111,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 
 func LancamentosRouter() *map[string]http.HandlerFunc {
 	return &map[string]http.HandlerFunc{
-		"GET /lancamentos":  get,
-		"POST /lancamentos": post,
+		"GET /api/lancamentos":  get,
+		"POST /api/lancamentos": post,
 	}
 }

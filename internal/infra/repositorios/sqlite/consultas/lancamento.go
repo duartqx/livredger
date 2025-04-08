@@ -33,12 +33,13 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 			descr
 		FROM lancamentos
 		%s
+		%s
+		ORDER BY timestamp DESC
 	`
 
+	groupBy := ""
 	if consulta.SomenteVersaoMaisRecente {
-		base += `
-			GROUP BY chave HAVING max(versao)
-		`
+		groupBy += `GROUP BY chave HAVING max(versao)`
 	}
 
 	var (
@@ -54,12 +55,12 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 		condicoes = "WHERE timestamp BETWEEN :inicio AND :final "
 
 		argumentos = []any{
-			sql.Named("inicio", consulta.Intervalo.Inicio),
-			sql.Named("final", consulta.Intervalo.Final),
+			sql.Named("inicio", consulta.Intervalo.Inicio.Format("2006-01-02 15:04:05")),
+			sql.Named("final", consulta.Intervalo.Final.Format("2006-01-02 15:04:05")),
 		}
 	}
 
-	rows, err := db.Query(fmt.Sprintf(base, condicoes), argumentos...)
+	rows, err := db.Query(fmt.Sprintf(base, condicoes, groupBy), argumentos...)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
