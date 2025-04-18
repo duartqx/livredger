@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS lancamentos (
     evento VARCHAR(128) NOT NULL CHECK(
         evento IN (
             'LancamentoCriado',
+            'LancamentoPrevisto',
             'LancamentoAtualizado',
             'LancamentoPago',
             'LancamentoRecebido',
