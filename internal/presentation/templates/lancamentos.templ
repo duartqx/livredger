@@ -1,0 +1,16 @@
+package views
+
+templ Lancamentos() {
+	<lancamentos x-data="lancamentos">
+		<template x-for="(lancamento, index) in lancamentos" :key="`${lancamento.id}-{lancamento.chave}`">
+			<lancamento>
+				<div x-text="lancamento.id"></div>
+				<div x-text="lancamento.evento"></div>
+				<div x-text="lancamento.valores"></div>
+				<div x-text="lancamento.natureza"></div>
+				<div x-text="lancamento.description"></div>
+				<div x-text="lancamento.vencimento"></div>
+			</lancamento>
+		</template>
+	</lancamentos>
+}
