@@ -99,8 +99,8 @@ func get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	resultado := h.Resultado[entidade.Lancamento]{
-		Itens: lancamentos,
 		Total: len(*lancamentos),
+		Itens: lancamentos,
 	}
 
 	if err := json.NewEncoder(w).Encode(resultado); err != nil {
@@ -109,8 +109,8 @@ func get(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func LancamentosRouter() *map[string]http.HandlerFunc {
-	return &map[string]http.HandlerFunc{
+func lancamentosRouter() *RouterMap {
+	return &RouterMap{
 		"GET /api/lancamentos":  get,
 		"POST /api/lancamentos": post,
 	}

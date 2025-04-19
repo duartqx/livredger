@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	// "embed"
+	"embed"
 	"flag"
-	// "io/fs"
+	"io/fs"
 	"log"
 	"net/http"
 	"os/signal"
@@ -17,24 +17,27 @@ import (
 )
 
 var (
-	err error
-	// static fs.FS
-	port int
-	srv  *http.Server
+	err    error
+	static fs.FS
+	port   int
+	srv    *http.Server
 )
+
+//go:embed internal/presentation/static/*
+var embededFS embed.FS
 
 func init() {
 	flag.IntVar(&port, "port", 8000, "The port the server will run at")
 
 	flag.Parse()
 
-	// static, err = fs.Sub(embededFS, "internal/presentation/static")
-	// if err != nil {
-	// 	log.Fatalln(err)
-	// }
+	static, err = fs.Sub(embededFS, "internal/presentation/static")
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	srv = &http.Server{
-		Handler:      routers.Router(),
+		Handler:      routers.Router(&routers.Static{Path: "/static/", Fs: static}),
 		Addr:         fmt.Sprintf(":%d", port),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,

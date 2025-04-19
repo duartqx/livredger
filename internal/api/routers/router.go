@@ -2,6 +2,7 @@ package routers
 
 import (
 	"fmt"
+	"io/fs"
 	"net/http"
 	"strings"
 
@@ -16,6 +17,13 @@ type Mux struct {
 	*http.ServeMux
 }
 
+type Static struct {
+	Fs   fs.FS
+	Path string
+}
+
+type RouterMap map[string]http.HandlerFunc
+
 func (m *Mux) Group(pattern string, handler http.Handler) error {
 	if !strings.HasPrefix(pattern, "/") && !strings.HasSuffix(pattern, "/") {
 		return fmt.Errorf("Invalid Router Pattern")
@@ -28,6 +36,14 @@ func (m *Mux) Group(pattern string, handler http.Handler) error {
 	return nil
 }
 
+func (m *Mux) AddRoutes(rms ...*RouterMap) {
+	for _, rm := range rms {
+		for pattern, router := range *rm {
+			m.HandleFunc(pattern, router)
+		}
+	}
+}
+
 func (m Mux) Use(mux http.Handler, middlewares ...i.Middleware) http.Handler {
 	wrapped := mux
 	for _, middleware := range middlewares {
@@ -36,12 +52,14 @@ func (m Mux) Use(mux http.Handler, middlewares ...i.Middleware) http.Handler {
 	return wrapped
 }
 
-func Router() http.Handler {
+func Router(static ...*Static) http.Handler {
 	mux := Mux{ServeMux: http.NewServeMux()}
 
-	for pattern, router := range *LancamentosRouter() {
-		mux.HandleFunc(pattern, router)
+	for _, s := range static {
+		mux.Group(s.Path, http.StripPrefix("/", http.FileServer(http.FS(s.Fs))))
 	}
+
+	mux.AddRoutes(lancamentosRouter(), viewsRouter())
 
 	return mux.Use(
 		mux,
