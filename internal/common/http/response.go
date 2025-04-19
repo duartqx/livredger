@@ -9,8 +9,8 @@ import (
 )
 
 type Resultado[T any] struct {
-	Itens *[]*T `json:"itens"`
 	Total int   `json:"total"`
+	Itens *[]*T `json:"itens"`
 }
 
 func JsonErrorResponse(w http.ResponseWriter, err error, statusCode int) {

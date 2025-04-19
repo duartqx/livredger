@@ -33,5 +33,9 @@ func ParseIntervalo(inicio, final string) (*Intervalo, error) {
 		}
 	}
 
+	if intervalo.Final.Before(intervalo.Inicio) {
+		return nil, fmt.Errorf("Intervalo de tempo inválido (Início maior que final)")
+	}
+
 	return &intervalo, nil
 }
