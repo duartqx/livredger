@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
 
-	s "github.com/duartqx/livredger/internal/common/sql"
 	t "github.com/duartqx/livredger/internal/common/types"
 	c "github.com/duartqx/livredger/internal/domain/consultas"
 	e "github.com/duartqx/livredger/internal/domain/entidade"
@@ -22,39 +22,37 @@ func NewRepositorioDeConsultaLancamentos() *RepositorioDeConsultaLancamentos {
 
 func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.ConsultaLancamentos) (*[]*e.Lancamento, error) {
 
-	builder := s.NewBuilder(
-		`SELECT
-			id,
-			evento,
-			timestamp,
-			chave,
-			versao,
-			valores,
-			natureza,
-			meio,
-			vencimento,
-			descr
-		FROM lancamentos
-		{{ .Where }}
-		{{ .GroupBy }}
-		ORDER BY timestamp DESC`,
-	)
+	sql := squirrel.StatementBuilder.PlaceholderFormat(squirrel.Question)
 
-	grouping := ""
+	builder := sql.
+		Select(
+			"id",
+			"evento",
+			"timestamp",
+			"chave",
+			"versao",
+			"valores",
+			"natureza",
+			"meio",
+			"vencimento",
+			"descr",
+		).
+		From("lancamentos").
+		OrderBy("timestamp DESC")
+
 	if consulta.SomenteVersaoMaisRecente {
-		grouping += `GROUP BY chave HAVING max(versao)`
+		builder = builder.GroupBy("chave").Having("max(versao)")
 	}
 
-	conds := r.parse(consulta)
+	builder = r.parse(consulta, builder)
 
-	stmt := builder.Render(
-		&s.Valores{
-			"GroupBy": grouping,
-			"Where":   conds.Condicoes(),
-		},
-	)
+	stmt, args, err := builder.ToSql()
 
-	rows, err := r.query(db, stmt, conds.Argumentos())
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := r.query(db, stmt, &args)
 
 	if err != nil {
 		return nil, err
@@ -89,29 +87,23 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 	return &lancamentos, nil
 }
 
-func (r RepositorioDeConsultaLancamentos) parse(consulta *c.ConsultaLancamentos) *s.Condicoes {
-
-	var conds s.Condicoes
+func (r RepositorioDeConsultaLancamentos) parse(consulta *c.ConsultaLancamentos, builder squirrel.SelectBuilder) squirrel.SelectBuilder {
 
 	if consulta.Chave != uuid.Nil {
-		conds.Add("chave = :chave", sql.Named("chave", consulta.Chave))
-	} else {
-
-		if consulta.Description != "" {
-			conds.Add("descr LIKE :descr", sql.Named("descr", "%"+consulta.Description+"%"))
-		}
-
-		conds.Add(
-			"timestamp BETWEEN :inicio AND :final",
-			sql.Named("inicio", consulta.Intervalo.Inicio.Format(time.DateOnly)),
-			sql.Named("final", consulta.Intervalo.Final.Format(time.DateOnly)),
-		)
+		return builder.Where(squirrel.Eq{"chave": consulta.Chave})
 	}
 
-	return &conds
+	if consulta.Description != "" {
+		builder = builder.Where(squirrel.Like{"descr": "%" + consulta.Description + "%"})
+	}
+
+	return builder.Where(squirrel.And{
+		squirrel.GtOrEq{"timestamp": consulta.Intervalo.Inicio.Format(time.DateOnly)},
+		squirrel.LtOrEq{"timestamp": consulta.Intervalo.Final.Format(time.DateOnly)},
+	})
 }
 
-func (r RepositorioDeConsultaLancamentos) query(db *sql.DB, stmt string, args *[]any) (*sql.Rows, error) {
+func (r RepositorioDeConsultaLancamentos) query(db *sql.DB, stmt string, args *[]interface{}) (*sql.Rows, error) {
 	rows, err := db.Query(stmt, *args...)
 
 	if err != nil {
