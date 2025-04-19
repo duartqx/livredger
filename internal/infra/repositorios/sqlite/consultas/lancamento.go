@@ -4,9 +4,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 
+	s "github.com/duartqx/livredger/internal/common/sql"
 	t "github.com/duartqx/livredger/internal/common/types"
 	c "github.com/duartqx/livredger/internal/domain/consultas"
 	e "github.com/duartqx/livredger/internal/domain/entidade"
@@ -19,8 +21,9 @@ func NewRepositorioDeConsultaLancamentos() *RepositorioDeConsultaLancamentos {
 }
 
 func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.ConsultaLancamentos) (*[]*e.Lancamento, error) {
-	base := `
-		SELECT
+
+	builder := s.NewBuilder(
+		`SELECT
 			id,
 			evento,
 			timestamp,
@@ -32,40 +35,28 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 			vencimento,
 			descr
 		FROM lancamentos
-		%s
-		%s
-		ORDER BY timestamp DESC
-	`
-
-	groupBy := ""
-	if consulta.SomenteVersaoMaisRecente {
-		groupBy += `GROUP BY chave HAVING max(versao)`
-	}
-
-	var (
-		condicoes  string
-		argumentos []any
+		{{ .Where }}
+		{{ .GroupBy }}
+		ORDER BY timestamp DESC`,
 	)
 
-	if consulta.Chave != uuid.Nil {
-		condicoes = "WHERE chave = :chave"
-
-		argumentos = []any{sql.Named("chave", consulta.Chave)}
-	} else {
-		condicoes = "WHERE timestamp BETWEEN :inicio AND :final "
-
-		argumentos = []any{
-			sql.Named("inicio", consulta.Intervalo.Inicio.Format("2006-01-02 15:04:05")),
-			sql.Named("final", consulta.Intervalo.Final.Format("2006-01-02 15:04:05")),
-		}
+	grouping := ""
+	if consulta.SomenteVersaoMaisRecente {
+		grouping += `GROUP BY chave HAVING max(versao)`
 	}
 
-	rows, err := db.Query(fmt.Sprintf(base, condicoes, groupBy), argumentos...)
+	conds := r.parse(consulta)
+
+	stmt := builder.Render(
+		&s.Valores{
+			"GroupBy": grouping,
+			"Where":   conds.Condicoes(),
+		},
+	)
+
+	rows, err := r.query(db, stmt, conds.Argumentos())
 
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("%w: Lançamentos não encontrados", t.NotFoundError)
-		}
 		return nil, err
 	}
 
@@ -96,4 +87,39 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 	}
 
 	return &lancamentos, nil
+}
+
+func (r RepositorioDeConsultaLancamentos) parse(consulta *c.ConsultaLancamentos) *s.Condicoes {
+
+	var conds s.Condicoes
+
+	if consulta.Chave != uuid.Nil {
+		conds.Add("chave = :chave", sql.Named("chave", consulta.Chave))
+	} else {
+
+		if consulta.Description != "" {
+			conds.Add("descr LIKE :descr", sql.Named("descr", "%"+consulta.Description+"%"))
+		}
+
+		conds.Add(
+			"timestamp BETWEEN :inicio AND :final",
+			sql.Named("inicio", consulta.Intervalo.Inicio.Format(time.DateOnly)),
+			sql.Named("final", consulta.Intervalo.Final.Format(time.DateOnly)),
+		)
+	}
+
+	return &conds
+}
+
+func (r RepositorioDeConsultaLancamentos) query(db *sql.DB, stmt string, args *[]any) (*sql.Rows, error) {
+	rows, err := db.Query(stmt, *args...)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("%w: Lançamentos não encontrados", t.NotFoundError)
+		}
+		return nil, err
+	}
+
+	return rows, nil
 }

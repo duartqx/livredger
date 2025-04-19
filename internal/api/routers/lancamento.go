@@ -60,12 +60,13 @@ func post(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Params
+// Query Params
 //
 //	chave: uuid
 //	somente_versao_mais_recente: true
 //	intervalo.inicio: time.Time
 //	intervalo.final: time.Time
+//	descricao: string
 func get(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		h.JsonErrorResponse(w, err, http.StatusBadRequest)
@@ -82,6 +83,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 		r.FormValue("somente_versao_mais_recente"),
 		r.FormValue("intervalo.inicio"),
 		r.FormValue("intervalo.final"),
+		r.FormValue("descricao"),
 	)
 
 	if err != nil {

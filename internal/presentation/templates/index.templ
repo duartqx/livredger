@@ -8,6 +8,7 @@ templ nav(active string) {
 				hx-target="lancamentos"
 				hx-swap="innerHTML"
 				hx-push-url="false"
+				hx-trigger="click, load"
 				role="button"
 				class={ "nav-item", "px-3", "fw-bold", templ.KV("active", active == "lancamentos") }
 				@click="htmx.takeClass($el, 'active')"
