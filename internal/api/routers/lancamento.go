@@ -62,11 +62,7 @@ func post(w http.ResponseWriter, r *http.Request) {
 
 // Query Params
 //
-//	chave: uuid
-//	somente_versao_mais_recente: true
-//	intervalo.inicio: time.Time
-//	intervalo.final: time.Time
-//	descricao: string
+//	q: consultas.ConsultaLancamentos
 func get(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		h.JsonErrorResponse(w, err, http.StatusBadRequest)
@@ -78,20 +74,16 @@ func get(w http.ResponseWriter, r *http.Request) {
 	uow := i.Bootstrap(usuario)
 	defer uow.Close()
 
-	consulta, err := consultas.ParsearStringsParaConsultaLancamentos(
-		r.FormValue("chave"),
-		r.FormValue("somente_versao_mais_recente"),
-		r.FormValue("intervalo.inicio"),
-		r.FormValue("intervalo.final"),
-		r.FormValue("descricao"),
-	)
+	var consulta consultas.ConsultaLancamentos
 
-	if err != nil {
-		h.JsonErrorResponse(w, err, http.StatusBadRequest)
-		return
+	if q := r.FormValue("q"); q != "" {
+		if err := json.Unmarshal([]byte(q), &consulta); err != nil {
+			h.JsonErrorResponse(w, err, http.StatusBadRequest)
+			return
+		}
 	}
 
-	lancamentos, err := v.BuscarLancamentos(uow, consulta)
+	lancamentos, err := v.BuscarLancamentos(uow, &consulta)
 
 	if err != nil {
 		h.JsonErrorResponse(w, err, http.StatusInternalServerError)

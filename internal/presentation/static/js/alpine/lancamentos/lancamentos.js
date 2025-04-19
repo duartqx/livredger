@@ -24,7 +24,7 @@ export default {
     /** @returns {Promise<LancamentoApi[]>} */
     async _obtemLancamentosViaAPI() {
       const response = await fetch(
-        "/api/lancamentos?somente_versao_mais_recente=true",
+        `/api/lancamentos?q={"somente_versao_mais_recente": true}`,
         { method: "GET", credentials: "include" },
       );
 
