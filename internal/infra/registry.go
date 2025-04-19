@@ -8,13 +8,13 @@ import (
 	"github.com/duartqx/livredger/internal/infra/repositorios/sqlite/consultas"
 )
 
-type RepositoriosLancamento struct {
+type RepositoriosLancamentos struct {
 	Comando  repositorios.RepositorioDeComandoLancamentos
 	Consulta repositorios.RepositorioDeConsultaLancamentos
 }
 
 type Repositorios struct {
-	Lancamento *RepositoriosLancamento
+	Lancamentos *RepositoriosLancamentos
 }
 
 const DBMS string = "sqlite"
@@ -23,7 +23,7 @@ func FabricaDeRepositorios() *Repositorios {
 	switch DBMS {
 	case "sqlite":
 		return &Repositorios{
-			Lancamento: &RepositoriosLancamento{
+			Lancamentos: &RepositoriosLancamentos{
 				Comando:  comandos.NewRepositorioDeComandoLancamentos(),
 				Consulta: consultas.NewRepositorioDeConsultaLancamentos(),
 			},

@@ -17,5 +17,5 @@ func BuscarLancamentos(uow *i.UnidadeDeTrabalho, consulta *c.ConsultaLancamentos
 		return nil, fmt.Errorf("%w: Proibido buscar lançamentos sem chave sem a presença de intervalo de tempo", t.BusinessLogicError)
 	}
 
-	return uow.Repositorios.Lancamento.Consulta.Buscar(uow.DB, consulta)
+	return uow.Repositorios.Lancamentos.Consulta.Buscar(uow.DB, consulta)
 }

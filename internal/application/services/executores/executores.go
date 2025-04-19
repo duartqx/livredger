@@ -18,7 +18,7 @@ func CriarLancamento(uow *i.UnidadeDeTrabalho, comando *c.CriarLancamento) (*e.L
 		return nil, err
 	}
 
-	lancamento, err := uow.Repositorios.Lancamento.Comando.Criar(tx, comando)
+	lancamento, err := uow.Repositorios.Lancamentos.Comando.Criar(tx, comando)
 
 	if err != nil {
 		uow.Rollback()
