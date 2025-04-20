@@ -22,17 +22,21 @@ var eventosLancamento []string = []string{
 }
 
 type CriarLancamento struct {
-	Evento     string     `json:"evento"`
-	Chave      *uuid.UUID `json:"chave"`
-	Versao     int        `json:"versao"`
-	Valores    float64    `json:"valores"`
-	Natureza   string     `json:"natureza"`
-	Meio       string     `json:"meio"`
-	Vencimento time.Time  `json:"vencimento"`
-	Descr      string     `json:"descr"`
+	Evento        string    `json:"evento"`
+	Chave         uuid.UUID `json:"chave"`
+	Versao        int       `json:"versao"`
+	Valores       float64   `json:"valores"`
+	Natureza      string    `json:"natureza"`
+	MeioTransacao string    `json:"meio_transacao"`
+	Vencimento    time.Time `json:"vencimento"`
+	Descr         string    `json:"descricao"`
 }
 
 func (c CriarLancamento) Validar() error {
+	if uuid.Nil == c.Chave {
+		return fmt.Errorf("Chave é obrigatória")
+	}
+
 	if c.Descr == "" {
 		return fmt.Errorf("Descrição é obrigatória")
 	}
@@ -52,8 +56,8 @@ func (c CriarLancamento) Validar() error {
 		return fmt.Errorf("Versão não pode ser igual a 0")
 	}
 
-	if !slices.Contains(meios.MEIOS, c.Meio) {
-		return fmt.Errorf("Meio de transação inválido: %s", c.Meio)
+	if !slices.Contains(meios.MEIOS_TRANSACAO, c.MeioTransacao) {
+		return fmt.Errorf("Meio de transação inválido: %s", c.MeioTransacao)
 	}
 
 	if !slices.Contains(naturezas.NATUREZAS, c.Natureza) {

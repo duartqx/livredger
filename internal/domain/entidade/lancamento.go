@@ -14,11 +14,11 @@ type Lancamento struct {
 	Chave  uuid.UUID `json:"chave"`
 	Versao int       `json:"versao"`
 
-	Valores    float64   `json:"valores"`
-	Natureza   string    `json:"natureza"`
-	Meio       string    `json:"meio"`
-	Vencimento time.Time `json:"vencimento"`
-	Descr      string    `json:"description"`
+	Valores       float64   `json:"valores"`
+	Natureza      string    `json:"natureza"`
+	MeioTransacao string    `json:"meio_transacao"`
+	Vencimento    time.Time `json:"vencimento"`
+	Descr         string    `json:"descricao"`
 }
 
 func NovoLancamento() *Lancamento {
