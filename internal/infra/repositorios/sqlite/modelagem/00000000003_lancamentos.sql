@@ -17,8 +17,9 @@ CREATE TABLE IF NOT EXISTS lancamentos (
     versao INTEGER NOT NULL CHECK(versao > 0),
 
     valores REAL NOT NULL,
+    moeda VARCHAR(3) NOT NULL DEFAULT 'BRL' CHECK(moeda IN ('BRL', 'USD', 'EUR')),
     natureza VARCHAR(128) NOT NULL REFERENCES naturezas(nome),
-    meio VARCHAR(128) NOT NULL REFERENCES meios(nome),
+    meio_financeiro VARCHAR(128) NOT NULL REFERENCES meios_financeiro(nome),
     vencimento DATETIME,
 
     descr VARCHAR(500) NOT NULL CHECK(TRIM(descr) != ''),

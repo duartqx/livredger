@@ -24,14 +24,14 @@ type LancamentoCriado struct {
 func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *comandos.CriarLancamento) (*e.Lancamento, error) {
 
 	lancamento := e.Lancamento{
-		Evento:     comando.Evento,
-		Chave:      *comando.Chave,
-		Versao:     comando.Versao,
-		Valores:    comando.Valores,
-		Natureza:   comando.Natureza,
-		Meio:       comando.Meio,
-		Vencimento: comando.Vencimento,
-		Descr:      comando.Descr,
+		Evento:        comando.Evento,
+		Chave:         comando.Chave,
+		Versao:        comando.Versao,
+		Valores:       comando.Valores,
+		Natureza:      comando.Natureza,
+		MeioTransacao: comando.MeioTransacao,
+		Vencimento:    comando.Vencimento,
+		Descr:         comando.Descr,
 	}
 
 	row := tx.QueryRow(
@@ -42,7 +42,7 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *comandos.Cri
 			versao,
 			valores,
 			natureza,
-			meio,
+			meio_transacao,
 			vencimento,
 			descr
 		) VALUES (
@@ -62,7 +62,7 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *comandos.Cri
 		sql.Named("versao", comando.Versao),
 		sql.Named("valores", comando.Valores),
 		sql.Named("natureza", comando.Natureza),
-		sql.Named("meio", comando.Meio),
+		sql.Named("meio_transacao", comando.MeioTransacao),
 		sql.Named("vencimento", comando.Vencimento),
 		sql.Named("descr", comando.Descr),
 	)

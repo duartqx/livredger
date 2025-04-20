@@ -1,11 +1,11 @@
--- sql: Cria tabela meios
-CREATE TABLE IF NOT EXISTS meios (
+-- sql: Cria tabela meios_financeiro
+CREATE TABLE IF NOT EXISTS meios_financeiro (
     nome VARCHAR(128) PRIMARY KEY NOT NULL,
     CHECK(TRIM(nome) != '')
 );
 
--- sql: Insere meios de transação
-INSERT INTO meios (nome)
+-- sql: Insere meios financeiros
+INSERT INTO meios_financeiro (nome)
 VALUES
     ('Transferência Bancária'),
     ('PIX'),

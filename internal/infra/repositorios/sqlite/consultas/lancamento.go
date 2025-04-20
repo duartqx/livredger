@@ -33,7 +33,7 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 			"versao",
 			"valores",
 			"natureza",
-			"meio",
+			"meio_transacao",
 			"vencimento",
 			"descr",
 		).
@@ -72,7 +72,7 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 			&lancamento.Versao,
 			&lancamento.Valores,
 			&lancamento.Natureza,
-			&lancamento.Meio,
+			&lancamento.MeioTransacao,
 			&lancamento.Vencimento,
 			&lancamento.Descr,
 		)
