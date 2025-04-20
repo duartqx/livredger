@@ -19,7 +19,7 @@ export type Natureza =
   | "Investimento"
   | "Outro";
 
-export type MeioTransacao =
+export type MeioFinanceiro =
   | "Transferência Bancária"
   | "PIX"
   | "Cartão de Crédito"
@@ -44,7 +44,7 @@ export type LancamentoApi = {
   versao: number;
   valores: number;
   natureza: string;
-  meio: string;
+  meio_financeiro: string;
   vencimento: string;
   descricao: string;
 };
@@ -57,7 +57,7 @@ export type Lancamento = {
   versao: Number;
   valores: Float;
   natureza: Natureza;
-  meio: MeioTransacao;
+  meio_financeiro: MeioFinanceiro;
   vencimento: Date;
   descricao: string;
 };
@@ -69,7 +69,7 @@ export type LancamentoComando = {
   versao: Number;
   valores: Float;
   natureza: Natureza;
-  meio_transacao: MeioTransacao;
+  meio_financeiro: MeioFinanceiro;
   vencimento: Date;
   descricao: string;
 };
@@ -79,8 +79,8 @@ export type Opcao = {
   value: string;
 };
 
-export type EventosLancamento = EventoLancamento[]
+export type EventosLancamento = EventoLancamento[];
 
-export type Naturezas = Natureza[]
+export type Naturezas = Natureza[];
 
-export type MeiosTransacao = MeioTransacao[]
+export type MeiosFinanceiros = MeioFinanceiro[];

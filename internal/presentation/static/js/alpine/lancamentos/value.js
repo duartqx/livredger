@@ -26,7 +26,7 @@ export const NATUREZAS = [
 ];
 
 /** @type {MeiosTransacao} */
-export const MEIOS_TRANSACAO = [
+export const MEIOS_FINANCEIRO = [
   "Cartão de Benefícios",
   "Cartão de Crédito",
   "Cartão de Débito",
