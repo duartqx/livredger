@@ -15,11 +15,11 @@ func (i Intervalo) IsZero() bool {
 }
 
 func IntervaloDesseMes() Intervalo {
-	now := time.Now()
+	tomorrow := time.Now().UTC().Add(time.Hour * 24)
 
 	return Intervalo{
-		Inicio: time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location()),
-		Final:  now,
+		Inicio: time.Date(tomorrow.Year(), tomorrow.Month(), 1, 0, 0, 0, 0, tomorrow.Location()),
+		Final:  tomorrow,
 	}
 }
 
