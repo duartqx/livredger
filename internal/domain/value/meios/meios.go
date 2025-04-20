@@ -9,7 +9,7 @@ const (
 	BENEFICIOS             = "Cartão de Benefícios"
 )
 
-var MEIOS_TRANSACAO []string = []string{
+var MEIOS_FINANCEIRO []string = []string{
 	TRANSFERENCIA_BANCARIA,
 	PIX,
 	CARTAO_CREDITO,

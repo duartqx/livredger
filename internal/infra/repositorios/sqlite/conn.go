@@ -60,7 +60,7 @@ func executarMigracoes(db *sql.DB) error {
 
 func dbFilename(usuario *t.Usuario) string {
 	if usuario != nil && usuario.Id != 0 {
-		return fmt.Sprintf("./%d.db", usuario.Id)
+		return fmt.Sprintf("./%s.db", usuario.Email)
 	}
 
 	return "./local.db"

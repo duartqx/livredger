@@ -24,14 +24,14 @@ type LancamentoCriado struct {
 func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *comandos.CriarLancamento) (*e.Lancamento, error) {
 
 	lancamento := e.Lancamento{
-		Evento:        comando.Evento,
-		Chave:         comando.Chave,
-		Versao:        comando.Versao,
-		Valores:       comando.Valores,
-		Natureza:      comando.Natureza,
-		MeioTransacao: comando.MeioTransacao,
-		Vencimento:    comando.Vencimento,
-		Descr:         comando.Descr,
+		Evento:         comando.Evento,
+		Chave:          comando.Chave,
+		Versao:         comando.Versao,
+		Valores:        comando.Valores,
+		Natureza:       comando.Natureza,
+		MeioFinanceiro: comando.MeioFinanceiro,
+		Vencimento:     comando.Vencimento,
+		Descricao:      comando.Descricao,
 	}
 
 	row := tx.QueryRow(
@@ -42,18 +42,18 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *comandos.Cri
 			versao,
 			valores,
 			natureza,
-			meio_transacao,
+			meio_financeiro,
 			vencimento,
-			descr
+			descricao
 		) VALUES (
 			:evento,
 			:chave,
 			:versao,
 			:valores,
 			:natureza,
-			:meio,
+			:meio_financeiro,
 			:vencimento,
-			:descr
+			:descricao
 		)
 		RETURNING id, timestamp
 		`,
@@ -62,9 +62,9 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *comandos.Cri
 		sql.Named("versao", comando.Versao),
 		sql.Named("valores", comando.Valores),
 		sql.Named("natureza", comando.Natureza),
-		sql.Named("meio_transacao", comando.MeioTransacao),
+		sql.Named("meio_financeiro", comando.MeioFinanceiro),
 		sql.Named("vencimento", comando.Vencimento),
-		sql.Named("descr", comando.Descr),
+		sql.Named("descricao", comando.Descricao),
 	)
 
 	if err := row.Scan(&lancamento.Id, &lancamento.Timestamp); err != nil {

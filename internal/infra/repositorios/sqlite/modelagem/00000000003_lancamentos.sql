@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS lancamentos (
     meio_financeiro VARCHAR(128) NOT NULL REFERENCES meios_financeiro(nome),
     vencimento DATETIME,
 
-    descr VARCHAR(500) NOT NULL CHECK(TRIM(descr) != ''),
+    descricao VARCHAR(500) NOT NULL CHECK(TRIM(descricao) != ''),
 
     UNIQUE (chave, versao)
 );

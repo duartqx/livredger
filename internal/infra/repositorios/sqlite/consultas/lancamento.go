@@ -33,9 +33,9 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 			"versao",
 			"valores",
 			"natureza",
-			"meio_transacao",
+			"meio_financeiro",
 			"vencimento",
-			"descr",
+			"descricao",
 		).
 		From("lancamentos").
 		OrderBy("timestamp DESC")
@@ -72,9 +72,9 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 			&lancamento.Versao,
 			&lancamento.Valores,
 			&lancamento.Natureza,
-			&lancamento.MeioTransacao,
+			&lancamento.MeioFinanceiro,
 			&lancamento.Vencimento,
-			&lancamento.Descr,
+			&lancamento.Descricao,
 		)
 
 		if err != nil {
@@ -93,8 +93,8 @@ func (r RepositorioDeConsultaLancamentos) parse(consulta *c.ConsultaLancamentos,
 		return builder.Where(squirrel.Eq{"chave": consulta.Chave})
 	}
 
-	if consulta.Description != "" {
-		builder = builder.Where(squirrel.Like{"descr": "%" + consulta.Description + "%"})
+	if consulta.Descricao != "" {
+		builder = builder.Where(squirrel.Like{"descricao": "%" + consulta.Descricao + "%"})
 	}
 
 	return builder.Where(squirrel.And{

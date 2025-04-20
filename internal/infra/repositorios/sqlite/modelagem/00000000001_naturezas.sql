@@ -21,5 +21,5 @@ VALUES
     ('Petshop'),
     ('Saúde'),
     ('Investimento'),
-    ('Outro'),
+    ('Outro')
 ON CONFLICT DO NOTHING;
