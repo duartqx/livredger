@@ -4,13 +4,13 @@
  *  Natureza,
  *  EventoLancamento,
  *  LancamentoComando,
- *  MeioTransacao
+ *  MeioFinanceiro
  * } from './types.d.ts'
  *
  * @typedef {{
  *  evento: EventoLancamento
  *  natureza: Natureza | ""
- *  meioTransacao: MeioTransacao | ""
+ *  meioFinanceiro: MeioFinanceiro | ""
  *  valores: Float
  *  vencimento: string
  *  descricao: string
@@ -19,38 +19,76 @@
  * }} LancamentoModelo
  */
 
-import { MEIOS_TRANSACAO, NATUREZAS } from "./value.js";
+import { MEIOS_FINANCEIRO as MEIOS_FINANCEIROS, NATUREZAS } from "./value.js";
+
+/** @returns {LancamentoModelo} */
+function modeloPadrao() {
+  if (window.location.host.startsWith("localhost")) {
+    return {
+      evento: "LancamentoPrevisto",
+      natureza: "Água e Gás",
+      meioFinanceiro: "Cartão de Benefícios",
+      valores: 10.0,
+      vencimento: dayjs().add(3, "hours").toISOString().slice(0, 16),
+      descricao: "afksjdfl",
+      versao: 1,
+    };
+  }
+  return {
+    evento: "LancamentoCriado",
+    natureza: "",
+    meioFinanceiro: "",
+    valores: 0,
+    vencimento: "",
+    descricao: "",
+    versao: 1,
+  };
+}
 
 export default {
   name: "CriarLancamento",
   component: () => ({
+    criando: false,
     /** @type {LancamentoModelo} */
-    modelo: {
-      evento: "LancamentoPrevisto",
-      natureza: "",
-      meioTransacao: "",
-      valores: 0,
-      vencimento: "",
-      descricao: "",
-      versao: 1,
-      comando() {
-        return {
-          evento: this.evento,
-          timestamp: window.dayjs(),
-          chave: crypto.randomUUID(),
-          versao: this.versao,
-          valores: Number(this.valores),
-          natureza: this.natureza,
-          meio_transacao: this.meioTransacao,
-          vencimento: window.dayjs(this.vencimento),
-          descricao: this.descricao,
-        };
-      },
-    },
+    modelo: modeloPadrao(),
     naturezas: NATUREZAS,
-    meios_transacao: MEIOS_TRANSACAO,
+    meios_financeiros: MEIOS_FINANCEIROS,
+    /** @returns {LancamentoComando} */
+    comando() {
+      return {
+        evento: this.modelo.evento,
+        timestamp: window.dayjs(),
+        chave: crypto.randomUUID(),
+        versao: this.modelo.versao,
+        valores: Number(this.modelo.valores),
+        natureza: this.modelo.natureza,
+        meio_financeiro: this.modelo.meioFinanceiro,
+        vencimento: window.dayjs(this.modelo.vencimento),
+        descricao: this.modelo.descricao,
+      };
+    },
     async submit() {
-      console.log(this.modelo.comando());
+      const criando = !this.criando;
+
+      this.criando = criando;
+
+      const comando = this.comando();
+
+      const response = await fetch("/api/lancamentos", {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(comando),
+      });
+
+      if (!response.ok) {
+        console.log(response);
+      }
+
+      this.criando = !criando;
+
+      const body = await response.json();
+
+      console.log(body)
     },
   }),
 };
