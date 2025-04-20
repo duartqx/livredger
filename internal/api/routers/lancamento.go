@@ -15,21 +15,6 @@ import (
 	i "github.com/duartqx/livredger/internal/infra"
 )
 
-// Comando:
-//
-//	{
-//		"evento": One of [
-//			LancamentoCriado,
-//			LancamentoAtualizado,
-//			LancamentoPago,
-//			LancamentoRecebido,
-//			LancamentoCancelado
-//		]
-//		"chave": uuid
-//		"versao": int
-//		"vencimento": time.Time
-//		"descr": string[500]
-//	}
 func post(w http.ResponseWriter, r *http.Request) {
 	var comando c.CriarLancamento
 
@@ -86,8 +71,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 	lancamentos, err := v.BuscarLancamentos(uow, &consulta)
 
 	if err != nil {
-		h.JsonErrorResponse(w, err, http.StatusInternalServerError)
-		return
+		panic(err)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
