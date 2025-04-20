@@ -6,21 +6,23 @@
  *    Meio,
  *    EventoLancamento,
  *    LancamentoApi,
- *    Lancamento
+ *    Lancamento,
+ *    MeiosTransacao,
+ *    Naturezas
  *  } from './types.d.ts'
  */
 
 export default {
-  name: "lancamentos",
+  name: "ConsultaLancamentos",
   component: () => ({
+    /** @type {LancamentoApi[] | null} */
+    _lancamentos: null,
     async lancamentos() {
       if (this._lancamentos === null) {
         this._lancamentos = await this._obtemLancamentosViaAPI();
       }
       return this._lancamentos;
     },
-    /** @type {LancamentoApi[] | null} */
-    _lancamentos: null,
     /** @returns {Promise<LancamentoApi[]>} */
     async _obtemLancamentosViaAPI() {
       const response = await fetch(
@@ -37,7 +39,7 @@ export default {
       /** @type {{total: number, itens: LancamentoApi[]}} */
       const corpo = await response.json();
 
-      console.log("GET", corpo.itens)
+      console.log("GET", corpo.itens);
 
       return corpo.itens;
     },

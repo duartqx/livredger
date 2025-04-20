@@ -8,7 +8,7 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func Lancamentos() templ.Component {
+func CriarLancamento() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -26,7 +26,71 @@ func Lancamentos() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<lancamentos x-data=\"lancamentos\"><template x-for=\"(lancamento, index) in lancamentos\" :key=\"`${lancamento.id}-{lancamento.chave}`\"><lancamento><div x-text=\"lancamento.id\"></div><div x-text=\"lancamento.evento\"></div><div x-text=\"lancamento.valores\"></div><div x-text=\"lancamento.natureza\"></div><div x-text=\"lancamento.description\"></div><div x-text=\"lancamento.vencimento\"></div></lancamento></template></lancamentos>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<lancamentos x-data=\"CriarLancamento\"><form x-ref=\"formAdicionarLancamento\" class=\"bg-body-tertiary rounded-2 p-3\" @submit.prevent=\"submit\"><section class=\"row\"><input-transacao class=\"col-xl col-lg-4 mt-2\"><label class=\"form-label\">Evento</label> <select class=\"form-select\" x-model=\"modelo.evento\" required><option value=\"LancamentoCriado\">Novo</option> <option value=\"LancamentoPrevisto\">Previsto</option></select></input-transacao> <input-natureza class=\"col-xl col-lg-4 mt-2\"><label class=\"form-label text-nowrap\">Natureza da Transação</label> <select class=\"form-select\" x-model=\"modelo.natureza\" required><option value=\"\">Selecione</option><template x-for=\"nat in naturezas\"><option :value=\"nat\" x-text=\"nat\"></option></template></select></input-natureza> <input-meio-transacao class=\"col-xl col-lg-4 mt-2\"><label class=\"form-label text-nowrap\">Meio de Transação</label> <select class=\"form-select\" x-model=\"modelo.meioTransacao\" required><option value=\"\">Selecione</option><template x-for=\"meio in meios_transacao\"><option :value=\"meio\" x-text=\"meio\"></option></template></select></input-meio-transacao> <input-valores class=\"col-xl col-lg-4 mt-2\"><label class=\"form-label\">Valores</label><div class=\"input-group\"><span class=\"input-group-text\">R$</span> <input class=\"form-control\" type=\"number\" step=\"0.0001\" x-model=\"modelo.valores\" required></div></input-valores> <input-vencimento class=\"col-lg col-md mt-2\"><label class=\"form-label\">Vencimento</label> <input class=\"form-control\" type=\"datetime-local\" x-model=\"modelo.vencimento\" required></input-vencimento></section><section class=\"row\"><input-descricao class=\"col-md mt-2\"><label class=\"form-label\">Descrição</label> <textarea rows=\"3\" class=\"form-control\" x-model=\"modelo.descricao\" placeholder=\"Adicione uma descrição sobre a transação\" type=\"text\" maxlength=\"500\" required></textarea></input-descricao></section><section><button class=\"col-4 offset-8 mt-2 btn btn-primary\">Submit</button></section></form></lancamentos>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func ConsultaLancamentos() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var2 == nil {
+			templ_7745c5c3_Var2 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<lancamentos x-data=\"ConsultaLancamentos\"><template x-for=\"(lancamento, index) in lancamentos\" :key=\"`${lancamento.id}-${lancamento.chave}`\"><lancamento><div x-text=\"lancamento.id\"></div><div x-text=\"lancamento.evento\"></div><div x-text=\"lancamento.valores\"></div><div x-text=\"lancamento.natureza\"></div><div x-text=\"lancamento.description\"></div><div x-text=\"lancamento.vencimento\"></div></lancamento></template></lancamentos>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func Lancamentos() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var3 == nil {
+			templ_7745c5c3_Var3 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = CriarLancamento().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = ConsultaLancamentos().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

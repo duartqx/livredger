@@ -5,7 +5,7 @@ templ nav(active string) {
 		<ul class="navbar-nav me-auto mb-0" x-data>
 			<li
 				hx-get="/lancamentos"
-				hx-target="lancamentos"
+				hx-target="main"
 				hx-swap="innerHTML"
 				hx-push-url="false"
 				hx-trigger="click, load"
@@ -46,9 +46,9 @@ templ index(active string) {
 		</head>
 		<body class="container p-4">
 			@nav(active)
-			<lancamentos>
+			<main>
 				{ children... }
-			</lancamentos>
+			</main>
 		</body>
 	</html>
 }
