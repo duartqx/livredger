@@ -1,14 +1,6 @@
 /**
  * @import {
- *    UUID,
- *    Float,
- *    Natureza,
- *    Meio,
- *    EventoLancamento,
  *    LancamentoApi,
- *    Lancamento,
- *    MeiosTransacao,
- *    Naturezas
  *  } from './types.d.ts'
  */
 
@@ -19,12 +11,12 @@ export default {
     _lancamentos: null,
     async lancamentos() {
       if (this._lancamentos === null) {
-        this._lancamentos = await this._obtemLancamentosViaAPI();
+        this._lancamentos = await this._consultarLancamentos();
       }
       return this._lancamentos;
     },
     /** @returns {Promise<LancamentoApi[]>} */
-    async _obtemLancamentosViaAPI() {
+    async _consultarLancamentos() {
       const response = await fetch(
         `/api/lancamentos?q={"somente_versao_mais_recente": true}`,
         { method: "GET", credentials: "include" },

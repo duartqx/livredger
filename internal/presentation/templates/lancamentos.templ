@@ -18,7 +18,7 @@ templ CriarLancamento() {
 				<input-natureza class="col-xl col-lg-4 mt-2">
 					<label class="form-label text-nowrap">Natureza da Transação</label>
 					<select class="form-select" x-model="modelo.natureza" required >
-						<option value="">Selecione</option>
+						//<option value="">Selecione</option>
 						<template x-for="nat in naturezas">
 							<option :value="nat" x-text="nat"></option>
 						</template>
@@ -26,9 +26,9 @@ templ CriarLancamento() {
 				</input-natureza>
 				<input-meio-transacao class="col-xl col-lg-4 mt-2">
 					<label class="form-label text-nowrap">Meio de Transação</label>
-					<select class="form-select" x-model="modelo.meioTransacao" required>
-						<option value="">Selecione</option>
-						<template x-for="meio in meios_transacao">
+					<select class="form-select" x-model="modelo.meioFinanceiro" required>
+						//<option value="">Selecione</option>
+						<template x-for="meio in meios_financeiros">
 							<option :value="meio" x-text="meio"></option>
 						</template>
 					</select>
@@ -52,7 +52,19 @@ templ CriarLancamento() {
 				</input-descricao>
 			</section>
 			<section>
-				<button class="col-4 offset-8 mt-2 btn btn-primary">Submit</button>
+				<button
+					:disabled="criando"
+					class="col-4 offset-8 mt-2 btn btn-primary d-inline-flex align-items-center justify-content-center"
+				>
+					<span class="px-2">Submit</span>
+						<span
+							:class="criando && 'visible'"
+							class="spinner-border spinner-border-sm fade-opacity"
+							aria-hidden="true"
+						></span>
+					<template>
+					</template>
+				</button>
 			</section>
 		</form>
 	</lancamentos>
@@ -61,13 +73,13 @@ templ CriarLancamento() {
 templ ConsultaLancamentos() {
 	<lancamentos x-data="ConsultaLancamentos">
 		<template x-for="(lancamento, index) in lancamentos" :key="`${lancamento.id}-${lancamento.chave}`">
-			<lancamento>
-				<div x-text="lancamento.id"></div>
-				<div x-text="lancamento.evento"></div>
-				<div x-text="lancamento.valores"></div>
-				<div x-text="lancamento.natureza"></div>
-				<div x-text="lancamento.description"></div>
-				<div x-text="lancamento.vencimento"></div>
+			<lancamento class="d-flex justify-content-around bg-body-tertiary p-3 my-4">
+				<span x-text="dayjs.utc(lancamento.timestamp).tz('America/Sao_Paulo').format('LLLL')"></span>
+				<span x-text="lancamento.evento"></span>
+				<span x-text="lancamento.valores"></span>
+				<span x-text="lancamento.natureza"></span>
+				<span x-text="lancamento.descricao"></span>
+				<span x-text="dayjs.utc(lancamento.vencimento).tz('America/Sao_Paulo').format('LLLL')"></span>
 			</lancamento>
 		</template>
 	</lancamentos>
