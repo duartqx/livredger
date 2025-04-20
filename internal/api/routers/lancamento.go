@@ -2,6 +2,7 @@ package routers
 
 import (
 	"encoding/json"
+	"errors"
 
 	"net/http"
 
@@ -59,7 +60,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 	uow := i.Bootstrap(usuario)
 	defer uow.Close()
 
-	var consulta consultas.ConsultaLancamentos
+	consulta := consultas.ConsultaLancamentosPadrao()
 
 	if q := r.FormValue("q"); q != "" {
 		if err := json.Unmarshal([]byte(q), &consulta); err != nil {
@@ -68,9 +69,13 @@ func get(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	lancamentos, err := v.BuscarLancamentos(uow, &consulta)
+	lancamentos, err := v.BuscarLancamentos(uow, consulta)
 
 	if err != nil {
+		if errors.Is(err, t.BusinessLogicError) {
+			h.JsonErrorResponse(w, err, http.StatusInternalServerError)
+			return
+		}
 		panic(err)
 	}
 
