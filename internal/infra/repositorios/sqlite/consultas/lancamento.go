@@ -49,13 +49,13 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 	stmt, args, err := builder.ToSql()
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %w", t.InternalError, err)
 	}
 
 	rows, err := r.query(db, stmt, &args)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %w", t.InternalError, err)
 	}
 
 	lancamentos := make([]*e.Lancamento, 0)
@@ -78,7 +78,7 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 		)
 
 		if err != nil {
-			return nil, fmt.Errorf("Não foi possível mapear lançamento: %w", err)
+			return nil, fmt.Errorf("%w: Não foi possível mapear lançamento: %w", t.InternalError, err)
 		}
 
 		lancamentos = append(lancamentos, &lancamento)
@@ -110,7 +110,7 @@ func (r RepositorioDeConsultaLancamentos) query(db *sql.DB, stmt string, args *[
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("%w: Lançamentos não encontrados", t.NotFoundError)
 		}
-		return nil, err
+		return nil, fmt.Errorf("%w: %w", t.InternalError, err)
 	}
 
 	return rows, nil

@@ -3,6 +3,7 @@ package types
 import "errors"
 
 var (
-	NotFoundError      error = errors.New("NotFoundError")
-	BusinessLogicError       = errors.New("BusinessLogicError")
+	BusinessLogicError = errors.New("BusinessLogicError")
+	InternalError      = errors.New("InternInternalError")
+	NotFoundError      = errors.New("NotFoundError")
 )

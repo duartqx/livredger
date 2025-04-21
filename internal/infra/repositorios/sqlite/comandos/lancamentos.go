@@ -6,7 +6,8 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/duartqx/livredger/internal/domain/comandos"
+	t "github.com/duartqx/livredger/internal/common/types"
+	c "github.com/duartqx/livredger/internal/domain/comandos"
 	e "github.com/duartqx/livredger/internal/domain/entidade"
 )
 
@@ -21,7 +22,7 @@ type LancamentoCriado struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *comandos.CriarLancamento) (*e.Lancamento, error) {
+func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLancamento) (*e.Lancamento, error) {
 
 	lancamento := e.Lancamento{
 		Evento:         comando.Evento,
@@ -71,10 +72,10 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *comandos.Cri
 		re := regexp.MustCompile("failed to get next row\nerror code = 1: Error fetching next row: SQLite failure: `(.*?)`")
 
 		if match := re.FindStringSubmatch(err.Error()); len(match) > 1 {
-			return nil, fmt.Errorf("Integridade: %s", match[1])
+			return nil, fmt.Errorf("%w: %s", t.BusinessLogicError, match[1])
 		}
 
-		return nil, fmt.Errorf("%w: Não foi possível inserir novo lançamento", err)
+		return nil, fmt.Errorf("%w: Não foi possível inserir novo lançamento: %w", t.InternalError, err)
 	}
 
 	return &lancamento, nil
