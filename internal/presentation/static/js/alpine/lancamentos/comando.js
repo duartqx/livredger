@@ -19,7 +19,8 @@
  * }} LancamentoModelo
  */
 
-import { MEIOS_FINANCEIRO as MEIOS_FINANCEIROS, NATUREZAS } from "./value.js";
+import { LancamentoComandoFalho, LancamentoComandoSucesso } from "./eventos.js";
+import { MEIOS_FINANCEIRO, NATUREZAS } from "./value.js";
 
 /** @returns {LancamentoModelo} */
 function modeloPadrao() {
@@ -52,7 +53,7 @@ export default {
     /** @type {LancamentoModelo} */
     modelo: modeloPadrao(),
     naturezas: NATUREZAS,
-    meios_financeiros: MEIOS_FINANCEIROS,
+    meios_financeiros: MEIOS_FINANCEIRO,
     /** @returns {LancamentoComando} */
     comando() {
       return {
@@ -85,7 +86,7 @@ export default {
 
       if (body.resultado && !body.error) {
         window.dispatchEvent(
-          new CustomEvent("LancamentoComandoSucesso", {
+          new CustomEvent(LancamentoComandoSucesso, {
             detail: { lancamento: body.resultado },
           }),
         );
@@ -93,7 +94,7 @@ export default {
         this.modelo = modeloPadrao();
       } else {
         window.dispatchEvent(
-          new CustomEvent("LancamentoComandoFalhou", {
+          new CustomEvent(LancamentoComandoFalho, {
             detail: { motivo: body.error },
           }),
         );

@@ -1,20 +1,21 @@
-/**
- * @import {
- *    LancamentoApi,
- *  } from './types.d.ts'
- */
+/** @import { LancamentoApi } from './types.d.ts' */
+
+import { LancamentoComandoSucesso } from './eventos.js';
 
 export default {
   name: "ConsultaLancamentos",
   component: () => ({
-    /** @type {LancamentoApi[] | null} */
-    _lancamentos: null,
-    async lancamentos() {
-      if (this._lancamentos === null) {
-        this._lancamentos = await this._consultarLancamentos();
-      }
-      return this._lancamentos;
+    async init() {
+      this.lancamentos = await this._consultarLancamentos();
+
+      /** Reatividade */
+      window.addEventListener(
+        LancamentoComandoSucesso,
+        this._adicionaLancamentoRecemCriado.bind(this),
+      );
     },
+    /** @type {LancamentoApi[]} */
+    lancamentos: [],
     /** @returns {Promise<LancamentoApi[]>} */
     async _consultarLancamentos() {
       const response = await fetch(
@@ -34,6 +35,9 @@ export default {
       console.log("GET", corpo.itens);
 
       return corpo.itens;
+    },
+    _adicionaLancamentoRecemCriado(event) {
+      this.lancamentos.unshift(event.detail.lancamento);
     },
   }),
 };
