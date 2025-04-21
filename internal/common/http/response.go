@@ -23,23 +23,28 @@ type Resultado[T any] struct {
 	Itens *[]*T `json:"itens"`
 }
 
-func JsonErrorResponse(w http.ResponseWriter, err error, statusCode int) {
-	res, errMarshal := json.Marshal(map[string]string{"error": err.Error()})
-
-	if errMarshal != nil {
-		http.Error(w, errMarshal.Error(), http.StatusInternalServerError)
-		return
-	}
+func JsonErrorReponse(w http.ResponseWriter, err error) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	if errors.Is(err, t.NotFoundError) {
+	switch {
+	case errors.Is(err, t.NotFoundError):
 		w.WriteHeader(http.StatusNotFound)
-		w.Write(res)
-		return
+	case errors.Is(err, t.BusinessLogicError) || errors.Is(err, &json.UnmarshalTypeError{}):
+		w.WriteHeader(http.StatusBadRequest)
+	default:
+		panic(err)
 	}
 
-	w.WriteHeader(statusCode)
+	w.Write(*marshal(err))
+}
 
-	w.Write(res)
+func marshal(err error) *[]byte {
+	res, err := json.Marshal(map[string]string{"error": err.Error()})
+
+	if err != nil {
+		panic(err)
+	}
+
+	return &res
 }

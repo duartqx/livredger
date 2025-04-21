@@ -2,7 +2,7 @@ package routers
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 
 	"net/http"
 
@@ -20,7 +20,7 @@ func post(w http.ResponseWriter, r *http.Request) {
 	var comando c.CriarLancamento
 
 	if err := json.NewDecoder(r.Body).Decode(&comando); err != nil {
-		h.JsonErrorResponse(w, err, http.StatusBadRequest)
+		h.JsonErrorReponse(w, fmt.Errorf("%w: %w", t.BusinessLogicError, err))
 		return
 	}
 	defer r.Body.Close()
@@ -33,7 +33,7 @@ func post(w http.ResponseWriter, r *http.Request) {
 	resultado, err := e.CriarLancamento(uow, &comando)
 
 	if err != nil {
-		h.JsonErrorResponse(w, err, http.StatusBadRequest)
+		h.JsonErrorReponse(w, err)
 		return
 	}
 
@@ -41,7 +41,7 @@ func post(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 
 	if err := json.NewEncoder(w).Encode(map[string]any{"resultado": resultado}); err != nil {
-		h.JsonErrorResponse(w, err, http.StatusInternalServerError)
+		h.JsonErrorReponse(w, fmt.Errorf("%w: %w", t.InternalError, err))
 		return
 	}
 }
@@ -51,7 +51,7 @@ func post(w http.ResponseWriter, r *http.Request) {
 //	q: consultas.ConsultaLancamentos
 func get(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
-		h.JsonErrorResponse(w, err, http.StatusBadRequest)
+		h.JsonErrorReponse(w, fmt.Errorf("%w: %w", t.BusinessLogicError, err))
 		return
 	}
 
@@ -64,7 +64,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 
 	if q := r.FormValue("q"); q != "" {
 		if err := json.Unmarshal([]byte(q), &consulta); err != nil {
-			h.JsonErrorResponse(w, err, http.StatusBadRequest)
+			h.JsonErrorReponse(w, fmt.Errorf("%w: %w", t.BusinessLogicError, err))
 			return
 		}
 	}
@@ -72,11 +72,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 	lancamentos, err := v.BuscarLancamentos(uow, consulta)
 
 	if err != nil {
-		if errors.Is(err, t.BusinessLogicError) {
-			h.JsonErrorResponse(w, err, http.StatusInternalServerError)
-			return
-		}
-		panic(err)
+		h.JsonErrorReponse(w, err)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -87,7 +83,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewEncoder(w).Encode(resultado); err != nil {
-		h.JsonErrorResponse(w, err, http.StatusInternalServerError)
+		h.JsonErrorReponse(w, fmt.Errorf("%w: %w", t.InternalError, err))
 		return
 	}
 }
