@@ -18,7 +18,6 @@ templ CriarLancamento() {
 				<input-natureza class="col-xl col-lg-4 mt-2">
 					<label class="form-label text-nowrap">Natureza da Transação</label>
 					<select class="form-select" x-model="modelo.natureza" required >
-						//<option value="">Selecione</option>
 						<template x-for="nat in naturezas">
 							<option :value="nat" x-text="nat"></option>
 						</template>
@@ -27,7 +26,6 @@ templ CriarLancamento() {
 				<input-meio-transacao class="col-xl col-lg-4 mt-2">
 					<label class="form-label text-nowrap">Meio de Transação</label>
 					<select class="form-select" x-model="modelo.meioFinanceiro" required>
-						//<option value="">Selecione</option>
 						<template x-for="meio in meios_financeiros">
 							<option :value="meio" x-text="meio"></option>
 						</template>

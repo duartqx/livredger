@@ -80,15 +80,26 @@ export default {
         body: JSON.stringify(comando),
       });
 
-      if (!response.ok) {
-        console.log(response);
+      /** @type {{ resultado: Lancamento } | { error: string }} */
+      const body = await response.json();
+
+      if (body.resultado && !body.error) {
+        window.dispatchEvent(
+          new CustomEvent("LancamentoComandoSucesso", {
+            detail: { lancamento: body.resultado },
+          }),
+        );
+
+        this.modelo = modeloPadrao();
+      } else {
+        window.dispatchEvent(
+          new CustomEvent("LancamentoComandoFalhou", {
+            detail: { motivo: body.error },
+          }),
+        );
       }
 
       this.criando = !criando;
-
-      const body = await response.json();
-
-      console.log(body)
     },
   }),
 };
