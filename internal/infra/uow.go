@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	t "github.com/duartqx/livredger/internal/common/types"
-	r "github.com/duartqx/livredger/internal/infra/repositorios/sqlite"
 )
 
 type UnidadeDeTrabalho struct {
@@ -56,12 +55,9 @@ func (u *UnidadeDeTrabalho) Close() {
 }
 
 func Bootstrap(usuario *t.Usuario) *UnidadeDeTrabalho {
-
-	conn := r.Connect(usuario)
-
 	return &UnidadeDeTrabalho{
 		Usuario:      usuario,
-		DB:           conn,
+		DB:           Connect(usuario),
 		Repositorios: FabricaDeRepositorios(),
 	}
 }

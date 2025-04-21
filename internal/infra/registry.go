@@ -1,34 +1,37 @@
 package infra
 
 import (
+	"database/sql"
 	"fmt"
 
+	"github.com/duartqx/livredger/internal/common/types"
 	"github.com/duartqx/livredger/internal/domain/repositorios"
-	"github.com/duartqx/livredger/internal/infra/repositorios/sqlite/comandos"
-	"github.com/duartqx/livredger/internal/infra/repositorios/sqlite/consultas"
+	"github.com/duartqx/livredger/internal/infra/repositorios/sqlite"
 )
 
-type RepositoriosLancamentos struct {
-	Comando  repositorios.RepositorioDeComandoLancamentos
-	Consulta repositorios.RepositorioDeConsultaLancamentos
-}
-
 type Repositorios struct {
-	Lancamentos *RepositoriosLancamentos
+	Lancamentos *repositorios.RepositoriosLancamentos
 }
 
+// TODO: Refatorar para ser Build target
 const DBMS string = "sqlite"
 
 func FabricaDeRepositorios() *Repositorios {
 	switch DBMS {
 	case "sqlite":
 		return &Repositorios{
-			Lancamentos: &RepositoriosLancamentos{
-				Comando:  comandos.NewRepositorioDeComandoLancamentos(),
-				Consulta: consultas.NewRepositorioDeConsultaLancamentos(),
-			},
+			Lancamentos: sqlite.FabricaDeRepositoriosDeLancamento(),
 		}
 	default:
 		panic(fmt.Sprintf("Repositorios não configurados para DBMS: {%s}", DBMS))
+	}
+}
+
+func Connect(usuario *types.Usuario) *sql.DB {
+	switch DBMS {
+	case "sqlite":
+		return sqlite.Connect(usuario)
+	default:
+		panic(fmt.Sprintf("Conexão para {%s} não configurada", DBMS))
 	}
 }

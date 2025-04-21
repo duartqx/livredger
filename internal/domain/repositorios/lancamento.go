@@ -15,3 +15,8 @@ type RepositorioDeConsultaLancamentos interface {
 type RepositorioDeComandoLancamentos interface {
 	Criar(tx *sql.Tx, comando *comandos.CriarLancamento) (*entidade.Lancamento, error)
 }
+
+type RepositoriosLancamentos struct {
+	Comando  RepositorioDeComandoLancamentos
+	Consulta RepositorioDeConsultaLancamentos
+}
