@@ -1,3 +1,137 @@
+:root {
+  --color-blue: #4B8DF5;
+  --color-blue-light: #D0E3FF;
+  --color-blue-dark: #3366CC;
+  --color-green: #28A745;
+  --color-green-light: #C6F1D7;
+  --color-green-dark: #1E7A38;
+  --color-red: #DC3545;
+  --color-red-light: #F8D7DA;
+  --color-red-dark: #A71D2A;
+  --color-yellow: #FFC107;
+  --color-yellow-light: #FFF3CD;
+  --color-yellow-dark: #FF8C00;
+  --color-background: #F8F9FA;
+  --color-surface: #FFFFFF;
+  --color-border: #D1D8E0;
+  --color-text: #343A40;
+  --color-subtext: #6C757D;
+}
+
+.blue:not(icone) {
+    color: var(--color-blue);
+}
+
+.blue-light:not(icone) {
+    color: var(--color-blue-light);
+}
+
+.blue-dark:not(icone) {
+    color: var(--color-blue-dark);
+}
+
+.green:not(icone) {
+    color: var(--color-green);
+}
+
+.green-light:not(icone) {
+    color: var(--color-green-light);
+}
+
+.green-dark:not(icone) {
+    color: var(--color-green-dark);
+}
+
+.red:not(icone) {
+    color: var(--color-red);
+}
+
+.red-light:not(icone) {
+    color: var(--color-red-light);
+}
+
+.red-dark:not(icone) {
+    color: var(--color-red-dark);
+}
+
+.yellow:not(icone) {
+    color: var(--color-yellow);
+}
+
+.yellow-light:not(icone) {
+    color: var(--color-yellow-light);
+}
+
+.yellow-dark:not(icone) {
+    color: var(--color-yellow-dark);
+}
+
+icone {
+  transform: scale(1.2);
+  padding: 8px 8px;
+  border-radius: 4px;
+  align-self: center;
+  display: flex;
+  align-items: center;
+
+  &.border {
+    border: 1px solid;
+  };
+
+  &.blue {
+    background-color: var(--color-blue);
+    color: var(--color-blue-light);
+    border-color: var(--color-blue-light)
+  };
+
+  &.blue-light {
+    background-color: var(--color-blue-light);
+    color: var(--color-blue);
+    border-color: var(--color-blue)
+  };
+
+  &.green {
+    background-color: var(--color-green);
+    color: var(--color-green-light);
+    border-color: var(--color-green-light)
+  };
+
+  &.green-light {
+    background-color: var(--color-green-light);
+    color: var(--color-green);
+    border-color: var(--color-green)
+  };
+
+  &.red {
+    background-color: var(--color-red);
+    color: var(--color-red-light);
+    border-color: var(--color-red-light)
+  };
+
+  &.red-light {
+    background-color: var(--color-red-light);
+    color: var(--color-red);
+    border-color: var(--color-red)
+  };
+
+  &.yellow {
+    background-color: var(--color-yellow);
+    color: var(--color-yellow-light);
+    border-color: var(--color-yellow-light)
+  };
+
+  &.yellow-light {
+    background-color: var(--color-yellow-light);
+    color: var(--color-yellow);
+    border-color: var(--color-yellow)
+  };
+
+  & > .detalhe {
+    font-size: 0.7rem;
+    padding-left: 8px;
+  }
+}
+
 .fade-opacity {
   opacity: 0;
   transition: opacity 0.3s ease !important;
@@ -128,6 +262,10 @@
 
 .fs-08rem {
   font-size: 0.8rem;
+}
+
+.fs-06rem {
+  font-size: 0.6rem;
 }
 
 .rounded-bottom-md-end {
