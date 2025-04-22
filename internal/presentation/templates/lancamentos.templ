@@ -1,10 +1,10 @@
 package views
 
 templ CriarLancamento() {
-	<lancamentos x-data="CriarLancamento">
+	<lancamentos x-data="CriarLancamento" class="row">
 		<form
 			x-ref="formAdicionarLancamento"
-			class="bg-body-tertiary rounded-2 p-3"
+			class="p-3"
 			@submit.prevent="submit"
 		>
 			<section class="row">
@@ -69,15 +69,23 @@ templ CriarLancamento() {
 }
 
 templ ConsultaLancamentos() {
-	<lancamentos x-data="ConsultaLancamentos">
+	<lancamentos x-data="ConsultaLancamentos" class="py-2">
 		<template x-for="(lancamento, index) in lancamentos" :key="`${lancamento.id}-${lancamento.chave}`">
-			<lancamento class="d-flex justify-content-around bg-body-tertiary p-3 my-4">
-				<span x-text="dayjs.utc(lancamento.timestamp).tz('America/Sao_Paulo').format('LLLL')"></span>
-				<span x-text="lancamento.evento"></span>
-				<span x-text="lancamento.valores"></span>
-				<span x-text="lancamento.natureza"></span>
-				<span x-text="lancamento.descricao"></span>
-				<span x-text="dayjs.utc(lancamento.vencimento).tz('America/Sao_Paulo').format('LLLL')"></span>
+			<lancamento x-data="Lancamento(lancamento)" class="row p-3">
+				<div class="col-1 d-flex align-items-center justify-content-center">
+					<icone :class="natureza.icone" :title="natureza.exibicao"></icone>
+				</div>
+				<div class="col-11 d-flex">
+					<div class="col-6">
+						<div x-text="value.descricao"></div>
+						<div class="text-secondary fs-06rem" x-text="dayjs.utc(value.timestamp).tz('America/Sao_Paulo').format('LLLL')"></div>
+					</div>
+					<div class="col-6">
+						<div :class="valores.cor" x-text="valores.exibicao"></div>
+					</div>
+				</div>
+				//<span x-text="value.evento"></span>
+				//<span x-text="dayjs.utc(value.vencimento).tz('America/Sao_Paulo').format('LLLL')"></span>
 			</lancamento>
 		</template>
 	</lancamentos>
