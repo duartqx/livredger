@@ -48,7 +48,7 @@ function modeloPadrao() {
 
 export default {
   name: "CriarLancamento",
-  component: () => ({
+  data: () => ({
     criando: false,
     /** @type {LancamentoModelo} */
     modelo: modeloPadrao(),

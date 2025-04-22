@@ -4,7 +4,7 @@ import { LancamentoComandoSucesso } from './eventos.js';
 
 export default {
   name: "ConsultaLancamentos",
-  component: () => ({
+  data: () => ({
     async init() {
       this.lancamentos = await this._consultarLancamentos();
 
