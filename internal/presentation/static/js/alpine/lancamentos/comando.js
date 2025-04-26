@@ -3,8 +3,10 @@
  *  Float,
  *  Natureza,
  *  EventoLancamento,
+ *  Lancamento,
  *  LancamentoComando,
- *  MeioFinanceiro
+ *  MeioFinanceiro,
+ LancamentoApi
  * } from './types.d.ts'
  *
  * @typedef {{
@@ -81,23 +83,34 @@ export default {
         body: JSON.stringify(comando),
       });
 
-      /** @type {{ resultado: Lancamento } | { error: string }} */
+      /** @type {{ resultado: LancamentoApi } | { error: string }} */
       const body = await response.json();
 
-      if (body.resultado && !body.error) {
-        window.dispatchEvent(
-          new CustomEvent(LancamentoComandoSucesso, {
-            detail: { lancamento: body.resultado },
-          }),
-        );
-
-        this.modelo = modeloPadrao();
-      } else {
+      if (body.error) {
         window.dispatchEvent(
           new CustomEvent(LancamentoComandoFalho, {
             detail: { motivo: body.error },
           }),
         );
+      } else if (body.resultado) {
+
+        /** @type { LancamentoApi } */
+        const resultado = body.resultado;
+
+        /** @type { Lancamento } */
+        const lancamento = {
+          ...resultado,
+          timestamp: dayjs(resultado.timestamp).toDate(),
+          vencimento: dayjs(resultado.vencimento).toDate(),
+        }
+
+        window.dispatchEvent(
+          new CustomEvent(LancamentoComandoSucesso, {
+            detail: { lancamento: lancamento },
+          }),
+        );
+
+        this.modelo = modeloPadrao();
       }
 
       this.criando = !criando;
