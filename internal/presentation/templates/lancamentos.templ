@@ -60,8 +60,6 @@ templ CriarLancamento() {
 							class="spinner-border spinner-border-sm fade-opacity"
 							aria-hidden="true"
 						></span>
-					<template>
-					</template>
 				</button>
 			</section>
 		</form>
@@ -71,22 +69,44 @@ templ CriarLancamento() {
 templ ConsultaLancamentos() {
 	<lancamentos x-data="ConsultaLancamentos" class="py-2">
 		<template x-for="(lancamento, index) in lancamentos" :key="`${lancamento.id}-${lancamento.chave}`">
-			<lancamento x-data="Lancamento(lancamento)" class="row p-3">
-				<div class="col-1 d-flex align-items-center justify-content-center">
-					<icone :class="natureza.icone" :title="natureza.exibicao"></icone>
-				</div>
-				<div class="col-11 d-flex">
-					<div class="col-6">
-						<div x-text="value.descricao"></div>
-						<div class="text-secondary fs-06rem" x-text="dayjs.utc(value.timestamp).tz('America/Sao_Paulo').format('LLLL')"></div>
-					</div>
-					<div class="col-6">
-						<div :class="valores.cor" x-text="valores.exibicao"></div>
-					</div>
-				</div>
-			</lancamento>
+			<div class="col-lg-6 col-md-12">
+				@Lancamento()
+			</div>
 		</template>
 	</lancamentos>
+}
+
+templ Lancamento() {
+	<lancamento x-data="Lancamento(lancamento)" class="row p-3">
+		<div class="col-1 d-flex align-items-center justify-content-center">
+			<icone :class="natureza.icone" :title="natureza.exibicao"></icone>
+		</div>
+		<div class="col-11 d-flex ps-3 pe-0">
+			<div class="col-6">
+				<div x-text="value.descricao"></div>
+				<div class="text-secondary fs-06rem" x-text="dayjs.utc(value.timestamp).tz('America/Sao_Paulo').format('LLLL')"></div>
+			</div>
+			<div class="col-6 d-flex justify-content-end">
+				<div>
+					<div class="text-end" x-text="valores.exibicao"></div>
+					<div class="text-secondary fs-06rem text-end" x-text="natureza.exibicao"></div>
+				</div>
+				<div class="d-flex align-items-center justify-content-center ps-2">
+					<button
+						class="btn btn-lighter bi bi-three-dots-vertical position-relative"
+						@click="toggleOpcoes">
+
+						<div class="position-absolute top-120 start-0 z-3 p-2 text-bg-light w-160px" x-show="opcoesVisiveis">
+							<div role="button" class="fs-06rem px-1 d-flex align-items-around">
+								<i class="bi bi-ban"></i>
+								<span class="ps-2">Cancelar Lançamento</span>
+							</div>
+						</div>
+					</button>
+				</div>
+			</div>
+		</div>
+	</lancamento>
 }
 
 templ Lancamentos() {

@@ -44,6 +44,7 @@ export default {
     },
     valores: {},
     natureza: {},
+    opcoesVisiveis: false,
     /** @type {Lancamento} */
     value: Alpine.reactive({ ...lancamento }),
     _iconeNatureza() {
@@ -81,5 +82,8 @@ export default {
           return "bi bi-circle red-light";
       }
     },
+    toggleOpcoes() {
+      this.opcoesVisiveis = !this.opcoesVisiveis;
+    }
   }),
 };

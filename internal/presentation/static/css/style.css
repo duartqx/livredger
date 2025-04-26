@@ -196,6 +196,10 @@ icone {
   width: 160px !important;
 }
 
+.w-240px {
+  width: 240px !important;
+}
+
 .w-382px {
   width: 382px;
 }
@@ -287,6 +291,20 @@ icone {
   color: white !important;
   background-color: #dc3545;
   transition: background-color 0.2s ease-in-out;
+}
+
+.btn {
+  &.btn-lighter {
+    background-color: var(--color-surface) !important;
+
+    &:hover {
+      background-color: var(--color-background) !important;
+    };
+  }
+}
+
+.top-120 {
+  top: 120%;
 }
 
 @media (min-width: 375px) {
