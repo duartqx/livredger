@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS lancamentos (
         evento IN (
             'LancamentoCriado',
             'LancamentoPrevisto',
-            'LancamentoAtualizado',
             'LancamentoPago',
             'LancamentoRecebido',
             'LancamentoCancelado'

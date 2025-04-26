@@ -60,7 +60,6 @@ export const MEIOS_FINANCEIRO = [
 
 export const LancamentoCriado = "LancamentoCriado";
 export const LancamentoPrevisto = "LancamentoPrevisto";
-export const LancamentoAtualizado = "LancamentoAtualizado";
 export const LancamentoPago = "LancamentoPago";
 export const LancamentoRecebido = "LancamentoRecebido";
 export const LancamentoCancelado = "LancamentoCancelado";
@@ -69,7 +68,6 @@ export const LancamentoCancelado = "LancamentoCancelado";
 export const LANCAMENTOS = [
   LancamentoCriado,
   LancamentoPrevisto,
-  LancamentoAtualizado,
   LancamentoPago,
   LancamentoRecebido,
   LancamentoRecebido,

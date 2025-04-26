@@ -30,7 +30,6 @@ export type MeioFinanceiro =
 export type EventoLancamento =
   | "LancamentoCriado"
   | "LancamentoPrevisto"
-  | "LancamentoAtualizado"
   | "LancamentoPago"
   | "LancamentoRecebido"
   | "LancamentoRecebido"

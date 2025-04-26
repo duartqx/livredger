@@ -15,7 +15,6 @@ import (
 var eventosLancamento []string = []string{
 	string(eventos.LancamentoCriado),
 	string(eventos.LancamentoPrevisto),
-	string(eventos.LancamentoAtualizado),
 	string(eventos.LancamentoPago),
 	string(eventos.LancamentoRecebido),
 	string(eventos.LancamentoCancelado),

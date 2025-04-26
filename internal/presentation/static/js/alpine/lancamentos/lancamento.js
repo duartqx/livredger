@@ -20,7 +20,6 @@ import {
 import {
   LancamentoCriado,
   LancamentoPrevisto,
-  LancamentoAtualizado,
   LancamentoPago,
   LancamentoRecebido,
   LancamentoCancelado,
@@ -56,7 +55,7 @@ export default {
         case COMPRAS:
           return "bi bi-bag red-light";
         case MERCADO:
-          return "bi bi-cart3 blue";
+          return "bi bi-cart3 blue-light";
         case LUZ:
           return "bi bi-lightbulb-fill blue-light";
         case CONDOMINIO:
@@ -79,7 +78,7 @@ export default {
           return "bi bi-graph-up green-light";
         case OUTRO:
         default:
-          return "bi bi-circle red";
+          return "bi bi-circle red-light";
       }
     },
   }),
