@@ -1,6 +1,6 @@
 /** @import { LancamentoApi } from './types.d.ts' */
 
-import { LancamentoComandoSucesso } from './eventos.js';
+import { LancamentoComandoSucesso } from "./eventos.js";
 
 export default {
   name: "ConsultaLancamentos",
@@ -32,12 +32,20 @@ export default {
       /** @type {{total: number, itens: LancamentoApi[]}} */
       const corpo = await response.json();
 
-      console.log("GET", corpo.itens);
-
-      return corpo.itens;
+      return corpo.itens.map((lancamento) => ({
+        ...lancamento,
+        timestamp: dayjs(lancamento.timestamp).toDate(),
+        vencimento: dayjs(lancamento.vencimento).toDate(),
+      }));
     },
     _adicionaLancamentoRecemCriado(event) {
-      this.lancamentos.unshift(event.detail.lancamento);
+      if (!event.detail.index) {
+        return this.lancamentos.unshift(event.detail.lancamento);
+      }
+
+      this.lancamentos[event.detail.index] = event.detail.lancamento;
+
+      return this.lancamentos.length;
     },
   }),
 };
