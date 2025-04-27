@@ -26,7 +26,7 @@ func CriarLancamento() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<lancamentos x-data=\"CriarLancamento\" class=\"row\"><form x-ref=\"formAdicionarLancamento\" class=\"p-3\" @submit.prevent=\"submit\"><section class=\"row\"><input-transacao class=\"col-xl col-lg-4 mt-2\"><label class=\"form-label\">Evento</label> <select class=\"form-select\" x-model=\"modelo.evento\" required><option value=\"LancamentoCriado\">Novo</option> <option value=\"LancamentoPrevisto\">Previsto</option></select></input-transacao> <input-natureza class=\"col-xl col-lg-4 mt-2\"><label class=\"form-label text-nowrap\">Natureza da Transação</label> <select class=\"form-select\" x-model=\"modelo.natureza\" required><template x-for=\"nat in naturezas\"><option :value=\"nat\" x-text=\"nat\"></option></template></select></input-natureza> <input-meio-transacao class=\"col-xl col-lg-4 mt-2\"><label class=\"form-label text-nowrap\">Meio Financeiro</label> <select class=\"form-select\" x-model=\"modelo.meioFinanceiro\" required><template x-for=\"meio in meios_financeiros\"><option :value=\"meio\" x-text=\"meio\"></option></template></select></input-meio-transacao> <input-valores class=\"col-xl col-lg-4 mt-2\"><label class=\"form-label\">Valores</label><div class=\"input-group\"><span class=\"input-group-text\">R$</span> <input class=\"form-control\" type=\"number\" step=\"0.0001\" x-model=\"modelo.valores\" required></div></input-valores> <input-vencimento class=\"col-lg col-md mt-2\"><label class=\"form-label\">Vencimento</label> <input class=\"form-control\" type=\"datetime-local\" x-model=\"modelo.vencimento\" required></input-vencimento></section><section class=\"row\"><input-descricao class=\"col-md mt-2\"><label class=\"form-label\">Descrição</label> <textarea rows=\"3\" class=\"form-control\" x-model=\"modelo.descricao\" placeholder=\"Adicione uma descrição sobre a transação\" type=\"text\" maxlength=\"500\" required></textarea></input-descricao></section><section><button :disabled=\"criando\" class=\"col-4 offset-8 mt-2 btn btn-primary d-inline-flex align-items-center justify-content-center\"><span class=\"px-2\">Submit</span> <span :class=\"criando &amp;&amp; &#39;visible&#39;\" class=\"spinner-border spinner-border-sm fade-opacity\" aria-hidden=\"true\"></span></button></section></form></lancamentos>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<lancamentos x-data=\"CriarLancamento\" class=\"row\"><form x-ref=\"formAdicionarLancamento\" class=\"p-3\" @submit.prevent=\"submit\"><section class=\"row\"><cadastro after=\"true\" class=\"col-xl col-lg-4 mt-2\"><label>Evento</label> <select x-model=\"modelo.evento\" required><template x-for=\"evento in eventosLancamento\"><option :value=\"evento.value\" x-text=\"evento.label\"></option></template></select></cadastro> <cadastro after=\"true\" class=\"col-xl col-lg-4 mt-2\"><label class=\"text-nowrap\">Natureza da Transação</label> <select x-model=\"modelo.natureza\" required><template x-for=\"nat in naturezas\"><option :value=\"nat\" x-text=\"nat\"></option></template></select></cadastro> <cadastro after=\"true\" class=\"col-xl col-lg-4 mt-2\"><label class=\"text-nowrap\">Meio Financeiro</label> <select x-model=\"modelo.meioFinanceiro\" required><template x-for=\"meio in meios_financeiros\"><option :value=\"meio\" x-text=\"meio\"></option></template></select></cadastro> <cadastro class=\"col-xl col-lg-4 mt-2\"><label>Valores</label> <before>R$</before> <input type=\"number\" step=\"0.0001\" x-model=\"modelo.valores\" required></cadastro> <cadastro class=\"col-lg col-md mt-2\"><label>Vencimento</label> <input type=\"datetime-local\" x-model=\"modelo.vencimento\" required></cadastro></section><section class=\"row\"><cadastro class=\"col-md mt-2\"><label>Descrição</label> <textarea rows=\"3\" x-model=\"modelo.descricao\" placeholder=\"Adicione uma descrição sobre a transação\" type=\"text\" maxlength=\"500\" required></textarea></cadastro></section><section><button :disabled=\"criando\" class=\"col-4 offset-8 mt-2 btn btn-dark d-inline-flex align-items-center justify-content-center\"><span class=\"px-2\">Submit</span> <span :class=\"criando &amp;&amp; &#39;visible&#39;\" class=\"spinner-border spinner-border-sm fade-opacity\" aria-hidden=\"true\"></span></button></section></form></lancamentos>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -34,7 +34,7 @@ func CriarLancamento() templ.Component {
 	})
 }
 
-func ConsultaLancamentos() templ.Component {
+func ListarLancamentos() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -52,7 +52,15 @@ func ConsultaLancamentos() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<lancamentos x-data=\"ConsultaLancamentos\" class=\"py-2\"><template x-for=\"(lancamento, index) in lancamentos\" :key=\"`${lancamento.id}-${lancamento.chave}`\"><div class=\"col-lg-6 col-md-12\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<lancamentos x-data=\"ListarLancamentos\" class=\"py-2\"><filtros class=\"row py-3\"><filtro class=\"col-md\"><label>Intervalo</label> <input type=\"date\" x-model=\"filtros.intervalo\"></filtro> <filtro class=\"col-md\"><label>Descrição</label> <input type=\"text\" x-model=\"filtros.descricao\"></filtro> <filtro class=\"col-md\"><label>Chave</label> <input type=\"text\" x-model=\"filtros.chave\"></filtro> <filtro class=\"col-md\" after=\"true\"><label>Evento</label> <select x-model=\"filtros.evento\"><option value=\"\">Selecione</option><template x-for=\"evento in eventosLancamento\"><option value=\"evento.value\" x-text=\"evento.label\"></option></template></select></filtro></filtros>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = headersListaLancamentos().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<resultados><template x-for=\"(lancamento, index) in lancamentos\" :key=\"`${lancamento.id}-${lancamento.chave}`\"><div class=\"col-12\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -60,7 +68,33 @@ func ConsultaLancamentos() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></template></lancamentos>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></template></resultados></lancamentos>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func headersListaLancamentos() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var3 == nil {
+			templ_7745c5c3_Var3 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"border-bottom border-top border-2 border-dark row p-2\"><div class=\"row ps-2 pe-0\"><div class=\"col-4 d-flex\"><div class=\"col-9\">timestamp</div><div class=\"col-3 text-center\">evento</div></div><div class=\"col-5\">detalhes</div><div class=\"col-2 text-end ms-2 pe-0\">valores</div><div class=\"col-1 ps-0\"></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -81,12 +115,12 @@ func Lancamento() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var3 == nil {
-			templ_7745c5c3_Var3 = templ.NopComponent
+		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var4 == nil {
+			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<lancamento x-data=\"Lancamento(lancamento)\" class=\"row p-3\"><div class=\"col-1 d-flex align-items-center justify-content-center\"><icone :class=\"natureza.icone\" :title=\"natureza.exibicao\"></icone></div><div class=\"col-11 d-flex ps-3 pe-0\"><div class=\"col-6\"><div x-text=\"value.descricao\"></div><div class=\"text-secondary fs-06rem\" x-text=\"dayjs.utc(value.timestamp).tz(&#39;America/Sao_Paulo&#39;).format(&#39;LLLL&#39;)\"></div></div><div class=\"col-6 d-flex justify-content-end\"><div><div class=\"text-end\" x-text=\"valores.exibicao\"></div><div class=\"text-secondary fs-06rem text-end\" x-text=\"natureza.exibicao\"></div></div><div class=\"d-flex align-items-center justify-content-center ps-2\"><button class=\"btn btn-lighter bi bi-three-dots-vertical position-relative\" @click=\"toggleOpcoes\"><div class=\"position-absolute top-120 start-0 z-3 p-2 text-bg-light w-160px\" x-show=\"opcoesVisiveis\"><div role=\"button\" class=\"fs-06rem px-1 d-flex align-items-around\"><i class=\"bi bi-ban\"></i> <span class=\"ps-2\">Cancelar Lançamento</span></div></div></button></div></div></div></lancamento>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<lancamento x-data=\"Lancamento(lancamento)\" class=\"row py-3\"><div class=\"col-4 d-flex fs-06rem\"><div class=\"col-9 d-flex align-items-center\"><div x-text=\"dayjs.utc(value.timestamp).tz(&#39;America/Sao_Paulo&#39;).format(&#39;LLLL&#39;)\"></div></div><div class=\"col-3 fw-medium fs-06rem d-flex align-items-center justify-content-center\"><span x-text=\"evento\"></span></div></div><div class=\"col-5\"><div x-text=\"value.descricao\"></div><div class=\"text-secondary fs-06rem\" x-text=\"value.chave\"></div></div><div class=\"col-2 d-flex justify-content-end\"><div class=\"pe-2 d-flex flex-column align-items-end\"><div class=\"text-end\" x-text=\"valores.exibicao\"></div><tag :class=\"`${natureza.cor} fs-06rem text-end`\" x-text=\"natureza.exibicao\"></tag></div></div><div class=\"col-1 text-end\"><button class=\"btn btn-lighter bi bi-card-list\"></button></div></lancamento>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -107,9 +141,9 @@ func Lancamentos() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var4 == nil {
-			templ_7745c5c3_Var4 = templ.NopComponent
+		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var5 == nil {
+			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section>")
@@ -120,7 +154,7 @@ func Lancamentos() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = ConsultaLancamentos().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = ListarLancamentos().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

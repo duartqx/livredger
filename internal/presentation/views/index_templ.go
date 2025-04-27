@@ -26,7 +26,7 @@ func nav(active string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<nav class=\"navbar navbar-expand border-bottom border-4 border-primary row mb-2\"><ul class=\"navbar-nav me-auto mb-0\" x-data>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<nav class=\"navbar navbar-expand border-bottom border-4 border-dark row mb-2\"><ul class=\"navbar-nav me-auto mb-0\" x-data>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
