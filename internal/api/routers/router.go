@@ -13,16 +13,23 @@ import (
 	tr "github.com/duartqx/ddgomiddlewares/trailling"
 )
 
-type Mux struct {
-	*http.ServeMux
-}
+var templatesFS fs.FS
 
 type Static struct {
 	Fs   fs.FS
 	Path string
 }
 
+type Dependencies struct {
+	Static    *[]Static
+	Templates fs.FS
+}
+
 type RouterMap map[string]http.HandlerFunc
+
+type Mux struct {
+	*http.ServeMux
+}
 
 func (m *Mux) Group(pattern string, handler http.Handler) error {
 	if !strings.HasPrefix(pattern, "/") && !strings.HasSuffix(pattern, "/") {
@@ -52,10 +59,12 @@ func (m Mux) Use(mux http.Handler, middlewares ...i.Middleware) http.Handler {
 	return wrapped
 }
 
-func Router(static ...*Static) http.Handler {
+func Router(dependencies *Dependencies) http.Handler {
+	templatesFS = dependencies.Templates
+
 	mux := Mux{ServeMux: http.NewServeMux()}
 
-	for _, s := range static {
+	for _, s := range *dependencies.Static {
 		mux.Group(s.Path, http.StripPrefix("/", http.FileServer(http.FS(s.Fs))))
 	}
 
