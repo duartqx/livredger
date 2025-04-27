@@ -3,7 +3,6 @@ CREATE TABLE IF NOT EXISTS lancamentos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     evento VARCHAR(128) NOT NULL CHECK(
         evento IN (
-            'LancamentoCriado',
             'LancamentoPrevisto',
             'LancamentoPago',
             'LancamentoRecebido',

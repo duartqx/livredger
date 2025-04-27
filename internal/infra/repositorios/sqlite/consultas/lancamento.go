@@ -44,7 +44,7 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 		builder = builder.GroupBy("chave").Having("max(versao)")
 	}
 
-	builder = r.parse(consulta, builder)
+	builder = r.adicionarFiltros(consulta, builder)
 
 	stmt, args, err := builder.ToSql()
 
@@ -87,10 +87,14 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 	return &lancamentos, nil
 }
 
-func (r RepositorioDeConsultaLancamentos) parse(consulta *c.ConsultaLancamentos, builder squirrel.SelectBuilder) squirrel.SelectBuilder {
+func (r RepositorioDeConsultaLancamentos) adicionarFiltros(consulta *c.ConsultaLancamentos, builder squirrel.SelectBuilder) squirrel.SelectBuilder {
 
 	if consulta.Chave != uuid.Nil {
 		return builder.Where(squirrel.Eq{"chave": consulta.Chave})
+	}
+
+	if consulta.Evento != "" {
+		builder = builder.Where(squirrel.Eq{"evento": consulta.Evento})
 	}
 
 	if consulta.Descricao != "" {
