@@ -6,19 +6,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/duartqx/livredger/internal/common/types"
 	"github.com/duartqx/livredger/internal/domain/eventos"
 	"github.com/duartqx/livredger/internal/domain/value/meios"
 	"github.com/duartqx/livredger/internal/domain/value/naturezas"
 	"github.com/google/uuid"
 )
-
-var eventosLancamento []string = []string{
-	string(eventos.LancamentoCriado),
-	string(eventos.LancamentoPrevisto),
-	string(eventos.LancamentoPago),
-	string(eventos.LancamentoRecebido),
-	string(eventos.LancamentoCancelado),
-}
 
 type CriarLancamento struct {
 	Evento         string    `json:"evento"`
@@ -33,34 +26,38 @@ type CriarLancamento struct {
 
 func (c CriarLancamento) Validar() error {
 	if uuid.Nil == c.Chave {
-		return fmt.Errorf("Chave é obrigatória")
+		return fmt.Errorf("%w: Chave é obrigatória", types.BusinessLogicError)
 	}
 
 	if c.Descricao == "" {
-		return fmt.Errorf("Descrição é obrigatória")
+		return fmt.Errorf("%w: Descrição é obrigatória", types.BusinessLogicError)
 	}
 
 	if len(c.Descricao) > 500 {
-		return fmt.Errorf("Descrição muito longa, deve ter no máximo 500 caracteres")
+		return fmt.Errorf(
+			"%w: Descrição muito longa, deve ter no máximo 500 caracteres",
+			types.BusinessLogicError,
+		)
 	}
 
-	if !slices.Contains(eventosLancamento, c.Evento) {
+	if !slices.Contains(eventos.EVENTOS_DE_LANCAMENTOS, c.Evento) {
 		return fmt.Errorf(
-			"Evento não é válido, opções: [%s]",
-			strings.Join(eventosLancamento, ", "),
+			"%w: Evento não é válido, opções: [%s]",
+			types.BusinessLogicError,
+			strings.Join(eventos.EVENTOS_DE_LANCAMENTOS, ", "),
 		)
 	}
 
 	if c.Versao == 0 {
-		return fmt.Errorf("Versão não pode ser igual a 0")
+		return fmt.Errorf("%w: Versão não pode ser igual a 0", types.BusinessLogicError)
 	}
 
 	if !slices.Contains(meios.MEIOS_FINANCEIRO, c.MeioFinanceiro) {
-		return fmt.Errorf("Meio Financeiro inválido: %s", c.MeioFinanceiro)
+		return fmt.Errorf("%w: Meio Financeiro inválido: %s", types.BusinessLogicError, c.MeioFinanceiro)
 	}
 
 	if !slices.Contains(naturezas.NATUREZAS, c.Natureza) {
-		return fmt.Errorf("Natureza da transação inválida: %s", c.Natureza)
+		return fmt.Errorf("%w: Natureza da transação inválida: %s", types.BusinessLogicError, c.Natureza)
 	}
 
 	return nil
