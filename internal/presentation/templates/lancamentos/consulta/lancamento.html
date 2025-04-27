@@ -1,5 +1,5 @@
 {{ define "lancamento" }}
-<lancamento x-data="Lancamento(lancamento)" class="row py-3">
+<lancamento x-data="Lancamento({{ . | jsonify }})" class="row py-3">
   <div class="col-4 d-flex fs-06rem">
     <div class="col-9 d-flex align-items-center">
       <div

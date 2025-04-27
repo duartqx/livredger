@@ -4,15 +4,15 @@ import (
 	"log"
 	"net/http"
 
-	"html/template"
+	h "github.com/duartqx/livredger/internal/common/http"
 )
 
-type Templates struct {
-	ComBase *template.Template
-	Partial *template.Template
+type ViewContext struct {
+	Templates *h.Templates
+	Data      map[string]any
 }
 
-func view(templates *Templates) http.HandlerFunc {
+func view(ctx *ViewContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		auth := r.Header.Get("Authorization")
 
@@ -20,51 +20,31 @@ func view(templates *Templates) http.HandlerFunc {
 			log.Println("Authorization", auth)
 		}
 
-		if templates.Partial != nil && r.Header.Get("HX-Request") == "true" {
-			if err := templates.Partial.ExecuteTemplate(w, "partial", nil); err != nil {
+		if ctx.Templates.Partial != nil && r.Header.Get("HX-Request") == "true" {
+			if err := ctx.Templates.Partial.ExecuteTemplate(w, "partial", ctx.Data); err != nil {
 				panic(err)
 			}
 			return
 		}
-		if err := templates.ComBase.Execute(w, nil); err != nil {
+		if err := ctx.Templates.ComBase.ExecuteTemplate(w, "base", ctx.Data); err != nil {
 			panic(err)
 		}
 	}
 }
 
 func viewsRouter() *RouterMap {
+	registry := ObterTemplateRegistry()
 	return &RouterMap{
-		"GET /{$}": view(
-			&Templates{
-				ComBase: template.Must(
-					template.ParseFS(
-						templatesFS,
-						"index.html",
-						"nav.html",
-					),
-				),
-				Partial: nil,
-			},
-		),
-		"GET /lancamentos": view(
-			&Templates{
-				ComBase: template.Must(
-					template.ParseFS(
-						templatesFS,
-						"index.html",
-						"nav.html",
-						"lancamentos/consulta/listar.html",
-						"lancamentos/consulta/lancamento.html",
-					),
-				),
-				Partial: template.Must(
-					template.ParseFS(
-						templatesFS,
-						"lancamentos/consulta/listar.html",
-						"lancamentos/consulta/lancamento.html",
-					),
-				),
-			},
-		),
+		"GET /{$}": view(&ViewContext{
+			Templates: registry.Index,
+			Data:      map[string]any{"Active": "lancamentos"},
+		}),
+		"GET /lancamentos": view(&ViewContext{
+			Templates: registry.Lancamentos.Consulta,
+			Data:      map[string]any{"Active": "lancamentos"},
+		}),
+		"GET /lancamentos/criar": view(&ViewContext{
+			Templates: registry.Lancamentos.Comando,
+		}),
 	}
 }

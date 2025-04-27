@@ -75,17 +75,19 @@ func get(w http.ResponseWriter, r *http.Request) {
 		h.JsonErrorReponse(w, err)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-
 	resultado := h.Resultado[entidade.Lancamento]{
 		Total: len(*lancamentos),
 		Itens: lancamentos,
 	}
 
-	if err := json.NewEncoder(w).Encode(resultado); err != nil {
-		h.JsonErrorReponse(w, fmt.Errorf("%w: %w", t.InternalError, err))
-		return
-	}
+	h.HandleResponse(
+		&h.Response[entidade.Lancamento]{
+			Writer:    w,
+			Request:   r,
+			Resultado: &resultado,
+			Template:  ObterTemplateRegistry().Lancamentos.Resultados,
+		},
+	)
 }
 
 func lancamentosRouter() *RouterMap {

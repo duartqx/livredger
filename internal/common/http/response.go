@@ -3,6 +3,8 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"html/template"
 	"net/http"
 
 	t "github.com/duartqx/livredger/internal/common/types"
@@ -18,9 +20,39 @@ const (
 	MultipartFormData = "multipart/form-data"
 )
 
+type Templates struct {
+	ComBase *template.Template
+	Partial *template.Template
+}
+
 type Resultado[T any] struct {
 	Total int   `json:"total"`
 	Itens *[]*T `json:"itens"`
+}
+
+type Response[T any] struct {
+	Writer    http.ResponseWriter
+	Request   *http.Request
+	Resultado *Resultado[T]
+	Template  *template.Template
+}
+
+func HandleResponse[T any](res *Response[T]) {
+
+	if res.Template == nil || res.Request.Header.Get("Accept") == "application/json" {
+		res.Writer.Header().Set("Content-Type", "application/json")
+
+		if err := json.NewEncoder(res.Writer).Encode(res.Resultado); err != nil {
+			JsonErrorReponse(res.Writer, fmt.Errorf("%w: %w", t.InternalError, err))
+			return
+		}
+
+		return
+	}
+
+	if err := res.Template.ExecuteTemplate(res.Writer, "resultados", res.Resultado); err != nil {
+		panic(err)
+	}
 }
 
 func JsonErrorReponse(w http.ResponseWriter, err error) {
