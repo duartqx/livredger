@@ -1,0 +1,19 @@
+{{ define "nav" }}
+<nav class="navbar navbar-expand border-bottom border-4 border-dark row mb-2">
+  <ul class="navbar-nav me-auto mb-0" x-data>
+    <li
+      hx-get="/lancamentos"
+      hx-target="main"
+      hx-swap="innerHTML"
+      hx-push-url="false"
+      hx-trigger="click, load"
+      role="button"
+      class="nav-item px-3 fw-bold {{ if (eq .Active `lancamentos`) }}active{{ end }}"
+      @click="htmx.takeClass($el, 'active')"
+    >
+      <i class="bi bi-box"></i>
+      Lançamentos
+    </li>
+  </ul>
+</nav>
+{{ end }}

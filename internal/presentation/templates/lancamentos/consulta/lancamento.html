@@ -1,0 +1,32 @@
+{{ define "lancamento" }}
+<lancamento x-data="Lancamento(lancamento)" class="row py-3">
+  <div class="col-4 d-flex fs-06rem">
+    <div class="col-9 d-flex align-items-center">
+      <div
+        x-text="dayjs.utc(value.timestamp).tz('America/Sao_Paulo').format('LLLL')"
+      ></div>
+    </div>
+    <div
+      class="col-3 fw-medium fs-06rem d-flex align-items-center justify-content-center"
+    >
+      <span x-text="evento"></span>
+    </div>
+  </div>
+  <div class="col-5">
+    <div x-text="value.descricao"></div>
+    <div class="text-secondary fs-06rem" x-text="value.chave"></div>
+  </div>
+  <div class="col-2 d-flex justify-content-end">
+    <div class="pe-2 d-flex flex-column align-items-end">
+      <div class="text-end" x-text="valores.exibicao"></div>
+      <tag
+        :class="`${natureza.cor} fs-06rem text-end`"
+        x-text="natureza.exibicao"
+      ></tag>
+    </div>
+  </div>
+  <div class="col-1 text-end">
+    <button class="btn btn-lighter bi bi-card-list"></button>
+  </div>
+</lancamento>
+{{ end }}
