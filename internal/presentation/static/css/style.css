@@ -1,135 +1,154 @@
 :root {
-  --color-blue: #4B8DF5;
-  --color-blue-light: #D0E3FF;
-  --color-blue-dark: #3366CC;
-  --color-green: #28A745;
-  --color-green-light: #C6F1D7;
-  --color-green-dark: #1E7A38;
-  --color-red: #DC3545;
-  --color-red-light: #F8D7DA;
-  --color-red-dark: #A71D2A;
-  --color-yellow: #FFC107;
-  --color-yellow-light: #FFF3CD;
-  --color-yellow-dark: #FF8C00;
-  --color-background: #F8F9FA;
-  --color-surface: #FFFFFF;
-  --color-border: #D1D8E0;
-  --color-text: #343A40;
-  --color-subtext: #6C757D;
+  --color-blue: #4b8df5;
+  --color-blue-light: #d0e3ff;
+  --color-blue-dark: #3366cc;
+  --color-green: #28a745;
+  --color-green-light: #c6f1d7;
+  --color-green-dark: #1e7a38;
+  --color-red: #dc3545;
+  --color-red-light: #f8d7da;
+  --color-red-dark: #a71d2a;
+  --color-yellow: #ffc107;
+  --color-yellow-light: #fff3cd;
+  --color-yellow-dark: #ff8c00;
+  --color-background: #f8f9fa;
+  --color-surface: #ffffff;
+  --color-border: #d1d8e0;
+  --color-text: #343a40;
+  --color-subtext: #6c757d;
 }
 
 .blue:not(icone) {
-    color: var(--color-blue);
+  color: var(--color-blue);
 }
 
 .blue-light:not(icone) {
-    color: var(--color-blue-light);
+  color: var(--color-blue-light);
 }
 
 .blue-dark:not(icone) {
-    color: var(--color-blue-dark);
+  color: var(--color-blue-dark);
 }
 
 .green:not(icone) {
-    color: var(--color-green);
+  color: var(--color-green);
 }
 
 .green-light:not(icone) {
-    color: var(--color-green-light);
+  color: var(--color-green-light);
 }
 
 .green-dark:not(icone) {
-    color: var(--color-green-dark);
+  color: var(--color-green-dark);
 }
 
 .red:not(icone) {
-    color: var(--color-red);
+  color: var(--color-red);
 }
 
 .red-light:not(icone) {
-    color: var(--color-red-light);
+  color: var(--color-red-light);
 }
 
 .red-dark:not(icone) {
-    color: var(--color-red-dark);
+  color: var(--color-red-dark);
 }
 
 .yellow:not(icone) {
-    color: var(--color-yellow);
+  color: var(--color-yellow);
 }
 
 .yellow-light:not(icone) {
-    color: var(--color-yellow-light);
+  color: var(--color-yellow-light);
 }
 
 .yellow-dark:not(icone) {
-    color: var(--color-yellow-dark);
+  color: var(--color-yellow-dark);
+}
+
+tag {
+  padding: 4px;
+  border-radius: 2px;
+  white-space: nowrap;
 }
 
 icone {
   transform: scale(1.2);
-  padding: 8px 8px;
+  padding: 6px;
   border-radius: 4px;
   align-self: center;
   display: flex;
   align-items: center;
 
-  &.border {
-    border: 1px solid;
-  };
+  &.sm {
+    font-size: 0.6rem;
+  }
 
-  &.blue {
-    background-color: var(--color-blue);
-    color: var(--color-blue-light);
-    border-color: var(--color-blue-light)
-  };
-
-  &.blue-light {
-    background-color: var(--color-blue-light);
-    color: var(--color-blue);
-    border-color: var(--color-blue)
-  };
-
-  &.green {
-    background-color: var(--color-green);
-    color: var(--color-green-light);
-    border-color: var(--color-green-light)
-  };
-
-  &.green-light {
-    background-color: var(--color-green-light);
-    color: var(--color-green);
-    border-color: var(--color-green)
-  };
-
-  &.red {
-    background-color: var(--color-red);
-    color: var(--color-red-light);
-    border-color: var(--color-red-light)
-  };
-
-  &.red-light {
-    background-color: var(--color-red-light);
-    color: var(--color-red);
-    border-color: var(--color-red)
-  };
-
-  &.yellow {
-    background-color: var(--color-yellow);
-    color: var(--color-yellow-light);
-    border-color: var(--color-yellow-light)
-  };
-
-  &.yellow-light {
-    background-color: var(--color-yellow-light);
-    color: var(--color-yellow);
-    border-color: var(--color-yellow)
-  };
+  & span {
+    padding-left: 8px;
+    white-space: nowrap;
+    font-size: 0.5rem;
+  }
 
   & > .detalhe {
     font-size: 0.7rem;
     padding-left: 8px;
   }
+}
+
+tag, icone {
+  &.border {
+    border: 1px solid;
+  }
+
+  &.blue {
+    background-color: var(--color-blue);
+    color: var(--color-blue-light);
+    border-color: var(--color-blue-light);
+  }
+
+  &.blue-light {
+    background-color: var(--color-blue-light);
+    color: var(--color-blue);
+    border-color: var(--color-blue);
+  }
+
+  &.green {
+    background-color: var(--color-green);
+    color: var(--color-green-light);
+    border-color: var(--color-green-light);
+  }
+
+  &.green-light {
+    background-color: var(--color-green-light);
+    color: var(--color-green);
+    border-color: var(--color-green);
+  }
+
+  &.red {
+    background-color: var(--color-red);
+    color: var(--color-red-light);
+    border-color: var(--color-red-light);
+  }
+
+  &.red-light {
+    background-color: var(--color-red-light);
+    color: var(--color-red);
+    border-color: var(--color-red);
+  }
+
+  &.yellow {
+    background-color: var(--color-yellow);
+    color: var(--color-yellow-light);
+    border-color: var(--color-yellow-light);
+  }
+
+  &.yellow-light {
+    background-color: var(--color-yellow-light);
+    color: var(--color-yellow);
+    border-color: var(--color-yellow);
+  }
+
 }
 
 .fade-opacity {
@@ -249,7 +268,8 @@ icone {
 }
 
 .active {
-  color: #0d6efd !important;
+  color: #000 !important;
+  font-weigth: bold;
 }
 
 .minw-120px {
@@ -273,11 +293,11 @@ icone {
 }
 
 .rounded-bottom-md-end {
-  border-radius: 0 0 .375rem .375rem;
+  border-radius: 0 0 0.375rem 0.375rem;
 }
 
 .rounded-top-md-start {
-  border-radius: .375rem .375rem 0 0;
+  border-radius: 0.375rem 0.375rem 0 0;
 }
 
 .round-badge-end {
@@ -299,12 +319,68 @@ icone {
 
     &:hover {
       background-color: var(--color-background) !important;
-    };
+    }
   }
 }
 
 .top-120 {
   top: 120%;
+}
+
+filtro,
+cadastro {
+  display: flex;
+  align-items: center;
+  position: relative;
+  font-size: 0.8rem;
+  padding: 6px 0;
+
+  & * {
+    all: unset;
+    padding: 0 4px 6px 4px;
+  }
+
+  & label {
+    border: none;
+    position: absolute;
+    top: -40%;
+    left: 1%;
+    background-color: var(--color-surface);
+    padding: 2px 12px;
+    font-weigth: lighter;
+    font-size: 0.6rem;
+    margin-top: none;
+  }
+
+  & input:not([type="radio"]):not([type="checkbox"]), & select, & textarea {
+    border-bottom: 1px solid #000;
+    width: 100%;
+  }
+
+  & before {
+    border-bottom: 1px solid #000;
+  }
+
+  &[after="true"]::after {
+    content: "⏷";
+    position: absolute;
+    right: 10%;
+    top: 45%;
+    pointer-events: none;
+    font-size: 1.0rem;
+    font-weigth: lighter;
+    transition: transform 0.3s ease;
+  }
+
+  @media (min-width: 375px) {
+    & {
+      padding-top: 24px;
+
+      & label {
+        top: 0%;
+      }
+    }
+  }
 }
 
 @media (min-width: 375px) {
@@ -327,11 +403,11 @@ icone {
   }
 
   .rounded-bottom-md-end {
-    border-radius: 0 .375rem .375rem 0;
+    border-radius: 0 0.375rem 0.375rem 0;
   }
 
   .rounded-top-md-start {
-    border-radius: .375rem 0 0 .375rem;
+    border-radius: 0.375rem 0 0 0.375rem;
   }
 
   .round-badge-end {
