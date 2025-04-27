@@ -1,9 +1,10 @@
 /** @import { LancamentoApi } from './types.d.ts' */
 
 import { LancamentoComandoSucesso } from "./eventos.js";
+import { LANCAMENTOS_MAPEADOS_PARA_OPCOES } from "./value.js";
 
 export default {
-  name: "ConsultaLancamentos",
+  name: "ListarLancamentos",
   data: () => ({
     async init() {
       this.lancamentos = await this._consultarLancamentos();
@@ -14,8 +15,16 @@ export default {
         this._adicionaLancamentoRecemCriado.bind(this),
       );
     },
+    filtros: {
+      somente_versao_mais_recente: true,
+      evento: "",
+      intervalo: "",
+      descricao: "",
+      chave: "",
+    },
     /** @type {LancamentoApi[]} */
     lancamentos: [],
+    eventosLancamento: LANCAMENTOS_MAPEADOS_PARA_OPCOES,
     /** @returns {Promise<LancamentoApi[]>} */
     async _consultarLancamentos() {
       const response = await fetch(
@@ -48,4 +57,4 @@ export default {
       return this.lancamentos.length;
     },
   }),
-};
+}

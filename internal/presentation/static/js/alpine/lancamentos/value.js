@@ -2,7 +2,8 @@
  * @import {
  * Naturezas,
  * MeiosTransacao,
- EventosLancamento
+ * EventoLancamento,
+ * EventosLancamento
  * } from './types.d.ts'
  */
 
@@ -58,7 +59,6 @@ export const MEIOS_FINANCEIRO = [
   TRANFERENCIA_BANCARIA,
 ];
 
-export const LancamentoCriado = "LancamentoCriado";
 export const LancamentoPrevisto = "LancamentoPrevisto";
 export const LancamentoPago = "LancamentoPago";
 export const LancamentoRecebido = "LancamentoRecebido";
@@ -66,10 +66,36 @@ export const LancamentoCancelado = "LancamentoCancelado";
 
 /** @type {EventosLancamento} */
 export const LANCAMENTOS = [
-  LancamentoCriado,
   LancamentoPrevisto,
   LancamentoPago,
   LancamentoRecebido,
-  LancamentoRecebido,
   LancamentoCancelado,
+];
+
+/** @type { [ key: EventoLancamento ]: string } */
+export const LANCAMENTOS_MAPEADOS_PARA_EXIBICAO = {
+  LancamentoPrevisto: "Previsto",
+  LancamentoPago: "Pago",
+  LancamentoRecebido: "Recebido",
+  LancamentoCancelado: "Cancelado",
+};
+
+/** @type {{ label: string, value: EventoLancamento }[]} */
+export const LANCAMENTOS_MAPEADOS_PARA_OPCOES = [
+  {
+    label: LANCAMENTOS_MAPEADOS_PARA_EXIBICAO[LancamentoPrevisto],
+    value: LancamentoPrevisto,
+  },
+  {
+    label: LANCAMENTOS_MAPEADOS_PARA_EXIBICAO[LancamentoPago],
+    value: LancamentoPago,
+  },
+  {
+    label: LANCAMENTOS_MAPEADOS_PARA_EXIBICAO[LancamentoRecebido],
+    value: LancamentoRecebido,
+  },
+  {
+    label: LANCAMENTOS_MAPEADOS_PARA_EXIBICAO[LancamentoCancelado],
+    value: LancamentoCancelado,
+  },
 ];

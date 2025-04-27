@@ -6,6 +6,7 @@ import {
   CONDOMINIO,
   INTERNET,
   INVESTIMENTO,
+  LANCAMENTOS_MAPEADOS_PARA_EXIBICAO,
   LUZ,
   MERCADO,
   NUVEM,
@@ -17,20 +18,12 @@ import {
   TELEFONIA,
 } from "./value.js";
 
-import {
-  LancamentoCriado,
-  LancamentoPrevisto,
-  LancamentoPago,
-  LancamentoRecebido,
-  LancamentoCancelado,
-} from "./value.js";
-
 export default {
   name: "Lancamento",
   data: (/** @type {Lancamento} */ lancamento) => ({
     async init() {
       this.natureza = {
-        icone: this._iconeNatureza(),
+        ...this._iconeECorNatureza(),
         exibicao: this.value.natureza,
       };
 
@@ -47,43 +40,47 @@ export default {
     opcoesVisiveis: false,
     /** @type {Lancamento} */
     value: Alpine.reactive({ ...lancamento }),
-    _iconeNatureza() {
+    evento() {
+      return LANCAMENTOS_MAPEADOS_PARA_EXIBICAO[this.value.evento];
+    },
+    /** @returns {{ icone: string, cor: string }} */
+    _iconeECorNatureza() {
       switch (this.value.natureza) {
         case SALARIO:
-          return "bi bi-cash-coin green";
+          return { icone: "bi bi-cash-coin", cor: "green" };
         case BENEFICIOS:
-          return "bi bi-cash green-light";
+          return { icone: "bi bi-cash", cor: "green-light" };
         case COMPRAS:
-          return "bi bi-bag red-light";
+          return { icone: "bi bi-bag", cor: "red-light" };
         case MERCADO:
-          return "bi bi-cart3 blue-light";
+          return { icone: "bi bi-cart3", cor: "blue-light" };
         case LUZ:
-          return "bi bi-lightbulb-fill blue-light";
+          return { icone: "bi bi-lightbulb-fill", cor: "blue-light" };
         case CONDOMINIO:
-          return "bi bi-building-fill blue-light";
+          return { icone: "bi bi-building-fill", cor: "blue-light" };
         case AGUA_E_GAS:
-          return "bi bi-moisture blue-light";
+          return { icone: "bi bi-moisture", cor: "blue-light" };
         case TELEFONIA:
-          return "bi bi-reception-4 blue-light";
+          return { icone: "bi bi-reception-4", cor: "blue-light" };
         case NUVEM:
-          return "bi bi-cloud-check-fill yellow-light";
+          return { icone: "bi bi-cloud-check-fill", cor: "yellow-light" };
         case INTERNET:
-          return "bi bi-router-fill blue-light";
+          return { icone: "bi bi-router-fill", cor: "blue-light" };
         case RECEITA_EXTRA:
-          return "bi bi-cash green-light";
+          return { icone: "bi bi-cash", cor: "green-light" };
         case PETSHOP:
-          return "bi bi-shop blue-light";
+          return { icone: "bi bi-shop", cor: "blue-light" };
         case SAUDE:
-          return "bi bi-bandaid-fill yellow-light";
+          return { icone: "bi bi-bandaid-fill", cor: "yellow-light" };
         case INVESTIMENTO:
-          return "bi bi-graph-up green-light";
+          return { icone: "bi bi-graph-up", cor: "green-light" };
         case OUTRO:
         default:
-          return "bi bi-circle red-light";
+          return { icone: "bi bi-circle", cor: "red-light" };
       }
     },
     toggleOpcoes() {
       this.opcoesVisiveis = !this.opcoesVisiveis;
-    }
+    },
   }),
 };

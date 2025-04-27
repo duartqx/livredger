@@ -28,10 +28,8 @@ export type MeioFinanceiro =
   | "Cartão de Benefícios";
 
 export type EventoLancamento =
-  | "LancamentoCriado"
   | "LancamentoPrevisto"
   | "LancamentoPago"
-  | "LancamentoRecebido"
   | "LancamentoRecebido"
   | "LancamentoCancelado";
 

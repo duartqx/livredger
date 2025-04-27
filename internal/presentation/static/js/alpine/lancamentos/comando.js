@@ -22,7 +22,12 @@
  */
 
 import { LancamentoComandoFalho, LancamentoComandoSucesso } from "./eventos.js";
-import { MEIOS_FINANCEIRO, NATUREZAS } from "./value.js";
+import {
+  MEIOS_FINANCEIRO,
+  NATUREZAS,
+  LANCAMENTOS_MAPEADOS_PARA_OPCOES,
+  LancamentoCancelado,
+} from "./value.js";
 
 /** @returns {LancamentoModelo} */
 function modeloPadrao() {
@@ -38,7 +43,7 @@ function modeloPadrao() {
     };
   }
   return {
-    evento: "LancamentoCriado",
+    evento: "LancamentoPrevisto",
     natureza: "",
     meioFinanceiro: "",
     valores: 0,
@@ -56,6 +61,9 @@ export default {
     modelo: modeloPadrao(),
     naturezas: NATUREZAS,
     meios_financeiros: MEIOS_FINANCEIRO,
+    eventosLancamento: LANCAMENTOS_MAPEADOS_PARA_OPCOES.filter(
+      (evento) => evento.value !== LancamentoCancelado,
+    ),
     /** @returns {LancamentoComando} */
     comando() {
       return {
@@ -93,7 +101,6 @@ export default {
           }),
         );
       } else if (body.resultado) {
-
         /** @type { LancamentoApi } */
         const resultado = body.resultado;
 
@@ -102,7 +109,7 @@ export default {
           ...resultado,
           timestamp: dayjs(resultado.timestamp).toDate(),
           vencimento: dayjs(resultado.vencimento).toDate(),
-        }
+        };
 
         window.dispatchEvent(
           new CustomEvent(LancamentoComandoSucesso, {
