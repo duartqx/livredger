@@ -75,13 +75,14 @@ func get(w http.ResponseWriter, r *http.Request) {
 		h.JsonErrorReponse(w, err)
 	}
 
-	resultado := h.Resultado[entidade.Lancamento]{
-		Total: len(*lancamentos),
-		Itens: lancamentos,
+	resultado := h.Resultado[consultas.ConsultaLancamentos, entidade.Lancamento]{
+		Total:    len(*lancamentos),
+		Consulta: consulta,
+		Itens:    lancamentos,
 	}
 
 	h.HandleResponse(
-		&h.Response[entidade.Lancamento]{
+		&h.Response[consultas.ConsultaLancamentos, entidade.Lancamento]{
 			Writer:    w,
 			Request:   r,
 			Resultado: &resultado,

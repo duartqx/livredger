@@ -24,7 +24,7 @@ type ConsultaLancamentos struct {
 func ConsultaLancamentosPadrao() *ConsultaLancamentos {
 	return &ConsultaLancamentos{
 		SomenteVersaoMaisRecente: true,
-		Intervalo:                t.IntervaloDesseMes(),
+		Intervalo:                t.Intervalo{},
 	}
 }
 

@@ -25,19 +25,20 @@ type Templates struct {
 	Partial *template.Template
 }
 
-type Resultado[T any] struct {
-	Total int   `json:"total"`
-	Itens *[]*T `json:"itens"`
+type Resultado[C, T any] struct {
+	Total    int   `json:"total"`
+	Consulta *C    `json:"consulta"`
+	Itens    *[]*T `json:"itens"`
 }
 
-type Response[T any] struct {
+type Response[C, T any] struct {
 	Writer    http.ResponseWriter
 	Request   *http.Request
-	Resultado *Resultado[T]
+	Resultado *Resultado[C, T]
 	Template  *template.Template
 }
 
-func HandleResponse[T any](res *Response[T]) {
+func HandleResponse[C, T any](res *Response[C, T]) {
 
 	if res.Template == nil || res.Request.Header.Get("Accept") == "application/json" {
 		res.Writer.Header().Set("Content-Type", "application/json")

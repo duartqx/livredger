@@ -101,10 +101,17 @@ func (r RepositorioDeConsultaLancamentos) adicionarFiltros(consulta *c.ConsultaL
 		builder = builder.Where(squirrel.Like{"descricao": "%" + consulta.Descricao + "%"})
 	}
 
-	return builder.Where(squirrel.And{
-		squirrel.GtOrEq{"timestamp": consulta.Intervalo.Inicio.Format(time.DateOnly)},
-		squirrel.LtOrEq{"timestamp": consulta.Intervalo.Final.Format(time.DateOnly)},
-	})
+	if !consulta.Intervalo.IsZero() {
+		if !consulta.Intervalo.Inicio.IsZero() {
+			builder = builder.Where(squirrel.GtOrEq{"timestamp": consulta.Intervalo.Inicio.Format(time.DateOnly)})
+		}
+
+		if !consulta.Intervalo.Final.IsZero() {
+			builder = builder.Where(squirrel.LtOrEq{"timestamp": consulta.Intervalo.Final.Format(time.DateOnly)})
+		}
+	}
+
+	return builder
 }
 
 func (r RepositorioDeConsultaLancamentos) query(db *sql.DB, stmt string, args *[]interface{}) (*sql.Rows, error) {
