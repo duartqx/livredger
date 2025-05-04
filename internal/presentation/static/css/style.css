@@ -96,7 +96,8 @@ icone {
   }
 }
 
-tag, icone {
+tag,
+icone {
   &.border {
     border: 1px solid;
   }
@@ -148,7 +149,6 @@ tag, icone {
     color: var(--color-yellow);
     border-color: var(--color-yellow);
   }
-
 }
 
 .fade-opacity {
@@ -269,7 +269,7 @@ tag, icone {
 
 .active {
   color: #000 !important;
-  font-weigth: bold;
+  font-weight: bold;
 }
 
 .minw-120px {
@@ -347,12 +347,13 @@ cadastro {
     left: 1%;
     background-color: var(--color-surface);
     padding: 2px 12px;
-    font-weigth: lighter;
     font-size: 0.6rem;
     margin-top: none;
   }
 
-  & input:not([type="radio"]):not([type="checkbox"]), & select, & textarea {
+  & input:not([type="radio"]):not([type="checkbox"]),
+  & select,
+  & textarea {
     border-bottom: 1px solid #000;
     width: 100%;
   }
@@ -367,8 +368,7 @@ cadastro {
     right: 10%;
     top: 45%;
     pointer-events: none;
-    font-size: 1.0rem;
-    font-weigth: lighter;
+    font-size: 1rem;
     transition: transform 0.3s ease;
   }
 
@@ -413,5 +413,59 @@ cadastro {
   .round-badge-end {
     top: 0;
     left: 95%;
+  }
+}
+
+.air-datepicker {
+  border-radius: 0;
+  border-color: black;
+
+  transition: 0.001;
+  /* animation: none; */
+  /* opacity: 1; */
+  /* transform: none; */
+
+  & .air-datepicker--pointer {
+    display: none;
+  }
+
+  & .air-datepicker-body--day-name {
+    color: black;
+    font-weight: bold;
+  }
+
+  & .air-datepicker-cell {
+    border-radius: 0 !important;
+
+    &.-focus-:not(.-in-range-) {
+      background-color: var(--color-blue);
+      color: white !important;
+    }
+
+    &.-current-:not(.-selected-):not(.-focus-) {
+      color: var(--color-blue);
+    }
+
+    &.-selected- {
+      background-color: var(--color-blue) !important;
+    }
+
+    &.-in-range- {
+      background-color: var(--color-blue-light) !important;
+
+      &.-focus- {
+        background-color: var(--color-blue-light);
+        filter: brightness(105%);
+      }
+    }
+
+    &.-other-month-.-in-range- {
+      background-color: var(--color-blue-light) !important;
+      filter: brightness(103%);
+
+      &.-focus- {
+        filter: brightness(108%);
+      }
+    }
   }
 }
