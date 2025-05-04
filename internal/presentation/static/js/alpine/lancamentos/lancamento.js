@@ -35,9 +35,8 @@ export default {
             : `R$ ${this.value.valores}`,
       };
     },
-    valores: {},
     natureza: {},
-    opcoesVisiveis: false,
+    valores: {},
     /** @type {Lancamento} */
     value: Alpine.reactive({ ...lancamento }),
     evento() {
@@ -78,9 +77,6 @@ export default {
         default:
           return { icone: "bi bi-circle", cor: "red-light" };
       }
-    },
-    toggleOpcoes() {
-      this.opcoesVisiveis = !this.opcoesVisiveis;
     },
   }),
 };
