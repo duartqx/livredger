@@ -372,6 +372,18 @@ cadastro {
     transition: transform 0.3s ease;
   }
 
+  & intervalo-picker {
+    position: relative;
+    width: 100%;
+    padding: 0;
+
+    & input:not([hidden="true"]) {
+      width: 100%;
+      padding: 0 4px 6px 4px;
+      height: 19.188px;
+    }
+  }
+
   @media (min-width: 375px) {
     & {
       padding-top: 24px;
@@ -419,11 +431,6 @@ cadastro {
 .air-datepicker {
   border-radius: 0;
   border-color: black;
-
-  transition: 0.001;
-  /* animation: none; */
-  /* opacity: 1; */
-  /* transform: none; */
 
   & .air-datepicker--pointer {
     display: none;

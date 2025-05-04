@@ -7,17 +7,19 @@ import { locale } from "../utils/locale.js";
  * @property {(chave: string, valor: string | Date | undefined) => void} atualiza
  */
 
-export class IntervaloPicker extends HTMLInputElement {
+export class InputIntervalo extends HTMLElement {
   constructor() {
     super();
 
-    this.setAttribute("readonly", "true");
+    this.container = document.createElement("input");
+    this.container.setAttribute("readonly", true);
+    this.append(this.container);
 
     /** @type {IntervaloRef} */
     this.intervalo = {
       inicio: this.#criarInnerInputDoIntervalo("inicio"),
       final: this.#criarInnerInputDoIntervalo("final"),
-      atualiza: function(chave, valor) {
+      atualiza: function (chave, valor) {
         this[chave].setAttribute(
           "value",
           (valor && dayjs(valor).format("YYYY-MM-DD")) || "",
@@ -28,7 +30,7 @@ export class IntervaloPicker extends HTMLInputElement {
     this.removeAttribute("name");
 
     if (window.AirDatepicker) {
-      this.picker = new window.AirDatepicker(this, {
+      this.picker = new window.AirDatepicker(this.container, {
         range: true,
         multipleDatesSeparator: " - ",
         locale: locale(),

@@ -1,3 +1,3 @@
-import { IntervaloPicker } from "./datepicker.js";
+import { InputIntervalo } from "./datepicker.js";
 
-customElements.define("intervalo-picker", IntervaloPicker, { extends: "input" })
+customElements.define("input-intervalo", InputIntervalo)
