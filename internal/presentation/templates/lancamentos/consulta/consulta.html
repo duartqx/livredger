@@ -4,6 +4,7 @@
   hx-trigger="load, submit"
   hx-target="resultados"
   hx-swap="innerHTML"
+  hx-on::config-request=""
 >
   <filtros class="row py-3">
     <filtro class="col-md">
@@ -27,6 +28,11 @@
         <option value="LancamentoRecebido">Recebido</option>
         <option value="LancamentoCancelado">Cancelado</option>
       </select>
+    </filtro>
+    <filtro class="col-md-2">
+      <submit>
+        <button class="btn btn-darker">Filtrar</button>
+      </submit>
     </filtro>
   </filtros>
 </form>
