@@ -369,18 +369,25 @@ cadastro {
     top: 45%;
     pointer-events: none;
     font-size: 1rem;
-    transition: transform 0.3s ease;
   }
 
-  & intervalo-picker {
+  & input-intervalo {
     position: relative;
     width: 100%;
     padding: 0;
 
+    & .after {
+      position: absolute;
+      right: 4%;
+      top: 0%;
+      pointer-events: none;
+      font-size: 0.9rem;
+    }
+
     & input:not([hidden="true"]) {
-      width: 100%;
-      padding: 0 4px 6px 4px;
-      height: 19.188px;
+      position: relative;
+      box-sizing: border-box;
+      max-width: 100%;
     }
   }
 

@@ -15,10 +15,13 @@ export class InputIntervalo extends HTMLElement {
     this.input = document.createElement("input");
     this.input.setAttribute("readonly", true);
 
+    this.after = document.createElement("span");
+    this.after.classList.add("bi", "bi-calendar2-week", "after");
+
     /** @type {IntervaloRef} */
     this.intervalo = this.#montarIntervalo();
 
-    this.append(this.input, this.intervalo.inicio, this.intervalo.final);
+    this.append(this.after, this.input, this.intervalo.inicio, this.intervalo.final);
 
     this.removeAttribute("name");
 
