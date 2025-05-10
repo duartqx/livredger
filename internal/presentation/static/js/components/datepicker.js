@@ -11,26 +11,19 @@ export class InputIntervalo extends HTMLElement {
   constructor() {
     super();
 
-    this.container = document.createElement("input");
-    this.container.setAttribute("readonly", true);
-    this.append(this.container);
+    /** @type {HTMLInputElement} */
+    this.input = document.createElement("input");
+    this.input.setAttribute("readonly", true);
 
     /** @type {IntervaloRef} */
-    this.intervalo = {
-      inicio: this.#criarInnerInputDoIntervalo("inicio"),
-      final: this.#criarInnerInputDoIntervalo("final"),
-      atualiza: function (chave, valor) {
-        this[chave].setAttribute(
-          "value",
-          (valor && dayjs(valor).format("YYYY-MM-DD")) || "",
-        );
-      },
-    };
+    this.intervalo = this.#montarIntervalo();
+
+    this.append(this.input, this.intervalo.inicio, this.intervalo.final);
 
     this.removeAttribute("name");
 
     if (window.AirDatepicker) {
-      this.picker = new window.AirDatepicker(this.container, {
+      this.picker = new window.AirDatepicker(this.input, {
         range: true,
         multipleDatesSeparator: " - ",
         locale: locale(),
@@ -43,15 +36,26 @@ export class InputIntervalo extends HTMLElement {
       });
     }
   }
-  /** @returns {HTMLInputElement} */
-  #criarInnerInputDoIntervalo(nome) {
-    const membro = document.createElement("input");
+  /** @returns {IntervaloRef} */
+  #montarIntervalo() {
+    const criarInnerInputs = (nome) => {
+      const input = document.createElement("input");
 
-    membro.setAttribute("hidden", true);
-    membro.setAttribute("name", `${this.getAttribute("name")}[${nome}]`);
+      input.setAttribute("hidden", true);
+      input.setAttribute("name", `${this.getAttribute("name")}[${nome}]`);
 
-    this.append(membro);
+      return input;
+    };
 
-    return membro;
+    return {
+      inicio: criarInnerInputs("inicio"),
+      final: criarInnerInputs("final"),
+      atualiza: function(chave, valor) {
+        this[chave].setAttribute(
+          "value",
+          (valor && dayjs(valor).format("YYYY-MM-DD")) || "",
+        );
+      },
+    };
   }
 }

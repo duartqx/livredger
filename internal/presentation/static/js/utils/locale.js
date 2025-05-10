@@ -12,7 +12,7 @@
  * @property {number} firstDay
  */
 
-/** @type {Record<string, Locale>} */
+/** @type {Record<"en-US" | "pt-BR" | "es", Locale>} */
 const LOCALES = {
   "en-US": {
     days: [
@@ -157,7 +157,7 @@ const LOCALES = {
 /** @returns {Locale} */
 export const locale = (padrao) => {
   if (padrao === undefined) {
-    padrao = "en-US";
+    padrao = "pt-BR";
   }
   return LOCALES[navigator.language] || LOCALES[padrao];
 };
