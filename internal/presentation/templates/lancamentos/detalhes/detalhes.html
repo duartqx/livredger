@@ -1,6 +1,6 @@
-{{ define "resultados" }}
+{{ define "partial" }}
 <!-- prettier-ignore -->
-{{ range .Itens }} 
+{{ range .Resultado.Itens }}
 
   <div>{{ .Id }} {{ .Evento }} {{ .Chave }}</div>
 

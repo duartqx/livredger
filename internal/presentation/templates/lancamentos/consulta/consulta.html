@@ -1,7 +1,7 @@
 {{ define "consulta" }}
 <form
-  hx-get="/api/lancamentos"
-  hx-trigger="load, submit"
+  hx-get="/lancamentos"
+  hx-trigger="submit"
   hx-target="resultados"
   hx-swap="innerHTML"
   hx-on::config-request=""
@@ -64,6 +64,8 @@
     </div>
   </header>
 
-  <resultados></resultados>
+  <resultados>
+    {{ range .Resultado.Itens }} {{ template "lancamento" . }} {{ end }}
+  </resultados>
 </lancamentos>
 {{ end }}
