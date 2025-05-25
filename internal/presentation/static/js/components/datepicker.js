@@ -10,35 +10,57 @@ import { locale } from "../utils/locale.js";
 export class InputIntervalo extends HTMLElement {
   constructor() {
     super();
+  }
 
-    /** @type {HTMLInputElement} */
+  connectedCallback() {
+    this.innerHTML = "";
+
+    this.#buildInputs();
+
+    this.#initPicker();
+  }
+
+  disconnectedCallback() {
+    this.picker.destroy();
+    this.picker = null;
+  }
+
+  #buildInputs() {
     this.input = document.createElement("input");
     this.input.setAttribute("readonly", true);
 
     this.after = document.createElement("span");
     this.after.classList.add("bi", "bi-calendar2-week", "after");
 
-    /** @type {IntervaloRef} */
     this.intervalo = this.#montarIntervalo();
 
-    this.append(this.after, this.input, this.intervalo.inicio, this.intervalo.final);
-
-    this.removeAttribute("name");
-
-    if (window.AirDatepicker) {
-      this.picker = new window.AirDatepicker(this.input, {
-        range: true,
-        multipleDatesSeparator: " - ",
-        locale: locale(),
-        position: "bottom center",
-        offset: -1,
-        onSelect: ({ date, formattedDate, datepicker }) => {
-          this.intervalo.atualiza("inicio", date[0]);
-          this.intervalo.atualiza("final", date[1]);
-        },
-      });
-    }
+    this.append(
+      this.after,
+      this.input,
+      this.intervalo.inicio,
+      this.intervalo.final,
+    );
   }
+
+  #initPicker() {
+    if (!window.AirDatepicker) {
+      return;
+    }
+
+    this.picker = new window.AirDatepicker(this.input, {
+      container: this,
+      range: true,
+      multipleDatesSeparator: " - ",
+      locale: locale(),
+      position: "bottom center",
+      offset: -1,
+      onSelect: ({ date }) => {
+        this.intervalo.atualiza("inicio", date[0]);
+        this.intervalo.atualiza("final", date[1]);
+      },
+    });
+  }
+
   /** @returns {IntervaloRef} */
   #montarIntervalo() {
     const criarInnerInputs = (nome) => {
@@ -53,7 +75,7 @@ export class InputIntervalo extends HTMLElement {
     return {
       inicio: criarInnerInputs("inicio"),
       final: criarInnerInputs("final"),
-      atualiza: function(chave, valor) {
+      atualiza: function (chave, valor) {
         this[chave].setAttribute(
           "value",
           (valor && dayjs(valor).format("YYYY-MM-DD")) || "",
