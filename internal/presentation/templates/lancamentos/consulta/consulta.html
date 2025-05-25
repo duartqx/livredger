@@ -6,34 +6,38 @@
   hx-swap="innerHTML"
   hx-on::config-request=""
 >
-  <filtros class="row py-3">
-    <filtro class="col-md">
-      <label>Intervalo</label>
-      <input-intervalo name="timestamp" />
-    </filtro>
-    <filtro class="col-md">
-      <label>Descrição</label>
-      <input type="text" name="descricao" />
-    </filtro>
-    <filtro class="col-md">
-      <label>Chave</label>
-      <input type="text" name="chave" />
-    </filtro>
-    <filtro class="col-md" after="true">
-      <label>Evento</label>
-      <select name="evento">
-        <option value="">Selecione</option>
-        <option value="LancamentoPrevisto">Previsto</option>
-        <option value="LancamentoPago">Pago</option>
-        <option value="LancamentoRecebido">Recebido</option>
-        <option value="LancamentoCancelado">Cancelado</option>
-      </select>
-    </filtro>
-    <filtro class="col-md-2">
-      <submit>
-        <button class="btn btn-darker">Filtrar</button>
-      </submit>
-    </filtro>
+  <filtros class="py-3">
+    <row class="row">
+      <filtro class="col-md">
+        <label>Intervalo</label>
+        <input-intervalo name="intervalo" />
+      </filtro>
+      <filtro class="col-md">
+        <label>Descrição</label>
+        <input type="text" name="descricao" />
+      </filtro>
+      <filtro class="col-md">
+        <label>Chave</label>
+        <input type="text" name="chave" />
+      </filtro>
+      <filtro class="col-md" after="true">
+        <label>Evento</label>
+        <select name="evento">
+          <option value="">Selecione</option>
+          <option value="LancamentoPrevisto">Previsto</option>
+          <option value="LancamentoPago">Pago</option>
+          <option value="LancamentoRecebido">Recebido</option>
+          <option value="LancamentoCancelado">Cancelado</option>
+        </select>
+      </filtro>
+    </row>
+    <row class="row">
+      <filtro class="col-md-3 offset-md-9">
+        <submit>
+          <button class="btn btn-darker">Filtrar</button>
+        </submit>
+      </filtro>
+    </row>
   </filtros>
 </form>
 {{ end }}
