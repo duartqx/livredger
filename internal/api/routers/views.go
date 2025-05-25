@@ -5,11 +5,14 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/duartqx/livredger/internal/application/services/visualizadores"
 	h "github.com/duartqx/livredger/internal/common/http"
 	"github.com/duartqx/livredger/internal/common/types"
+	"github.com/duartqx/livredger/internal/domain/consultas"
+	"github.com/google/uuid"
 )
 
-type DataFunc func(usuario *types.Usuario, r *http.Request) (map[string]any, error)
+type DataFunc func(r *http.Request) (map[string]any, error)
 
 type ViewContext struct {
 	ViewName  string
@@ -21,8 +24,6 @@ type ViewContext struct {
 func view(ctx *ViewContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Println("View", ctx.ViewName)
-
-		var usuario *types.Usuario
 
 		auth := r.Header.Get("Authorization")
 
@@ -40,9 +41,9 @@ func view(ctx *ViewContext) http.HandlerFunc {
 		)
 
 		if ctx.DataFunc != nil {
-			data, err = ctx.DataFunc(usuario, r)
+			data, err = ctx.DataFunc(r)
 			if err != nil {
-				h.JsonErrorReponse(w, err)
+				h.ErrorResponse(w, err)
 				return
 			}
 
@@ -66,12 +67,59 @@ func viewsRouter() *RouterMap {
 		"GET /{$}": view(&ViewContext{
 			ViewName:  "Index",
 			Templates: registry.Index,
-			Data:      map[string]any{"Active": "lancamentos"},
+			Data:      map[string]any{"Active": "Index"},
 		}),
 		"GET /lancamentos": view(&ViewContext{
 			ViewName:  "ConsultarLancamentos",
 			Templates: registry.Lancamentos.Consulta,
-			Data:      map[string]any{"Active": "lancamentos"},
+			DataFunc: func(r *http.Request) (map[string]any, error) {
+				var usuario *types.Usuario
+
+				consulta, err := parseConsultaDoForm(r)
+
+				if err != nil {
+					return nil, err
+				}
+
+				resultado, err := visualizadores.BuscarLancamentos(usuario, consulta)
+
+				if err != nil {
+					return nil, err
+				}
+
+				return map[string]any{
+					"Active":    "Lancamentos",
+					"Resultado": resultado,
+				}, nil
+			},
+		}),
+		"GET /lancamentos/{chave}": view(&ViewContext{
+			ViewName:  "DetalhesLancamentos",
+			Templates: registry.Lancamentos.Detalhes,
+			DataFunc: func(r *http.Request) (map[string]any, error) {
+
+				var usuario *types.Usuario
+
+				chave, err := uuid.Parse(r.PathValue("chave"))
+
+				if err != nil {
+					return nil, err
+				}
+
+				resultado, err := visualizadores.BuscarLancamentos(usuario, &consultas.ConsultaLancamentos{
+					SomenteVersaoMaisRecente: false,
+					Chave:                    chave,
+				})
+
+				if err != nil {
+					return nil, err
+				}
+
+				return map[string]any{
+					"Active":    "Lancamentos",
+					"Resultado": resultado,
+				}, nil
+			},
 		}),
 		"GET /lancamentos/criar": view(&ViewContext{
 			ViewName:  "CriarLancamento",

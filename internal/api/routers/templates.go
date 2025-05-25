@@ -3,6 +3,7 @@ package routers
 import (
 	"encoding/json"
 	"html/template"
+	"slices"
 
 	h "github.com/duartqx/livredger/internal/common/http"
 )
@@ -15,6 +16,10 @@ func jsonify(v any) template.JS {
 	return template.JS(b)
 }
 
+func orEq(key string, values ...string) bool {
+	return slices.Contains(values, key)
+}
+
 func compose(templates ...string) *template.Template {
 	if len(templates) == 0 {
 		panic("É necessário passar ao menos um template para compose")
@@ -23,6 +28,7 @@ func compose(templates ...string) *template.Template {
 	return template.Must(template.New("").Funcs(
 		template.FuncMap{
 			"jsonify": jsonify,
+			"orEq":    orEq,
 		},
 	).ParseFS(templatesFS, templates...))
 }
@@ -30,7 +36,7 @@ func compose(templates ...string) *template.Template {
 type TemplatesLancamento struct {
 	Consulta   *h.Templates
 	Comando    *h.Templates
-	Detalhes   *template.Template
+	Detalhes   *h.Templates
 	Resultados *template.Template
 }
 
@@ -53,9 +59,11 @@ func ObterTemplateRegistry() *TemplateRegistry {
 					ComBase: compose(
 						"index.html",
 						"nav.html",
+						"lancamentos/consulta/lancamento.html",
 						"lancamentos/consulta/consulta.html",
 					),
 					Partial: compose(
+						"lancamentos/consulta/lancamento.html",
 						"lancamentos/consulta/consulta.html",
 					),
 				},
@@ -69,13 +77,16 @@ func ObterTemplateRegistry() *TemplateRegistry {
 						"lancamentos/criar.html",
 					),
 				},
-				Detalhes: compose(
-					"lancamentos/detalhes/detalhes.html",
-				),
-				Resultados: compose(
-					"lancamentos/consulta/lancamento.html",
-					"lancamentos/consulta/resultados.html",
-				),
+				Detalhes: &h.Templates{
+					ComBase: compose(
+						"index.html",
+						"nav.html",
+						"lancamentos/detalhes/detalhes.html",
+					),
+					Partial: compose(
+						"lancamentos/detalhes/detalhes.html",
+					),
+				},
 			},
 		}
 	}

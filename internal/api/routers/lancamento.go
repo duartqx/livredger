@@ -3,40 +3,38 @@ package routers
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
-	"log"
 
 	"net/http"
 
-	d "github.com/duartqx/livredger/internal/api/decoders"
-	e "github.com/duartqx/livredger/internal/application/services/executores"
-	v "github.com/duartqx/livredger/internal/application/services/visualizadores"
+	"github.com/duartqx/livredger/internal/api/decoders"
+	"github.com/duartqx/livredger/internal/application/services/executores"
+	"github.com/duartqx/livredger/internal/application/services/visualizadores"
 	h "github.com/duartqx/livredger/internal/common/http"
-	t "github.com/duartqx/livredger/internal/common/types"
-	c "github.com/duartqx/livredger/internal/domain/comandos"
+	"github.com/duartqx/livredger/internal/common/types"
+	"github.com/duartqx/livredger/internal/domain/comandos"
 	"github.com/duartqx/livredger/internal/domain/consultas"
 	"github.com/duartqx/livredger/internal/domain/entidade"
-	i "github.com/duartqx/livredger/internal/infra"
+	"github.com/duartqx/livredger/internal/infra"
 )
 
-func post(w http.ResponseWriter, r *http.Request) {
-	var comando c.CriarLancamento
+func criarLancamento(w http.ResponseWriter, r *http.Request) {
+	var comando comandos.CriarLancamento
 
 	if err := json.NewDecoder(r.Body).Decode(&comando); err != nil {
-		h.JsonErrorReponse(w, fmt.Errorf("%w: %w", t.BusinessLogicError, err))
+		h.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.BusinessLogicError, err))
 		return
 	}
 	defer r.Body.Close()
 
-	var usuario *t.Usuario
+	var usuario *types.Usuario
 
-	uow := i.Bootstrap(usuario)
+	uow := infra.Bootstrap(usuario)
 	defer uow.Close()
 
-	resultado, err := e.CriarLancamento(uow, &comando)
+	resultado, err := executores.CriarLancamento(uow, &comando)
 
 	if err != nil {
-		h.JsonErrorReponse(w, err)
+		h.JsonErrorResponse(w, err)
 		return
 	}
 
@@ -44,67 +42,52 @@ func post(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 
 	if err := json.NewEncoder(w).Encode(map[string]any{"resultado": resultado}); err != nil {
-		h.JsonErrorReponse(w, fmt.Errorf("%w: %w", t.InternalError, err))
+		h.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.InternalError, err))
 		return
 	}
 }
 
-// Query Params
-//
-//	q: consultas.ConsultaLancamentos
-func get(w http.ResponseWriter, r *http.Request) {
+func parseConsultaDoForm(r *http.Request) (*consultas.ConsultaLancamentos, error) {
 	if err := r.ParseForm(); err != nil {
-		h.JsonErrorReponse(w, fmt.Errorf("%w: %w", t.BusinessLogicError, err))
-		return
+		return nil, fmt.Errorf("%w: %w", types.BusinessLogicError, err)
 	}
-
-	var usuario *t.Usuario
-
-	uow := i.Bootstrap(usuario)
-	defer uow.Close()
 
 	consulta := consultas.ConsultaLancamentosPadrao()
 
-	if err := d.Decoder().Decode(consulta, r.Form); err != nil {
-		h.JsonErrorReponse(w, err)
-		return
+	if err := decoders.Decoder().Decode(consulta, r.Form); err != nil {
+		return nil, err
 	}
 
-	lancamentos, err := v.BuscarLancamentos(uow, consulta)
-
-	if err != nil {
-		h.JsonErrorReponse(w, err)
-		return
-	}
-
-	resultado := h.Resultado[consultas.ConsultaLancamentos, entidade.Lancamento]{
-		Total:    len(*lancamentos),
-		Consulta: consulta,
-		Itens:    lancamentos,
-	}
-
-	var tmpl *template.Template
-	if r.URL.Query().Get("detalhes") != "" {
-		log.Println("detalhes", r.URL.Query().Get("detalhes"))
-		tmpl = ObterTemplateRegistry().Lancamentos.Detalhes
-	} else {
-		log.Println("resultados")
-		tmpl = ObterTemplateRegistry().Lancamentos.Resultados
-	}
-
-	h.HandleResponse(
-		&h.Response[consultas.ConsultaLancamentos, entidade.Lancamento]{
-			Writer:    w,
-			Request:   r,
-			Resultado: &resultado,
-			Template:  tmpl,
-		},
-	)
+	return consulta, nil
 }
 
 func lancamentosRouter() *RouterMap {
 	return &RouterMap{
-		"GET /api/lancamentos":  get,
-		"POST /api/lancamentos": post,
+		"GET /api/lancamentos": func(w http.ResponseWriter, r *http.Request) {
+			var usuario *types.Usuario
+
+			consulta, err := parseConsultaDoForm(r)
+
+			if err != nil {
+				h.JsonErrorResponse(w, err)
+				return
+			}
+
+			resultado, err := visualizadores.BuscarLancamentos(usuario, consulta)
+
+			if err != nil {
+				h.JsonErrorResponse(w, err)
+				return
+			}
+
+			h.HandleResponse(
+				&h.Response[consultas.ConsultaLancamentos, entidade.Lancamento]{
+					Writer:    w,
+					Request:   r,
+					Resultado: resultado,
+				},
+			)
+		},
+		"POST /api/lancamentos": criarLancamento,
 	}
 }

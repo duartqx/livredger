@@ -25,16 +25,10 @@ type Templates struct {
 	Partial *template.Template
 }
 
-type Resultado[C, T any] struct {
-	Total    int   `json:"total"`
-	Consulta *C    `json:"consulta"`
-	Itens    *[]*T `json:"itens"`
-}
-
 type Response[C, T any] struct {
 	Writer    http.ResponseWriter
 	Request   *http.Request
-	Resultado *Resultado[C, T]
+	Resultado *t.Resultado[C, T]
 	Template  *template.Template
 }
 
@@ -44,7 +38,7 @@ func HandleResponse[C, T any](res *Response[C, T]) {
 		res.Writer.Header().Set("Content-Type", "application/json")
 
 		if err := json.NewEncoder(res.Writer).Encode(res.Resultado); err != nil {
-			JsonErrorReponse(res.Writer, fmt.Errorf("%w: %w", t.InternalError, err))
+			JsonErrorResponse(res.Writer, fmt.Errorf("%w: %w", t.InternalError, err))
 			return
 		}
 
@@ -56,7 +50,7 @@ func HandleResponse[C, T any](res *Response[C, T]) {
 	}
 }
 
-func JsonErrorReponse(w http.ResponseWriter, err error) {
+func JsonErrorResponse(w http.ResponseWriter, err error) {
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -70,6 +64,21 @@ func JsonErrorReponse(w http.ResponseWriter, err error) {
 	}
 
 	w.Write(*marshal(err))
+}
+
+func ErrorResponse(w http.ResponseWriter, err error) {
+	w.Header().Set("Content-Type", "text/html")
+
+	switch {
+	case errors.Is(err, t.NotFoundError):
+		w.WriteHeader(http.StatusNotFound)
+	case errors.Is(err, t.BusinessLogicError) || errors.Is(err, &json.UnmarshalTypeError{}):
+		w.WriteHeader(http.StatusBadRequest)
+	default:
+		panic(err)
+	}
+
+	w.Write([]byte(err.Error()))
 }
 
 func marshal(err error) *[]byte {
