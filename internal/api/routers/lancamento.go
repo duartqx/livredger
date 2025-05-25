@@ -3,9 +3,11 @@ package routers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"net/http"
 
+	d "github.com/duartqx/livredger/internal/api/decoders"
 	e "github.com/duartqx/livredger/internal/application/services/executores"
 	v "github.com/duartqx/livredger/internal/application/services/visualizadores"
 	h "github.com/duartqx/livredger/internal/common/http"
@@ -62,17 +64,17 @@ func get(w http.ResponseWriter, r *http.Request) {
 
 	consulta := consultas.ConsultaLancamentosPadrao()
 
-	if q := r.FormValue("q"); q != "" {
-		if err := json.Unmarshal([]byte(q), &consulta); err != nil {
-			h.JsonErrorReponse(w, fmt.Errorf("%w: %w", t.BusinessLogicError, err))
-			return
-		}
+	if err := d.Decoder().Decode(consulta, r.Form); err != nil {
+		log.Println("form error", err)
+		h.JsonErrorReponse(w, err)
+		return
 	}
 
 	lancamentos, err := v.BuscarLancamentos(uow, consulta)
 
 	if err != nil {
 		h.JsonErrorReponse(w, err)
+		return
 	}
 
 	resultado := h.Resultado[consultas.ConsultaLancamentos, entidade.Lancamento]{

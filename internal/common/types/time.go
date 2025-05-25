@@ -6,8 +6,8 @@ import (
 )
 
 type Intervalo struct {
-	Inicio time.Time `json:"inicio"`
-	Final  time.Time `json:"final"`
+	Inicio time.Time `json:"inicio" form:"inicio"`
+	Final  time.Time `json:"final" form:"final"`
 }
 
 func (i Intervalo) IsZero() bool {

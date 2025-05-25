@@ -14,11 +14,11 @@ import (
 )
 
 type ConsultaLancamentos struct {
-	Chave                    uuid.UUID   `json:"chave"`
-	SomenteVersaoMaisRecente bool        `json:"somente_versao_mais_recente"`
-	Evento                   string      `json:"evento"`
-	Intervalo                t.Intervalo `json:"intervalo"`
-	Descricao                string      `json:"descricao"`
+	Chave                    uuid.UUID   `json:"chave" form:"chave"`
+	SomenteVersaoMaisRecente bool        `json:"somente_versao_mais_recente" form:"somente_versao_mais_recente"`
+	Evento                   string      `json:"evento" form:"evento"`
+	Intervalo                t.Intervalo `json:"intervalo" form:"intervalo"`
+	Descricao                string      `json:"descricao" form:"descricao"`
 }
 
 func ConsultaLancamentosPadrao() *ConsultaLancamentos {
