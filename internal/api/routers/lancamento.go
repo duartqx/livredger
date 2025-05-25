@@ -3,6 +3,7 @@ package routers
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"log"
 
 	"net/http"
@@ -65,7 +66,6 @@ func get(w http.ResponseWriter, r *http.Request) {
 	consulta := consultas.ConsultaLancamentosPadrao()
 
 	if err := d.Decoder().Decode(consulta, r.Form); err != nil {
-		log.Println("form error", err)
 		h.JsonErrorReponse(w, err)
 		return
 	}
@@ -83,12 +83,21 @@ func get(w http.ResponseWriter, r *http.Request) {
 		Itens:    lancamentos,
 	}
 
+	var tmpl *template.Template
+	if r.URL.Query().Get("detalhes") != "" {
+		log.Println("detalhes", r.URL.Query().Get("detalhes"))
+		tmpl = ObterTemplateRegistry().Lancamentos.Detalhes
+	} else {
+		log.Println("resultados")
+		tmpl = ObterTemplateRegistry().Lancamentos.Resultados
+	}
+
 	h.HandleResponse(
 		&h.Response[consultas.ConsultaLancamentos, entidade.Lancamento]{
 			Writer:    w,
 			Request:   r,
 			Resultado: &resultado,
-			Template:  ObterTemplateRegistry().Lancamentos.Resultados,
+			Template:  tmpl,
 		},
 	)
 }

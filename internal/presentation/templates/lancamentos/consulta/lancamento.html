@@ -26,7 +26,13 @@
     </div>
   </div>
   <div class="col-1 text-end">
-    <button class="btn btn-lighter bi bi-card-list"></button>
+    <button
+      class="btn btn-lighter bi bi-card-list"
+      hx-get="/api/lancamentos/?chave={{ .Chave }}&somente_versao_mais_recente=false&detalhes=true"
+      hx-target="main"
+      hx-swap="innerHTML"
+    >
+    </button>
   </div>
 </lancamento>
 {{ end }}

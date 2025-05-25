@@ -30,6 +30,7 @@ func compose(templates ...string) *template.Template {
 type TemplatesLancamento struct {
 	Consulta   *h.Templates
 	Comando    *h.Templates
+	Detalhes   *template.Template
 	Resultados *template.Template
 }
 
@@ -68,6 +69,9 @@ func ObterTemplateRegistry() *TemplateRegistry {
 						"lancamentos/criar.html",
 					),
 				},
+				Detalhes: compose(
+					"lancamentos/detalhes/detalhes.html",
+				),
 				Resultados: compose(
 					"lancamentos/consulta/lancamento.html",
 					"lancamentos/consulta/resultados.html",
