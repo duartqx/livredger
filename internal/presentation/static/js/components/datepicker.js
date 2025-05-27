@@ -15,17 +15,6 @@ export class InputIntervalo extends HTMLElement {
   connectedCallback() {
     this.innerHTML = "";
 
-    this.#buildInputs();
-
-    this.#initPicker();
-  }
-
-  disconnectedCallback() {
-    this.picker.destroy();
-    this.picker = null;
-  }
-
-  #buildInputs() {
     this.input = document.createElement("input");
     this.input.setAttribute("readonly", true);
 
@@ -40,9 +29,7 @@ export class InputIntervalo extends HTMLElement {
       this.intervalo.inicio,
       this.intervalo.final,
     );
-  }
 
-  #initPicker() {
     if (!window.AirDatepicker) {
       return;
     }
@@ -61,6 +48,11 @@ export class InputIntervalo extends HTMLElement {
     });
   }
 
+  disconnectedCallback() {
+    this.picker.destroy();
+    this.picker = null;
+  }
+
   /** @returns {IntervaloRef} */
   #montarIntervalo() {
     const criarInnerInputs = (nome) => {
@@ -75,7 +67,7 @@ export class InputIntervalo extends HTMLElement {
     return {
       inicio: criarInnerInputs("inicio"),
       final: criarInnerInputs("final"),
-      atualiza: function (chave, valor) {
+      atualiza: function(chave, valor) {
         this[chave].setAttribute(
           "value",
           (valor && dayjs(valor).format("YYYY-MM-DD")) || "",
