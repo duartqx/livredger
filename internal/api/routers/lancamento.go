@@ -66,6 +66,9 @@ func lancamentosRouter() *RouterMap {
 		"GET /api/lancamentos": func(w http.ResponseWriter, r *http.Request) {
 			var usuario *types.Usuario
 
+			uow := infra.Bootstrap(usuario)
+			defer uow.Close()
+
 			consulta, err := parseConsultaDoForm(r)
 
 			if err != nil {
@@ -73,7 +76,7 @@ func lancamentosRouter() *RouterMap {
 				return
 			}
 
-			resultado, err := visualizadores.BuscarLancamentos(usuario, consulta)
+			resultado, err := visualizadores.BuscarLancamentos(uow, consulta)
 
 			if err != nil {
 				h.JsonErrorResponse(w, err)

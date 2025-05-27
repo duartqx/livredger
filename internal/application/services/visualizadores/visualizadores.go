@@ -7,12 +7,9 @@ import (
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-func BuscarLancamentos(usuario *types.Usuario, consulta *consultas.ConsultaLancamentos) (
+func BuscarLancamentos(uow *infra.UnidadeDeTrabalho, consulta *consultas.ConsultaLancamentos) (
 	*types.Resultado[consultas.ConsultaLancamentos, entidade.Lancamento], error,
 ) {
-
-	uow := infra.Bootstrap(usuario)
-	defer uow.Close()
 
 	lancamentos, err := uow.Repositorios.Lancamentos.Consulta.Buscar(uow.DB, consulta)
 

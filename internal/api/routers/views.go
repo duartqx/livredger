@@ -9,6 +9,7 @@ import (
 	h "github.com/duartqx/livredger/internal/common/http"
 	"github.com/duartqx/livredger/internal/common/types"
 	"github.com/duartqx/livredger/internal/domain/consultas"
+	"github.com/duartqx/livredger/internal/infra"
 	"github.com/google/uuid"
 )
 
@@ -22,6 +23,10 @@ type ViewContext struct {
 }
 
 func view(ctx *ViewContext) http.HandlerFunc {
+	if ctx.Data != nil && ctx.DataFunc != nil {
+		panic(fmt.Errorf("Você deve passar somente ViewContext.Data ou ViewContext.DataFunc, mas nunca ambos"))
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Println("View", ctx.ViewName)
 
@@ -29,10 +34,6 @@ func view(ctx *ViewContext) http.HandlerFunc {
 
 		if auth != "" {
 			log.Println("Authorization", auth)
-		}
-
-		if ctx.Data != nil && ctx.DataFunc != nil {
-			panic(fmt.Errorf("Você deve passar somente ViewContext.Data ou ViewContext.DataFunc, mas nunca ambos"))
 		}
 
 		var (
@@ -46,7 +47,6 @@ func view(ctx *ViewContext) http.HandlerFunc {
 				h.ErrorResponse(w, err)
 				return
 			}
-
 		}
 
 		if ctx.Templates.Partial != nil && r.Header.Get("HX-Request") == "true" {
@@ -55,6 +55,7 @@ func view(ctx *ViewContext) http.HandlerFunc {
 			}
 			return
 		}
+
 		if err := ctx.Templates.ComBase.ExecuteTemplate(w, "base", data); err != nil {
 			panic(err)
 		}
@@ -75,13 +76,16 @@ func viewsRouter() *RouterMap {
 			DataFunc: func(r *http.Request) (map[string]any, error) {
 				var usuario *types.Usuario
 
+				uow := infra.Bootstrap(usuario)
+				defer uow.Close()
+
 				consulta, err := parseConsultaDoForm(r)
 
 				if err != nil {
 					return nil, err
 				}
 
-				resultado, err := visualizadores.BuscarLancamentos(usuario, consulta)
+				resultado, err := visualizadores.BuscarLancamentos(uow, consulta)
 
 				if err != nil {
 					return nil, err
@@ -100,13 +104,16 @@ func viewsRouter() *RouterMap {
 
 				var usuario *types.Usuario
 
+				uow := infra.Bootstrap(usuario)
+				defer uow.Close()
+
 				chave, err := uuid.Parse(r.PathValue("chave"))
 
 				if err != nil {
 					return nil, err
 				}
 
-				resultado, err := visualizadores.BuscarLancamentos(usuario, &consultas.ConsultaLancamentos{
+				resultado, err := visualizadores.BuscarLancamentos(uow, &consultas.ConsultaLancamentos{
 					SomenteVersaoMaisRecente: false,
 					Chave:                    chave,
 				})
