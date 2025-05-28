@@ -1,9 +1,10 @@
 package types
 
 type Enumerated[T any] struct {
-	Index  int
-	Item   T
-	IsLast bool
+	Index   int
+	Item    T
+	IsFirst bool
+	IsLast  bool
 }
 
 type Resultado[C, T any] struct {
@@ -18,7 +19,7 @@ func (r Resultado[C, T]) Enumerated() *[]Enumerated[T] {
 	for index, item := range *r.Itens {
 		enumerated = append(
 			enumerated,
-			Enumerated[T]{Index: index, Item: *item, IsLast: index == r.Total-1},
+			Enumerated[T]{Index: index, Item: *item, IsFirst: index == 0, IsLast: index == r.Total-1},
 		)
 	}
 
