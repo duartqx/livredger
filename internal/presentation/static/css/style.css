@@ -370,6 +370,8 @@ cadastro {
 
   & before {
     border-bottom: 1px solid #000;
+    padding-bottom: 6px;
+    padding-right: 6px;
   }
 
   & submit {
@@ -389,7 +391,7 @@ cadastro {
   &[after="true"]::after {
     content: "⏷";
     position: absolute;
-    right: 10%;
+    right: 5%;
     top: 45%;
     pointer-events: none;
     font-size: 1rem;
@@ -422,6 +424,12 @@ cadastro {
       & label {
         top: 0%;
       }
+    }
+  }
+
+  @media (min-width: 992px) {
+    &[after="true"]::after {
+      right: 10%;
     }
   }
 }

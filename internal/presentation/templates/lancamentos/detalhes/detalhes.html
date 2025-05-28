@@ -1,9 +1,13 @@
 {{ define "partial" }}
 <!-- prettier-ignore -->
-{{ range .Resultado.Itens }}
+{{ range .Resultado.Enumerated }}
 
-  <div>{{ .Id }} {{ .Evento }} {{ .Chave }}</div>
+  <div>{{ .Item.Id }} {{ .Item.Evento }} {{ .Item.Chave }}</div>
 
+  {{ if .IsLast }}
+    {{ template "criar_lancamento_form" .Item }}
+  {{ end }}
 {{ end }}
 <!-- prettier-ignore -->
+
 {{ end }}

@@ -8,7 +8,7 @@
       hx-push-url="true"
       hx-trigger="click{{ if (eq .Active `Index`) }}, load{{ end }}"
       role="button"
-      class="nav-item px-3 fw-bold {{ if (orEq .Active `Lancamentos` `Index`) }}active{{ end }}"
+      class="nav-item px-3 fw-bold {{ if .Active }}{{ if (orEq .Active `Lancamentos` `Index`) }}active{{ end }}{{ end }}"
       @click="htmx.takeClass($el, 'active')"
     >
       <i class="bi bi-box"></i>

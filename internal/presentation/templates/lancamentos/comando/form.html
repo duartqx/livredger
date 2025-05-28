@@ -1,5 +1,5 @@
-{{ define "partial" }}
-<lancamentos x-data="CriarLancamento" class="row">
+{{ define "criar_lancamento_form" }}
+<lancamentos x-data="CriarLancamento({{ if . }} {{ . | jsonify }} {{ end }})" class="row">
   <form x-ref="formAdicionarLancamento" class="p-3" @submit.prevent="submit">
     <section class="row">
       <cadastro after="true" class="col-xl col-lg-4 mt-2">

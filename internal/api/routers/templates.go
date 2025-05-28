@@ -29,6 +29,7 @@ func compose(templates ...string) *template.Template {
 		template.FuncMap{
 			"jsonify": jsonify,
 			"orEq":    orEq,
+			"sub":     func(a, b int) int { return a - b },
 		},
 	).ParseFS(templatesFS, templates...))
 }
@@ -71,19 +72,23 @@ func ObterTemplateRegistry() *TemplateRegistry {
 					ComBase: compose(
 						"index.html",
 						"nav.html",
-						"lancamentos/criar.html",
+						"lancamentos/comando/form.html",
+						"lancamentos/comando/criar.html",
 					),
 					Partial: compose(
-						"lancamentos/criar.html",
+						"lancamentos/comando/form.html",
+						"lancamentos/comando/criar.html",
 					),
 				},
 				Detalhes: &h.Templates{
 					ComBase: compose(
 						"index.html",
 						"nav.html",
+						"lancamentos/comando/form.html",
 						"lancamentos/detalhes/detalhes.html",
 					),
 					Partial: compose(
+						"lancamentos/comando/form.html",
 						"lancamentos/detalhes/detalhes.html",
 					),
 				},

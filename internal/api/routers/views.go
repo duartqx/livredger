@@ -131,6 +131,7 @@ func viewsRouter() *RouterMap {
 		"GET /lancamentos/criar": view(&ViewContext{
 			ViewName:  "CriarLancamento",
 			Templates: registry.Lancamentos.Comando,
+			Data:      map[string]any{"Active": "Lancamentos"},
 		}),
 	}
 }
