@@ -1,37 +1,39 @@
 package naturezas
 
 const (
-	SALARIO       = "Salário"
+	AGUA_E_GAS    = "Água e Gás"
 	BENEFICIOS    = "Benefícios"
 	COMPRAS       = "Compras"
-	MERCADO       = "Mercado"
-	LUZ           = "Luz"
 	CONDOMINIO    = "Condomínio"
-	AGUA_E_GAS    = "Água e Gás"
-	TELEFONIA     = "Telefonia"
-	NUVEM         = "Nuvem"
 	INTERNET      = "Internet"
-	RECEITA_EXTRA = "Receita Extra"
-	PETSHOP       = "Petshop"
-	SAUDE         = "Saúde"
 	INVESTIMENTO  = "Investimento"
+	JUROS         = "Juros"
+	LUZ           = "Luz"
+	MERCADO       = "Mercado"
+	NUVEM         = "Nuvem"
 	OUTRO         = "Outro"
+	PETSHOP       = "Petshop"
+	RECEITA_EXTRA = "Receita Extra"
+	SALARIO       = "Salário"
+	SAUDE         = "Saúde"
+	TELEFONIA     = "Telefonia"
 )
 
 var NATUREZAS []string = []string{
-	SALARIO,
+	AGUA_E_GAS,
 	BENEFICIOS,
 	COMPRAS,
-	MERCADO,
-	LUZ,
 	CONDOMINIO,
-	AGUA_E_GAS,
-	TELEFONIA,
-	NUVEM,
 	INTERNET,
-	RECEITA_EXTRA,
-	PETSHOP,
-	SAUDE,
 	INVESTIMENTO,
+	JUROS,
+	LUZ,
+	MERCADO,
+	NUVEM,
 	OUTRO,
+	PETSHOP,
+	RECEITA_EXTRA,
+	SALARIO,
+	SAUDE,
+	TELEFONIA,
 }

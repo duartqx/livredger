@@ -7,10 +7,11 @@ CREATE TABLE IF NOT EXISTS meios_financeiro (
 -- sql: Insere meios financeiros
 INSERT INTO meios_financeiro (nome)
 VALUES
-    ('Transferência Bancária'),
-    ('PIX'),
+    ('Cartão de Benefícios'),
     ('Cartão de Crédito'),
     ('Cartão de Débito'),
     ('Dinheiro'),
-    ('Cartão de Benefícios')
+    ('PIX'),
+    ('Poupança'),
+    ('Transferência Bancária')
 ON CONFLICT DO NOTHING;

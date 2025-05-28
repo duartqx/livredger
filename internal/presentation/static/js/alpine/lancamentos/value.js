@@ -13,6 +13,7 @@ export const COMPRAS = "Compras";
 export const CONDOMINIO = "Condomínio";
 export const INTERNET = "Internet";
 export const INVESTIMENTO = "Investimento";
+export const JUROS = "Juros";
 export const LUZ = "Luz";
 export const MERCADO = "Mercado";
 export const NUVEM = "Nuvem";
@@ -31,6 +32,7 @@ export const NATUREZAS = [
   CONDOMINIO,
   INTERNET,
   INVESTIMENTO,
+  JUROS,
   LUZ,
   MERCADO,
   NUVEM,
@@ -46,6 +48,7 @@ export const CARTAO_DE_BENEFICIOS = "Cartão de Benefícios";
 export const CARTAO_DE_CREDITO = "Cartão de Crédito";
 export const CARTAO_DE_DEBITO = "Cartão de Débito";
 export const DINHEIRO = "Dinheiro";
+export const POUPANCA = "Poupança";
 export const PIX = "PIX";
 export const TRANFERENCIA_BANCARIA = "Transferência Bancária";
 
@@ -56,6 +59,7 @@ export const MEIOS_FINANCEIRO = [
   CARTAO_DE_DEBITO,
   DINHEIRO,
   PIX,
+  POUPANCA,
   TRANFERENCIA_BANCARIA,
 ];
 

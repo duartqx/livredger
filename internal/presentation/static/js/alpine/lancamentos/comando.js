@@ -76,9 +76,7 @@ export default {
     })(),
     naturezas: NATUREZAS,
     meios_financeiros: MEIOS_FINANCEIRO,
-    eventosLancamento: LANCAMENTOS_MAPEADOS_PARA_OPCOES.filter(
-      (evento) => evento.value !== LancamentoCancelado,
-    ),
+    eventosLancamento: LANCAMENTOS_MAPEADOS_PARA_OPCOES,
     reset(/** @type {LancamentoApi} */ lancamentoCriado) {
       const lancamento =
         lancamentoCriado || lancamentoOriginal || modeloPadrao();

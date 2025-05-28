@@ -7,19 +7,20 @@ CREATE TABLE IF NOT EXISTS naturezas (
 -- sql: Insere naturezas conhecidas
 INSERT INTO naturezas (nome)
 VALUES
-    ('Salário'),
+    ('Água e Gás'),
     ('Benefícios'),
     ('Compras'),
-    ('Mercado'),
-    ('Luz'),
     ('Condomínio'),
-    ('Água e Gás'),
-    ('Telefonia'),
-    ('Nuvem'),
     ('Internet'),
-    ('Receita Extra'),
-    ('Petshop'),
-    ('Saúde'),
     ('Investimento'),
-    ('Outro')
+    ('Juros'),
+    ('Luz'),
+    ('Mercado'),
+    ('Nuvem'),
+    ('Outro'),
+    ('Petshop'),
+    ('Receita Extra'),
+    ('Salário'),
+    ('Saúde'),
+    ('Telefonia')
 ON CONFLICT DO NOTHING;
