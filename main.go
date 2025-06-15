@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"embed"
 	"flag"
 	"io/fs"
 	"log"
@@ -16,36 +15,27 @@ import (
 	"github.com/duartqx/livredger/internal/api/routers"
 )
 
+const (
+	staticPath    = "internal/presentation/static"
+	templatesPath = "internal/presentation/templates"
+)
+
 var (
-	err       error
 	static    fs.FS
 	templates fs.FS
 	port      int
-	srv       *http.Server
 )
 
-//go:embed internal/presentation/static/*
-var staticFS embed.FS
-
-//go:embed internal/presentation/templates/*
-var templatesFS embed.FS
-
-func init() {
+func parse() {
 	flag.IntVar(&port, "port", 8000, "The port the server will run at")
 
 	flag.Parse()
+}
 
-	static, err = fs.Sub(staticFS, "internal/presentation/static")
-	if err != nil {
-		log.Fatalln(err)
-	}
+func main() {
+	parse()
 
-	templates, err = fs.Sub(templatesFS, "internal/presentation/templates")
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	srv = &http.Server{
+	srv := &http.Server{
 		Handler: routers.Router(
 			&routers.Dependencies{
 				Templates: templates,
@@ -58,9 +48,7 @@ func init() {
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-}
 
-func main() {
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
 			log.Fatalln(err)
