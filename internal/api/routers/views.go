@@ -124,6 +124,7 @@ func viewsRouter() *RouterMap {
 				resultado, err := visualizadores.BuscarLancamentos(uow, &consultas.ConsultaLancamentos{
 					SomenteVersaoMaisRecente: false,
 					Chave:                    chave,
+					Paginacao:                types.Paginacao{Pagina: 0, Ordenacao: types.Ordenacao{Campo: "timestamp", Direcao: "ASC"}},
 				})
 
 				if err != nil {

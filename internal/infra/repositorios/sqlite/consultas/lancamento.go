@@ -38,7 +38,7 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 			"descricao",
 		).
 		From("lancamentos").
-		OrderBy("timestamp DESC")
+		OrderBy(fmt.Sprintf("%s %s", consulta.Paginacao.Ordenacao.Campo, consulta.Paginacao.Ordenacao.Direcao))
 
 	if consulta.SomenteVersaoMaisRecente {
 		builder = builder.GroupBy("chave").Having("max(versao)")

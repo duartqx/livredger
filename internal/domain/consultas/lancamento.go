@@ -19,12 +19,14 @@ type ConsultaLancamentos struct {
 	Evento                   string      `json:"evento" form:"evento"`
 	Intervalo                t.Intervalo `json:"intervalo" form:"intervalo"`
 	Descricao                string      `json:"descricao" form:"descricao"`
+	Paginacao                t.Paginacao `json:"paginacao" form:"paginacao"`
 }
 
 func ConsultaLancamentosPadrao() *ConsultaLancamentos {
 	return &ConsultaLancamentos{
 		SomenteVersaoMaisRecente: true,
 		Intervalo:                t.Intervalo{},
+		Paginacao:                t.Paginacao{Pagina: 0, Ordenacao: t.Ordenacao{Campo: "timestamp", Direcao: "DESC"}},
 	}
 }
 
