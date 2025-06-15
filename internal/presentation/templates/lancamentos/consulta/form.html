@@ -1,0 +1,53 @@
+{{ define "form" }}
+<form
+  hx-get="/lancamentos"
+  hx-trigger="submit"
+  hx-target="resultados"
+  hx-swap="innerHTML"
+  hx-ext="response-targets"
+  hx-target-400="this"
+>
+  <filtros class="py-3">
+    <row>
+      <filtro>
+        <label>Intervalo</label>
+        <input-intervalo name="intervalo" />
+        <err name="intervalo" />
+      </filtro>
+      <filtro>
+        <label>Descrição</label>
+        <input type="text" name="descricao" />
+      </filtro>
+      <filtro>
+        <label>Chave</label>
+        <input type="text" name="chave" />
+        {{ if and .Errors .Errors.chave }}
+          <div>{{ .Errors.chave }}</div>
+        {{ end }}
+      </filtro>
+      <filtro after="true">
+        <label>Evento</label>
+        <select name="evento">
+          <option value="">Selecione</option>
+          <option value="LancamentoPrevisto">Previsto</option>
+          <option value="LancamentoPago">Pago</option>
+          <option value="LancamentoRecebido">Recebido</option>
+          <option value="LancamentoCancelado">Cancelado</option>
+        </select>
+      </filtro>
+    </row>
+    <row class="row">
+      <filtro>
+        <submit>
+          <button class="btn btn-darker">Filtrar</button>
+        </submit>
+      </filtro>
+    </row>
+  </filtros>
+</form>
+{{ end }}
+
+<!-- prettier-ignore -->
+{{ define "error" }}
+  {{ template "form" . }}
+{{ end }}

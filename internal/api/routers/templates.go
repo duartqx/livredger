@@ -54,6 +54,7 @@ func ObterTemplateRegistry() *TemplateRegistry {
 			Index: &h.Templates{
 				ComBase: compose("index.html", "nav.html"),
 				Partial: nil,
+				Error:   nil,
 			},
 			Lancamentos: &TemplatesLancamento{
 				Consulta: &h.Templates{
@@ -61,10 +62,16 @@ func ObterTemplateRegistry() *TemplateRegistry {
 						"index.html",
 						"nav.html",
 						"lancamentos/consulta/lancamento.html",
+						"lancamentos/consulta/form.html",
 						"lancamentos/consulta/consulta.html",
 					),
 					Partial: compose(
 						"lancamentos/consulta/lancamento.html",
+						"lancamentos/consulta/form.html",
+						"lancamentos/consulta/consulta.html",
+					),
+					Error: compose(
+						"lancamentos/consulta/form.html",
 						"lancamentos/consulta/consulta.html",
 					),
 				},
@@ -79,6 +86,7 @@ func ObterTemplateRegistry() *TemplateRegistry {
 						"lancamentos/comando/form.html",
 						"lancamentos/comando/criar.html",
 					),
+					Error: nil,
 				},
 				Detalhes: &h.Templates{
 					ComBase: compose(
@@ -91,6 +99,7 @@ func ObterTemplateRegistry() *TemplateRegistry {
 						"lancamentos/comando/form.html",
 						"lancamentos/detalhes/detalhes.html",
 					),
+					Error: nil,
 				},
 			},
 		}

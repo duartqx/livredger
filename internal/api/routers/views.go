@@ -1,10 +1,12 @@
 package routers
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/duartqx/livredger/internal/api/decoders"
 	"github.com/duartqx/livredger/internal/application/services/visualizadores"
 	h "github.com/duartqx/livredger/internal/common/http"
 	"github.com/duartqx/livredger/internal/common/types"
@@ -43,23 +45,29 @@ func view(ctx *ViewContext) http.HandlerFunc {
 
 		if ctx.DataFunc != nil {
 			data, err = ctx.DataFunc(r)
-			if err != nil {
-				h.ErrorResponse(w, err)
-				return
-			}
 		}
 
-		if ctx.Templates.Partial != nil && r.Header.Get("HX-Request") == "true" {
+		switch {
+		case err == nil && ctx.Templates.Partial != nil && r.Header.Get("HX-Request") == "true":
 			if err := ctx.Templates.Partial.ExecuteTemplate(w, "partial", data); err != nil {
 				panic(err)
 			}
-			return
-		}
-
-		if err := ctx.Templates.ComBase.ExecuteTemplate(w, "base", data); err != nil {
-			panic(err)
+		case err == nil:
+			if err := ctx.Templates.ComBase.ExecuteTemplate(w, "base", data); err != nil {
+				panic(err)
+			}
+		case errors.Is(err, decoders.DecoderError) && ctx.Templates.Error != nil:
+			w.WriteHeader(400)
+			if err := ctx.Templates.Error.ExecuteTemplate(
+				w, "error", map[string]any{"Errors": decoders.ParseDecodeError(err)},
+			); err != nil {
+				panic(err)
+			}
+		default:
+			h.ErrorResponse(w, err)
 		}
 	}
+
 }
 
 func viewsRouter() *RouterMap {

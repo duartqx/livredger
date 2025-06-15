@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/duartqx/livredger/internal/api/decoders"
 	t "github.com/duartqx/livredger/internal/common/types"
 )
 
@@ -23,6 +24,7 @@ const (
 type Templates struct {
 	ComBase *template.Template
 	Partial *template.Template
+	Error   *template.Template
 }
 
 type Response[C, T any] struct {
@@ -57,7 +59,10 @@ func JsonErrorResponse(w http.ResponseWriter, err error) {
 	switch {
 	case errors.Is(err, t.NotFoundError):
 		w.WriteHeader(http.StatusNotFound)
-	case errors.Is(err, t.BusinessLogicError) || errors.Is(err, &json.UnmarshalTypeError{}):
+	case
+		errors.Is(err, t.BusinessLogicError) ||
+			errors.Is(err, &json.UnmarshalTypeError{}) ||
+			errors.Is(err, decoders.DecoderError):
 		w.WriteHeader(http.StatusBadRequest)
 	default:
 		panic(err)
@@ -72,7 +77,10 @@ func ErrorResponse(w http.ResponseWriter, err error) {
 	switch {
 	case errors.Is(err, t.NotFoundError):
 		w.WriteHeader(http.StatusNotFound)
-	case errors.Is(err, t.BusinessLogicError) || errors.Is(err, &json.UnmarshalTypeError{}):
+	case
+		errors.Is(err, t.BusinessLogicError) ||
+			errors.Is(err, &json.UnmarshalTypeError{}) ||
+			errors.Is(err, decoders.DecoderError):
 		w.WriteHeader(http.StatusBadRequest)
 	default:
 		panic(err)
@@ -82,7 +90,13 @@ func ErrorResponse(w http.ResponseWriter, err error) {
 }
 
 func marshal(err error) *[]byte {
-	res, err := json.Marshal(map[string]string{"error": err.Error()})
+	var res []byte
+
+	if errors.Is(err, decoders.DecoderError) {
+		res, err = json.Marshal(map[string]any{"error": decoders.ParseDecodeError(err)})
+	} else {
+		res, err = json.Marshal(map[string]string{"error": err.Error()})
+	}
 
 	if err != nil {
 		panic(err)

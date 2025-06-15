@@ -55,7 +55,7 @@ func parseConsultaDoForm(r *http.Request) (*consultas.ConsultaLancamentos, error
 	consulta := consultas.ConsultaLancamentosPadrao()
 
 	if err := decoders.Decoder().Decode(consulta, r.Form); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %w", decoders.DecoderError, err)
 	}
 
 	return consulta, nil

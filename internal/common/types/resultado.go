@@ -7,6 +7,16 @@ type Enumerated[T any] struct {
 	IsLast  bool
 }
 
+type Paginacao struct {
+	Pagina    int       `json:"pagina"`
+	Ordenacao Ordenacao `json:"ordenacao"`
+}
+
+type Ordenacao struct {
+	Campo   string `json:"campo"`
+	Direcao string `json:"direcao" valid:"ASC|DESC"`
+}
+
 type Resultado[C, T any] struct {
 	Total    int   `json:"total"`
 	Consulta *C    `json:"consulta"`
