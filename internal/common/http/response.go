@@ -8,17 +8,8 @@ import (
 	"net/http"
 
 	"github.com/duartqx/livredger/internal/api/decoders"
+	"github.com/duartqx/livredger/internal/common/mimetypes"
 	t "github.com/duartqx/livredger/internal/common/types"
-)
-
-const (
-	JSON              = "application/json"
-	HTML              = "text/html; charset=utf-8"
-	HTMX              = "text/htmx"
-	PlainText         = "text/plain; charset=utf-8"
-	XML               = "application/xml"
-	FormURLEncoded    = "application/x-www-form-urlencoded"
-	MultipartFormData = "multipart/form-data"
 )
 
 type Templates struct {
@@ -36,7 +27,7 @@ type Response[C, T any] struct {
 
 func HandleResponse[C, T any](res *Response[C, T]) {
 
-	if res.Template == nil || res.Request.Header.Get("Accept") == "application/json" {
+	if res.Template == nil || res.Request.Header.Get("Accept") == mimetypes.JSON {
 		res.Writer.Header().Set("Content-Type", "application/json")
 
 		if err := json.NewEncoder(res.Writer).Encode(res.Resultado); err != nil {
@@ -52,10 +43,7 @@ func HandleResponse[C, T any](res *Response[C, T]) {
 	}
 }
 
-func JsonErrorResponse(w http.ResponseWriter, err error) {
-
-	w.Header().Set("Content-Type", "application/json")
-
+func writeHeaderStatus(w http.ResponseWriter, err error) {
 	switch {
 	case errors.Is(err, t.NotFoundError):
 		w.WriteHeader(http.StatusNotFound)
@@ -67,24 +55,21 @@ func JsonErrorResponse(w http.ResponseWriter, err error) {
 	default:
 		panic(err)
 	}
+}
+
+func JsonErrorResponse(w http.ResponseWriter, err error) {
+
+	w.Header().Set("Content-Type", mimetypes.JSON)
+
+	writeHeaderStatus(w, err)
 
 	w.Write(*marshal(err))
 }
 
 func ErrorResponse(w http.ResponseWriter, err error) {
-	w.Header().Set("Content-Type", "text/html")
+	w.Header().Set("Content-Type", mimetypes.HTML)
 
-	switch {
-	case errors.Is(err, t.NotFoundError):
-		w.WriteHeader(http.StatusNotFound)
-	case
-		errors.Is(err, t.BusinessLogicError) ||
-			errors.Is(err, &json.UnmarshalTypeError{}) ||
-			errors.Is(err, decoders.DecoderError):
-		w.WriteHeader(http.StatusBadRequest)
-	default:
-		panic(err)
-	}
+	writeHeaderStatus(w, err)
 
 	w.Write([]byte(err.Error()))
 }

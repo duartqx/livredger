@@ -133,7 +133,7 @@ func lancamentosRouter() *RouterMap {
 				chave, err := uuid.Parse(r.PathValue("chave"))
 
 				if err != nil {
-					return nil, err
+					return nil, fmt.Errorf("%w: UUID Inválido: %w", types.BusinessLogicError, err)
 				}
 
 				resultado, err := visualizadores.BuscarLancamentos(uow, &consultas.ConsultaLancamentos{
@@ -149,10 +149,7 @@ func lancamentosRouter() *RouterMap {
 					return nil, err
 				}
 
-				return map[string]any{
-					"Active":    "Lancamentos",
-					"Resultado": resultado,
-				}, nil
+				return map[string]any{"Active": "Lancamentos", "Resultado": resultado}, nil
 			},
 		}),
 		"GET /lancamentos/criar": View(&ViewContext{
