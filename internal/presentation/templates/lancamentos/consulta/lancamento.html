@@ -1,18 +1,14 @@
 {{ define "lancamento" }}
-<lancamento x-data="Lancamento({{ . | jsonify }})" class="row py-3">
-  <div class="col-4 d-flex fs-06rem">
-    <div class="col-9 d-flex align-items-center">
-      <div
-        x-text="dayjs.utc(value.timestamp).tz('America/Sao_Paulo').format('LLLL')"
-      ></div>
-    </div>
+<lancamento x-data="Lancamento({{ . | jsonify }})" class="d-flex py-3 border-box">
+  <div class="col-3 d-flex align-items-center fs-06rem">
     <div
-      class="col-3 fw-medium fs-06rem d-flex align-items-center justify-content-center"
-    >
-      <span x-text="evento"></span>
-    </div>
+      x-text="dayjs.utc(value.timestamp).tz('America/Sao_Paulo').format('LLLL')"
+    ></div>
   </div>
-  <div class="col-5">
+  <div class="col-2 fw-medium fs-06rem d-flex align-items-center">
+    <span x-text="evento"></span>
+  </div>
+  <div class="col-4">
     <div x-text="value.descricao"></div>
     <div class="text-secondary fs-06rem" x-text="value.chave"></div>
   </div>
@@ -25,7 +21,7 @@
       ></tag>
     </div>
   </div>
-  <div class="col-1 text-end">
+  <div class="col-1 text-center p-0 d-flex justify-content-center align-items-center">
     <button
       class="btn btn-lighter bi bi-card-list"
       hx-get="/lancamentos/{{ .Chave }}"

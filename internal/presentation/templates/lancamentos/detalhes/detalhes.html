@@ -2,11 +2,12 @@
 <!-- prettier-ignore -->
 {{ range .Resultado.Enumerated }}
 
-  <div>{{ .Item.Id }} {{ .Item.Evento }} {{ .Item.Chave }}</div>
+  <div>{{ .Item.Id }} | {{ .Item.Evento }} | {{ .Item.Valores }} | {{ .Item.Descricao }} | {{ .Item.Chave }}</div>
 
   {{ if .IsLast }}
-    {{ template "criar_lancamento_form" .Item }}
+    {{ template "lancamentos_comando_form" .Item }}
   {{ end }}
+
 {{ end }}
 <!-- prettier-ignore -->
 

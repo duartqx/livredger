@@ -1,71 +1,21 @@
-{{ define "consulta" }}
-<form
-  hx-get="/lancamentos"
-  hx-trigger="submit"
-  hx-target="resultados"
-  hx-swap="innerHTML"
-  hx-on::config-request=""
->
-  <filtros class="py-3">
-    <row class="row">
-      <filtro class="col-md">
-        <label>Intervalo</label>
-        <input-intervalo name="intervalo" />
-      </filtro>
-      <filtro class="col-md">
-        <label>Descrição</label>
-        <input type="text" name="descricao" />
-      </filtro>
-      <filtro class="col-md">
-        <label>Chave</label>
-        <input type="text" name="chave" />
-      </filtro>
-      <filtro class="col-md" after="true">
-        <label>Evento</label>
-        <select name="evento">
-          <option value="">Selecione</option>
-          <option value="LancamentoPrevisto">Previsto</option>
-          <option value="LancamentoPago">Pago</option>
-          <option value="LancamentoRecebido">Recebido</option>
-          <option value="LancamentoCancelado">Cancelado</option>
-        </select>
-      </filtro>
-    </row>
-    <row class="row">
-      <filtro class="col-md-3 offset-md-9">
-        <submit>
-          <button class="btn btn-darker">Filtrar</button>
-        </submit>
-      </filtro>
-    </row>
-  </filtros>
-</form>
-{{ end }}
-
-<!-- prettier-ignore -->
-{{/*  */}}
-
 {{ define "partial" }}
-<lancamentos x-data="ConsultaLancamentos" class="py-2">
-  <!-- prettier-ignore -->
-  {{ template "consulta" . }}
+<lancamentos x-data="ConsultaLancamentos" class="d-lg-flex px-0 py-2 border-box">
+  <section id="FomularioConsultaLancamentos" class="col-12 col-lg-3 pe-3 pt-40px">
+    {{ template "form" . }}
+  </section>
 
-  <header>
-    <div class="border-bottom border-top border-2 border-dark row p-2">
-      <div class="row ps-2 pe-0">
-        <div class="col-4 d-flex">
-          <div class="col-9">timestamp</div>
-          <div class="col-3 text-center">evento</div>
-        </div>
-        <div class="col-5">detalhes</div>
-        <div class="col-2 text-end ms-2 pe-0">valores</div>
-        <div class="col-1 ps-0"></div>
-      </div>
-    </div>
-  </header>
+  <section id="ResultadosConsultaLancamentos" class="col-12 col-lg-9">
+    <cabecalho class="border-bottom border-top border-2 border-dark w-100 py-2 d-flex">
+      <div class="col-3">timestamp</div>
+      <div class="col-2">evento</div>
+      <div class="col-4">detalhes</div>
+      <div class="col-2 text-center ms-2 pe-0">valores</div>
+      <div class="col-1 ps-0"></div>
+    </cabecalho>
 
-  <resultados>
-    {{ range .Resultado.Itens }} {{ template "lancamento" . }} {{ end }}
-  </resultados>
+    <resultados class="border-box">
+      {{ range .Resultado.Itens }} {{ template "lancamento" . }} {{ end }}
+    </resultados>
+  </section>
 </lancamentos>
 {{ end }}

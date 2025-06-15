@@ -3,29 +3,29 @@ export type UUID = string;
 export type Float = number;
 
 export type Natureza =
-  | "Salário"
   | "Benefícios"
   | "Compras"
-  | "Mercado"
-  | "Luz"
   | "Condomínio"
-  | "Água e Gás"
-  | "Telefonia"
-  | "Nuvem"
   | "Internet"
-  | "Receita Extra"
-  | "Petshop"
-  | "Saúde"
   | "Investimento"
-  | "Outro";
+  | "Luz"
+  | "Mercado"
+  | "Nuvem"
+  | "Outro"
+  | "Petshop"
+  | "Receita Extra"
+  | "Salário"
+  | "Saúde"
+  | "Telefonia"
+  | "Água e Gás";
 
 export type MeioFinanceiro =
-  | "Transferência Bancária"
-  | "PIX"
+  | "Cartão de Benefícios"
   | "Cartão de Crédito"
   | "Cartão de Débito"
   | "Dinheiro"
-  | "Cartão de Benefícios";
+  | "PIX"
+  | "Transferência Bancária";
 
 export type EventoLancamento =
   | "LancamentoPrevisto"

@@ -1,39 +1,61 @@
-{{ define "criar_lancamento_form" }}
-<lancamentos x-data="CriarLancamento({{ if . }} {{ . | jsonify }} {{ end }})" class="row">
+{{ define "lancamentos_comando_form" }}
+<lancamentos x-data="CriarLancamento({{ if . }}{{ . | jsonify }}{{ end }})" class="row">
   <form x-ref="formAdicionarLancamento" class="p-3" @submit.prevent="submit">
     <section class="row">
-      <cadastro after="true" class="col-xl col-lg-4 mt-2">
+      <cadastro after="true" class="col-lg mt-2">
         <label>Evento</label>
-        <select x-model="modelo.evento" required>
+        <select required>
           <template x-for="evento in eventosLancamento">
-            <option :value="evento.value" x-text="evento.label"></option>
+            <option
+              :value="evento.value"
+              {{ if . }}:selected="evento.value === '{{ .Evento }}'"{{ end }}
+              x-text="evento.label"
+            ></option>
           </template>
         </select>
       </cadastro>
-      <cadastro after="true" class="col-xl col-lg-4 mt-2">
+      <cadastro after="true" class="col-lg mt-2">
         <label class="text-nowrap">Natureza da Transação</label>
-        <select x-model="modelo.natureza" required>
+        <select required>
           <template x-for="nat in naturezas">
-            <option :value="nat" x-text="nat"></option>
+            <option
+              :value="nat"
+              {{ if . }}:selected="nat === '{{ .Natureza }}'"{{ end }}
+              x-text="nat"
+            ></option>
           </template>
         </select>
       </cadastro>
-      <cadastro after="true" class="col-xl col-lg-4 mt-2">
+      <cadastro after="true" class="col-lg mt-2">
         <label class="text-nowrap">Meio Financeiro</label>
-        <select x-model="modelo.meioFinanceiro" required>
+        <select required>
           <template x-for="meio in meios_financeiros">
-            <option :value="meio" x-text="meio"></option>
+            <option
+              :value="meio"
+              {{ if . }}:selected="meio === '{{ .MeioFinanceiro }}'"{{ end }}
+              x-text="meio"
+            ></option>
           </template>
         </select>
       </cadastro>
-      <cadastro class="col-xl col-lg-4 mt-2">
+      <cadastro class="col-lg mt-2">
         <label>Valores</label>
-        <before>R$</before>
-        <input type="number" step="0.0001" x-model="modelo.valores" required />
+        <before value="R$">
+          <input
+            type="number"
+            step="0.0001"
+            {{ if . }}value="{{ .Valores }}"{{ end }}
+            required
+          />
+        </before>
       </cadastro>
-      <cadastro class="col-lg col-md mt-2">
+      <cadastro class="col-lg mt-2">
         <label>Vencimento</label>
-        <input type="datetime-local" x-model="modelo.vencimento" required />
+        <input-datetime
+          name="vencimento"
+          value="{{ if . }}{{ .Vencimento.Format "2006-01-02T15:04:05Z07:00" }}{{ end }}"
+          required
+        />
       </cadastro>
     </section>
     <section class="row">
@@ -41,12 +63,11 @@
         <label>Descrição</label>
         <textarea
           rows="3"
-          x-model="modelo.descricao"
           placeholder="Adicione uma descrição sobre a transação"
           type="text"
           maxlength="500"
           required
-        ></textarea>
+        >{{ if . }}{{ .Descricao }}{{ end }}</textarea>
       </cadastro>
     </section>
     <section>

@@ -60,13 +60,13 @@ export default {
     /** @type {LancamentoModelo} */
     modelo: (() => {
       if (lancamentoOriginal) {
-        console.log("lancamentoOriginal", lancamentoOriginal);
         return {
           ...lancamentoOriginal,
           vencimento: dayjs(lancamentoOriginal.vencimento)
             .add(3, "hours")
             .toISOString()
             .slice(0, 16),
+          versao: lancamentoOriginal.versao + 1,
         };
       }
       return {
