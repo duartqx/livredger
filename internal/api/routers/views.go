@@ -7,12 +7,7 @@ import (
 	"net/http"
 
 	"github.com/duartqx/livredger/internal/api/decoders"
-	"github.com/duartqx/livredger/internal/application/services/visualizadores"
 	h "github.com/duartqx/livredger/internal/common/http"
-	"github.com/duartqx/livredger/internal/common/types"
-	"github.com/duartqx/livredger/internal/domain/consultas"
-	"github.com/duartqx/livredger/internal/infra"
-	"github.com/google/uuid"
 )
 
 type DataFunc func(r *http.Request) (map[string]any, error)
@@ -24,7 +19,7 @@ type ViewContext struct {
 	DataFunc  DataFunc
 }
 
-func view(ctx *ViewContext) http.HandlerFunc {
+func View(ctx *ViewContext) http.HandlerFunc {
 	if ctx.Data != nil && ctx.DataFunc != nil {
 		panic(fmt.Errorf("Você deve passar somente ViewContext.Data ou ViewContext.DataFunc, mas nunca ambos"))
 	}
@@ -71,76 +66,12 @@ func view(ctx *ViewContext) http.HandlerFunc {
 }
 
 func viewsRouter() *RouterMap {
-	registry := ObterTemplateRegistry()
+	templateRegistry := ObterTemplateRegistry()
 	return &RouterMap{
-		"GET /{$}": view(&ViewContext{
+		"GET /{$}": View(&ViewContext{
 			ViewName:  "Index",
-			Templates: registry.Index,
+			Templates: templateRegistry.Index,
 			Data:      map[string]any{"Active": "Index"},
-		}),
-		"GET /lancamentos": view(&ViewContext{
-			ViewName:  "ConsultarLancamentos",
-			Templates: registry.Lancamentos.Consulta,
-			DataFunc: func(r *http.Request) (map[string]any, error) {
-				var usuario *types.Usuario
-
-				uow := infra.Bootstrap(usuario)
-				defer uow.Close()
-
-				consulta, err := parseConsultaDoForm(r)
-
-				if err != nil {
-					return nil, err
-				}
-
-				resultado, err := visualizadores.BuscarLancamentos(uow, consulta)
-
-				if err != nil {
-					return nil, err
-				}
-
-				return map[string]any{
-					"Active":    "Lancamentos",
-					"Resultado": resultado,
-				}, nil
-			},
-		}),
-		"GET /lancamentos/{chave}": view(&ViewContext{
-			ViewName:  "DetalhesLancamentos",
-			Templates: registry.Lancamentos.Detalhes,
-			DataFunc: func(r *http.Request) (map[string]any, error) {
-
-				var usuario *types.Usuario
-
-				uow := infra.Bootstrap(usuario)
-				defer uow.Close()
-
-				chave, err := uuid.Parse(r.PathValue("chave"))
-
-				if err != nil {
-					return nil, err
-				}
-
-				resultado, err := visualizadores.BuscarLancamentos(uow, &consultas.ConsultaLancamentos{
-					SomenteVersaoMaisRecente: false,
-					Chave:                    chave,
-					Paginacao:                types.Paginacao{Pagina: 0, Ordenacao: types.Ordenacao{Campo: "timestamp", Direcao: "ASC"}},
-				})
-
-				if err != nil {
-					return nil, err
-				}
-
-				return map[string]any{
-					"Active":    "Lancamentos",
-					"Resultado": resultado,
-				}, nil
-			},
-		}),
-		"GET /lancamentos/criar": view(&ViewContext{
-			ViewName:  "CriarLancamento",
-			Templates: registry.Lancamentos.Comando,
-			Data:      map[string]any{"Active": "Lancamentos"},
 		}),
 	}
 }

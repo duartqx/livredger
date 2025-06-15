@@ -49,60 +49,62 @@ type TemplateRegistry struct {
 var templateRegistry *TemplateRegistry
 
 func ObterTemplateRegistry() *TemplateRegistry {
-	if templateRegistry == nil {
-		templateRegistry = &TemplateRegistry{
-			Index: &h.Templates{
-				ComBase: compose("index.html", "nav.html"),
-				Partial: nil,
-				Error:   nil,
+	if templateRegistry != nil {
+		return templateRegistry
+	}
+
+	templateRegistry = &TemplateRegistry{
+		Index: &h.Templates{
+			ComBase: compose("index.html", "nav.html"),
+			Partial: nil,
+			Error:   nil,
+		},
+		Lancamentos: &TemplatesLancamento{
+			Consulta: &h.Templates{
+				ComBase: compose(
+					"index.html",
+					"nav.html",
+					"lancamentos/consulta/lancamento.html",
+					"lancamentos/consulta/form.html",
+					"lancamentos/consulta/consulta.html",
+				),
+				Partial: compose(
+					"lancamentos/consulta/lancamento.html",
+					"lancamentos/consulta/form.html",
+					"lancamentos/consulta/consulta.html",
+				),
+				Error: compose(
+					"lancamentos/consulta/form.html",
+					"lancamentos/consulta/consulta.html",
+				),
 			},
-			Lancamentos: &TemplatesLancamento{
-				Consulta: &h.Templates{
-					ComBase: compose(
-						"index.html",
-						"nav.html",
-						"lancamentos/consulta/lancamento.html",
-						"lancamentos/consulta/form.html",
-						"lancamentos/consulta/consulta.html",
-					),
-					Partial: compose(
-						"lancamentos/consulta/lancamento.html",
-						"lancamentos/consulta/form.html",
-						"lancamentos/consulta/consulta.html",
-					),
-					Error: compose(
-						"lancamentos/consulta/form.html",
-						"lancamentos/consulta/consulta.html",
-					),
-				},
-				Comando: &h.Templates{
-					ComBase: compose(
-						"index.html",
-						"nav.html",
-						"lancamentos/comando/form.html",
-						"lancamentos/comando/criar.html",
-					),
-					Partial: compose(
-						"lancamentos/comando/form.html",
-						"lancamentos/comando/criar.html",
-					),
-					Error: nil,
-				},
-				Detalhes: &h.Templates{
-					ComBase: compose(
-						"index.html",
-						"nav.html",
-						"lancamentos/comando/form.html",
-						"lancamentos/detalhes/detalhes.html",
-					),
-					Partial: compose(
-						"lancamentos/comando/form.html",
-						"lancamentos/detalhes/detalhes.html",
-					),
-					Error: nil,
-				},
+			Comando: &h.Templates{
+				ComBase: compose(
+					"index.html",
+					"nav.html",
+					"lancamentos/comando/form.html",
+					"lancamentos/comando/criar.html",
+				),
+				Partial: compose(
+					"lancamentos/comando/form.html",
+					"lancamentos/comando/criar.html",
+				),
+				Error: nil,
 			},
-		}
+			Detalhes: &h.Templates{
+				ComBase: compose(
+					"index.html",
+					"nav.html",
+					"lancamentos/comando/form.html",
+					"lancamentos/detalhes/detalhes.html",
+				),
+				Partial: compose(
+					"lancamentos/comando/form.html",
+					"lancamentos/detalhes/detalhes.html",
+				),
+				Error: nil,
+			},
+		},
 	}
 
 	return templateRegistry
