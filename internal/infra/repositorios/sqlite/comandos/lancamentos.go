@@ -42,6 +42,7 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLanca
 			chave,
 			versao,
 			valores,
+			totais,
 			natureza,
 			meio_financeiro,
 			vencimento,
@@ -51,12 +52,16 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLanca
 			:chave,
 			:versao,
 			:valores,
+			(
+				SELECT COALESCE(SUM(totais), 0) + :valores
+				FROM lancamentos WHERE chave = :chave
+			),
 			:natureza,
 			:meio_financeiro,
 			:vencimento,
 			:descricao
 		)
-		RETURNING id, timestamp
+		RETURNING id, timestamp, totais
 		`,
 		sql.Named("evento", comando.Evento),
 		sql.Named("chave", comando.Chave.String()),
@@ -68,7 +73,7 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLanca
 		sql.Named("descricao", comando.Descricao),
 	)
 
-	if err := row.Scan(&lancamento.Id, &lancamento.Timestamp); err != nil {
+	if err := row.Scan(&lancamento.Id, &lancamento.Timestamp, &lancamento.Totais); err != nil {
 		re := regexp.MustCompile("failed to get next row\nerror code = 1: Error fetching next row: SQLite failure: `(.*?)`")
 
 		if match := re.FindStringSubmatch(err.Error()); len(match) > 1 {
