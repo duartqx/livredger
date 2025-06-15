@@ -76,3 +76,50 @@ export class InputIntervalo extends HTMLElement {
     };
   }
 }
+
+export class InputDatetime extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    this.innerHTML = "";
+
+    this.input = document.createElement("input");
+    this.input.setAttribute("name", this.getAttribute("name"));
+
+    if (this.getAttribute("required")) {
+      this.input.setAttribute("required", true);
+    }
+
+    if (this.getAttribute("value")) {
+      this.input.setAttribute("value", this.getAttribute("value"));
+    }
+
+    this.after = document.createElement("span");
+    this.after.classList.add("bi", "bi-calendar2-week", "after");
+
+    this.removeAttribute("name");
+    this.removeAttribute("value");
+
+    this.append(this.after, this.input);
+
+    if (!window.AirDatepicker) {
+      return;
+    }
+
+    this.picker = new window.AirDatepicker(this.input, {
+      container: this,
+      range: false,
+      timepicker: true,
+      locale: locale(),
+      position: "bottom center",
+      offset: -1,
+    });
+  }
+
+  disconnectedCallback() {
+    this.picker.destroy();
+    this.picker = null;
+  }
+}
