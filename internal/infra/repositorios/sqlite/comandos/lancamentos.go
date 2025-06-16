@@ -11,6 +11,8 @@ import (
 	e "github.com/duartqx/livredger/internal/domain/entidade"
 )
 
+var re = regexp.MustCompile("failed to get next row\nerror code = 1: Error fetching next row: SQLite failure: `(.*?)`")
+
 type RepositorioDeComandoLancamentos struct{}
 
 func NewRepositorioDeComandoLancamentos() *RepositorioDeComandoLancamentos {
@@ -36,6 +38,8 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLanca
 	}
 
 	row := tx.QueryRow(
+		// TODO: LancamentoCancelado aponta via fk para o lançamento cancelado
+		// Ele é igual ao lançamento original, mas com valores invertido ( multiplicado por -1 )
 		`
 		INSERT INTO lancamentos (
 			evento,
@@ -74,8 +78,6 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLanca
 	)
 
 	if err := row.Scan(&lancamento.Id, &lancamento.Timestamp, &lancamento.Totais); err != nil {
-		re := regexp.MustCompile("failed to get next row\nerror code = 1: Error fetching next row: SQLite failure: `(.*?)`")
-
 		if match := re.FindStringSubmatch(err.Error()); len(match) > 1 {
 			return nil, fmt.Errorf("%w: %s", t.BusinessLogicError, match[1])
 		}

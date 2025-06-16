@@ -13,7 +13,6 @@ import (
 	"github.com/duartqx/livredger/internal/common/types"
 	"github.com/duartqx/livredger/internal/domain/comandos"
 	"github.com/duartqx/livredger/internal/domain/consultas"
-	"github.com/duartqx/livredger/internal/domain/entidade"
 	"github.com/duartqx/livredger/internal/infra"
 	"github.com/google/uuid"
 )
@@ -56,13 +55,10 @@ func lancamentosRouter() *RouterMap {
 				return
 			}
 
-			h.HandleResponse(
-				&h.Response[consultas.ConsultaLancamentos, entidade.Lancamento]{
-					Writer:    w,
-					Request:   r,
-					Resultado: resultado,
-				},
-			)
+			if err := json.NewEncoder(w).Encode(resultado); err != nil {
+				h.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.InternalError, err))
+				return
+			}
 		},
 		"POST /api/lancamentos": func(w http.ResponseWriter, r *http.Request) {
 			var comando comandos.CriarLancamento

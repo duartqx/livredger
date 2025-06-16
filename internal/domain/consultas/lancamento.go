@@ -40,7 +40,12 @@ func (cl *ConsultaLancamentos) UnmarshalJSON(data []byte) error {
 	}
 
 	if aux.Evento != "" && !slices.Contains(e.EVENTOS_DE_LANCAMENTOS, aux.Evento) {
-		return fmt.Errorf("%w: %s não é um evento válido [%s]", types.BusinessLogicError, aux.Evento, strings.Join(e.EVENTOS_DE_LANCAMENTOS, ", "))
+		return fmt.Errorf(
+			"%w: %s não é um evento válido [%s]",
+			types.BusinessLogicError,
+			aux.Evento,
+			strings.Join(e.EVENTOS_DE_LANCAMENTOS, ", "),
+		)
 	}
 
 	if aux.Intervalo.IsZero() {
