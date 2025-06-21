@@ -413,8 +413,8 @@ cadastro {
   &[after="true"]::after {
     content: "⏷";
     position: absolute;
-    right: 0.8rem;
-    top: 1.5rem;
+    right: 1.75rem;
+    top: 50%;
     pointer-events: none;
     font-size: 1rem;
   }
@@ -427,7 +427,7 @@ cadastro {
     & .after {
       position: absolute;
       right: 0.8rem;
-      top: 0%;
+      top: 20%;
       pointer-events: none;
       font-size: 0.9rem;
     }
