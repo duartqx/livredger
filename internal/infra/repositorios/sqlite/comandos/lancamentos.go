@@ -57,7 +57,7 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLanca
 			:versao,
 			:valores,
 			(
-				SELECT COALESCE(SUM(totais), 0) + :valores
+				SELECT COALESCE(SUM(valores), 0) + :valores
 				FROM lancamentos WHERE chave = :chave
 			),
 			:natureza,
