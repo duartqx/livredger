@@ -4,7 +4,7 @@
     <section class="row">
       <cadastro after="true" class="col-lg mt-2">
         <label>Evento</label>
-        <select required>
+        <select required x-model="modelo.evento">
           <template x-for="evento in eventosLancamento">
             <option
               :value="evento.value"
@@ -16,7 +16,7 @@
       </cadastro>
       <cadastro after="true" class="col-lg mt-2">
         <label class="text-nowrap">Natureza da Transação</label>
-        <select required>
+        <select required x-model="modelo.natureza">
           <template x-for="nat in naturezas">
             <option
               :value="nat"
@@ -28,7 +28,7 @@
       </cadastro>
       <cadastro after="true" class="col-lg mt-2">
         <label class="text-nowrap">Meio Financeiro</label>
-        <select required>
+        <select required x-model="modelo.meio_financeiro">
           <template x-for="meio in meios_financeiros">
             <option
               :value="meio"
@@ -46,6 +46,7 @@
             step="0.0001"
             {{ if . }}value="{{ .Valores }}"{{ end }}
             required
+            x-model="modelo.valores"
           />
         </before>
       </cadastro>
@@ -53,8 +54,9 @@
         <label>Vencimento</label>
         <input-datetime
           name="vencimento"
-          value="{{ if . }}{{ .Vencimento.Format "2006-01-02T15:04:05Z07:00" }}{{ end }}"
+          value='{{ if . }}{{ .Vencimento.Format "2006-01-02T15:04:05Z07:00" }}{{ end }}'
           required
+          @change="modelo.vencimento = $event.detail.value"
         />
       </cadastro>
     </section>
@@ -67,6 +69,7 @@
           type="text"
           maxlength="500"
           required
+          x-model="modelo.descricao"
         >{{ if . }}{{ .Descricao }}{{ end }}</textarea>
       </cadastro>
     </section>
