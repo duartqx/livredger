@@ -44,6 +44,14 @@ export class InputIntervalo extends HTMLElement {
       onSelect: ({ date }) => {
         this.intervalo.atualiza("inicio", date[0]);
         this.intervalo.atualiza("final", date[1]);
+
+        this.dispatchEvent(
+          new CustomEvent("change", {
+            bubbles: true,
+            composed: true,
+            detail: { value: { inicio: date[0], final: date[1] } },
+          }),
+        );
       },
     });
   }
@@ -60,6 +68,7 @@ export class InputIntervalo extends HTMLElement {
 
       input.setAttribute("hidden", true);
       input.setAttribute("name", `${this.getAttribute("name")}[${nome}]`);
+      input.setAttribute("autocomplete", "off");
 
       return input;
     };
@@ -67,7 +76,7 @@ export class InputIntervalo extends HTMLElement {
     return {
       inicio: criarInnerInputs("inicio"),
       final: criarInnerInputs("final"),
-      atualiza: function(chave, valor) {
+      atualiza: function (chave, valor) {
         this[chave].setAttribute(
           "value",
           (valor && dayjs(valor).format("YYYY-MM-DD")) || "",
@@ -87,20 +96,18 @@ export class InputDatetime extends HTMLElement {
 
     this.input = document.createElement("input");
     this.input.setAttribute("name", this.getAttribute("name"));
+    this.input.setAttribute("autocomplete", "off");
 
     if (this.getAttribute("required")) {
       this.input.setAttribute("required", true);
     }
 
-    if (this.getAttribute("value")) {
-      this.input.setAttribute("value", this.getAttribute("value"));
-    }
+    const initialValue = [this.getAttribute("value")];
 
     this.after = document.createElement("span");
     this.after.classList.add("bi", "bi-calendar2-week", "after");
 
     this.removeAttribute("name");
-    this.removeAttribute("value");
 
     this.append(this.after, this.input);
 
@@ -115,6 +122,19 @@ export class InputDatetime extends HTMLElement {
       locale: locale(),
       position: "bottom center",
       offset: -1,
+      selectedDates: initialValue
+        .filter((v) => v)
+        .map((v) => dayjs(v).toDate()),
+      onSelect: ({ date }) => {
+        this.setAttribute("value", dayjs(date).format());
+        this.dispatchEvent(
+          new CustomEvent("change", {
+            bubbles: true,
+            composed: true,
+            detail: { value: date },
+          }),
+        );
+      },
     });
   }
 
