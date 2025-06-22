@@ -40,6 +40,7 @@ export type LancamentoApi = {
   chave: string;
   versao: number;
   valores: number;
+  totais: number;
   natureza: string;
   meio_financeiro: string;
   vencimento: string;
@@ -53,6 +54,7 @@ export type Lancamento = {
   chave: UUID;
   versao: Number;
   valores: Float;
+  totais: Float;
   natureza: Natureza;
   meio_financeiro: MeioFinanceiro;
   vencimento: Date;

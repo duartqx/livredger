@@ -1,27 +1,33 @@
 {{ define "lancamento" }}
-<lancamento x-data="Lancamento({{ . | jsonify }})" class="d-flex py-3 border-box">
+<lancamento
+  x-data="Lancamento({{ . | jsonify }})"
+  class="d-flex py-3 border-box"
+>
   <div class="col-3 d-flex align-items-center fs-06rem">
     <div
       x-text="dayjs.utc(value.timestamp).tz('America/Sao_Paulo').format('LLLL')"
     ></div>
   </div>
-  <div class="col-2 fw-medium fs-06rem d-flex align-items-center">
-    <span x-text="evento"></span>
+  <div class="col-2 fw-medium fs-06rem d-flex flex-column align-items-start justify-content-center">
+    <tag
+      :class="`${natureza.cor} fs-06rem text-end`"
+      x-text="natureza.exibicao"
+    ></tag>
+    <span class="fs-06rem" x-text="evento" title="evento"></span>
   </div>
-  <div class="col-4">
+  <div class="col-4 d-flex flex-column justify-content-center">
     <div x-text="value.descricao"></div>
     <div class="text-secondary fs-06rem" x-text="value.chave"></div>
   </div>
   <div class="col-2 d-flex justify-content-end">
     <div class="pe-2 d-flex flex-column align-items-end">
-      <div class="text-end" x-text="valores.exibicao"></div>
-      <tag
-        :class="`${natureza.cor} fs-06rem text-end`"
-        x-text="natureza.exibicao"
-      ></tag>
+      <div class="text-end" x-text="totais.exibicao" title="totais"></div>
+      <div class="text-end fs-08rem" x-text="valores.exibicao" title="valor"></div>
     </div>
   </div>
-  <div class="col-1 text-center p-0 d-flex justify-content-center align-items-center">
+  <div
+    class="col-1 text-center p-0 d-flex justify-content-center align-items-center"
+  >
     <button
       class="btn btn-lighter bi bi-card-list"
       hx-get="/lancamentos/{{ .Chave }}"
@@ -29,8 +35,7 @@
       hx-push-url="true"
       hx-swap="innerHTML"
       title="Detalhes do Lançamento"
-    >
-    </button>
+    ></button>
   </div>
 </lancamento>
 {{ end }}

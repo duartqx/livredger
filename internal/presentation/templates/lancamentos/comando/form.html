@@ -54,7 +54,7 @@
         <label>Vencimento</label>
         <input-datetime
           name="vencimento"
-          value='{{ if . }}{{ .Vencimento.Format "2006-01-02T15:04:05Z07:00" }}{{ end }}'
+          value='{{ if and . .Vencimento }}{{ .Vencimento.Format "2006-01-02T15:04:05Z07:00" }}{{ end }}'
           required
           @change="modelo.vencimento = $event.detail.value"
         />

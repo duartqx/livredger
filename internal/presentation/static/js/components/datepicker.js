@@ -67,7 +67,7 @@ export class InputIntervalo extends HTMLElement {
       const input = document.createElement("input");
 
       input.setAttribute("hidden", true);
-      input.setAttribute("name", `${this.getAttribute("name")}[${nome}]`);
+      input.setAttribute("name", `${this.getAttribute("name")}.${nome}`);
       input.setAttribute("autocomplete", "off");
 
       return input;
@@ -76,10 +76,10 @@ export class InputIntervalo extends HTMLElement {
     return {
       inicio: criarInnerInputs("inicio"),
       final: criarInnerInputs("final"),
-      atualiza: function (chave, valor) {
+      atualiza: function(chave, valor) {
         this[chave].setAttribute(
           "value",
-          (valor && dayjs(valor).format("YYYY-MM-DD")) || "",
+          (valor && dayjs(valor).format()) || "",
         );
       },
     };
@@ -102,8 +102,6 @@ export class InputDatetime extends HTMLElement {
       this.input.setAttribute("required", true);
     }
 
-    const initialValue = [this.getAttribute("value")];
-
     this.after = document.createElement("span");
     this.after.classList.add("bi", "bi-calendar2-week", "after");
 
@@ -122,7 +120,7 @@ export class InputDatetime extends HTMLElement {
       locale: locale(),
       position: "bottom center",
       offset: -1,
-      selectedDates: initialValue
+      selectedDates: [this.getAttribute("value")]
         .filter((v) => v)
         .map((v) => dayjs(v).toDate()),
       onSelect: ({ date }) => {

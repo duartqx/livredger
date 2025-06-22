@@ -34,6 +34,14 @@ export default {
             ? `-R$ ${Math.abs(this.value.valores)}`
             : `R$ ${this.value.valores}`,
       };
+
+      this.totais = {
+        cor: this.value.totais <= 0 ? "normal" : "green",
+        exibicao:
+          this.value.totais < 0
+            ? `-R$ ${Math.abs(this.value.totais).toFixed(2)}`
+            : `R$ ${this.value.totais.toFixed(2)}`,
+      };
     },
     natureza: {},
     valores: {},
