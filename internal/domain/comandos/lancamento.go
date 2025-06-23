@@ -62,3 +62,7 @@ func (c CriarLancamento) Validar() error {
 
 	return nil
 }
+
+type RecalcularTotais struct {
+	Chave uuid.UUID `json:"chave"`
+}

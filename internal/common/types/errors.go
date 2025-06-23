@@ -4,6 +4,6 @@ import "errors"
 
 var (
 	BusinessLogicError = errors.New("BusinessLogicError")
-	InternalError      = errors.New("InternInternalError")
+	InternalError      = errors.New("InternalError")
 	NotFoundError      = errors.New("NotFoundError")
 )

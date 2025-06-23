@@ -87,3 +87,42 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLanca
 
 	return &lancamento, nil
 }
+
+func (r RepositorioDeComandoLancamentos) RecalcularTotais(tx *sql.Tx, comando *c.RecalcularTotais) (int64, error) {
+
+	res, err := tx.Exec(
+		`
+		WITH totais_recalculados_por_chave AS (
+			SELECT
+				l1.id AS id,
+				(
+					SELECT SUM(valores)
+					FROM lancamentos AS l2
+					WHERE l2.id <= l1.id
+				) AS totais_recalculados
+			FROM lancamentos AS l1
+			WHERE l1.chave = :chave
+		)
+		UPDATE lancamentos
+		SET totais = (
+			SELECT trpc.totais_recalculados
+			FROM totais_recalculados_por_chave AS trpc
+			WHERE trpc.id = lancamentos.id
+		)
+		WHERE chave = :chave
+		`,
+		sql.Named("chave", comando.Chave.String()),
+	)
+
+	if err != nil {
+		return 0, fmt.Errorf("%w: Não foi possível recalcular totais: %w", t.InternalError, err)
+	}
+
+	aff, err := res.RowsAffected()
+
+	if err != nil {
+		return 0, fmt.Errorf("%w: Não foi possível recalcular totais: %w", t.InternalError, err)
+	}
+
+	return aff, nil
+}
