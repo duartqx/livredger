@@ -4,6 +4,9 @@ import {
   BENEFICIOS,
   COMPRAS,
   CONDOMINIO,
+  EDUCACAO,
+  ENTRETENIMENTO,
+  IMPOSTO,
   INTERNET,
   INVESTIMENTO,
   LANCAMENTOS_MAPEADOS_PARA_EXIBICAO,
@@ -16,45 +19,62 @@ import {
   SALARIO,
   SAUDE,
   TELEFONIA,
+  TRABALHO,
+  VAQUINHA,
+  VIAGEM,
 } from "./value.js";
+
+/**
+ * @param {number} valor
+ * @returns {{cor: string, exibicao: string}}
+ */
+function exibicaoValores(valor) {
+  return {
+    cor: valor <= 0 ? "normal" : "green",
+    exibicao:
+      valor < 0
+        ? `-R$ ${Math.abs(valor).toFixed(2)}`
+        : `R$ ${valor.toFixed(2)}`,
+  };
+}
 
 export default {
   name: "Lancamento",
   data: (/** @type {Lancamento} */ lancamento) => ({
-    async init() {
-      this.natureza = {
+    /** @type {Lancamento} */
+    lancamento: Alpine.reactive({ ...lancamento }),
+    get natureza() {
+      return {
         ...this._iconeECorNatureza(),
-        exibicao: this.value.natureza,
-      };
-
-      this.valores = {
-        cor: this.value.valores <= 0 ? "normal" : "green",
-        exibicao:
-          this.value.valores < 0
-            ? `-R$ ${Math.abs(this.value.valores)}`
-            : `R$ ${this.value.valores}`,
-      };
-
-      this.totais = {
-        cor: this.value.totais <= 0 ? "normal" : "green",
-        exibicao:
-          this.value.totais < 0
-            ? `-R$ ${Math.abs(this.value.totais).toFixed(2)}`
-            : `R$ ${this.value.totais.toFixed(2)}`,
+        exibicao: this.lancamento.natureza,
       };
     },
-    natureza: {},
-    valores: {},
-    /** @type {Lancamento} */
-    value: Alpine.reactive({ ...lancamento }),
-    evento() {
-      return LANCAMENTOS_MAPEADOS_PARA_EXIBICAO[this.value.evento];
+    get valores() {
+      return exibicaoValores(this.lancamento.valores);
+    },
+    get totais() {
+      return exibicaoValores(this.lancamento.totais);
+    },
+    get timestamp() {
+      return dayjs
+        .utc(this.lancamento.timestamp)
+        .tz("America/Sao_Paulo")
+        .format("LLLL");
+    },
+    get evento() {
+      return LANCAMENTOS_MAPEADOS_PARA_EXIBICAO[this.lancamento.evento];
     },
     /** @returns {{ icone: string, cor: string }} */
     _iconeECorNatureza() {
-      switch (this.value.natureza) {
+      switch (this.lancamento.natureza) {
         case SALARIO:
           return { icone: "bi bi-cash-coin", cor: "green" };
+        case EDUCACAO:
+          return { icone: "bi bi-book", cor: "green-light" };
+        case ENTRETENIMENTO:
+          return { icone: "bi bi-camera-reels-fill", cor: "green-light" };
+        case IMPOSTO:
+          return { icone: "bi bi-bank2", cor: "red-light" };
         case BENEFICIOS:
           return { icone: "bi bi-cash", cor: "green-light" };
         case COMPRAS:
@@ -81,6 +101,11 @@ export default {
           return { icone: "bi bi-bandaid-fill", cor: "yellow-light" };
         case INVESTIMENTO:
           return { icone: "bi bi-graph-up", cor: "green-light" };
+        case TRABALHO:
+          return { icone: "bi bi-pc-display-horizontal", cor: "blue-light" };
+        case VIAGEM:
+          return { icone: "bi bi-luggage-fill", cor: "blue-light" };
+        case VAQUINHA:
         case OUTRO:
         default:
           return { icone: "bi bi-circle", cor: "red-light" };

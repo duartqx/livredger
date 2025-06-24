@@ -4,11 +4,14 @@
   class="d-flex py-3 border-box"
 >
   <div class="col-3 d-flex align-items-center fs-06rem">
-    <div
-      x-text="dayjs.utc(value.timestamp).tz('America/Sao_Paulo').format('LLLL')"
-    ></div>
+    <div x-text="timestamp"></div>
   </div>
-  <div class="col-2 fw-medium fs-06rem d-flex flex-column align-items-start justify-content-center">
+  <div
+    class="
+      col-2 fw-medium fs-06rem d-flex flex-column
+      align-items-start justify-content-center
+    "
+  >
     <tag
       :class="`${natureza.cor} fs-06rem text-end`"
       x-text="natureza.exibicao"
@@ -16,11 +19,11 @@
     <span class="fs-06rem" x-text="evento" title="evento"></span>
   </div>
   <div class="col-4 d-flex flex-column justify-content-center">
-    <div x-text="value.descricao"></div>
-    <div class="text-secondary fs-06rem" x-text="value.chave"></div>
+    <div x-text="lancamento.descricao"></div>
+    <div class="text-secondary fs-06rem" x-text="lancamento.chave"></div>
   </div>
   <div class="col-2 d-flex align-items-center justify-content-center">
-      <div class="text-end" x-text="totais.exibicao" title="totais"></div>
+    <div class="text-end" x-text="totais.exibicao" title="totais"></div>
   </div>
   <div
     class="col-1 text-center p-0 d-flex justify-content-center align-items-center"

@@ -62,7 +62,6 @@ func View(ctx *ViewContext) http.HandlerFunc {
 			h.ErrorResponse(w, err)
 		}
 	}
-
 }
 
 func viewsRouter() *RouterMap {

@@ -8,9 +8,13 @@
  */
 
 export const AGUA_E_GAS = "Água e Gás";
+export const BARBEIRO = "Barbeiro";
 export const BENEFICIOS = "Benefícios";
 export const COMPRAS = "Compras";
 export const CONDOMINIO = "Condomínio";
+export const EDUCACAO = "Educação";
+export const ENTRETENIMENTO = "Entretenimento";
+export const IMPOSTO = "Imposto";
 export const INTERNET = "Internet";
 export const INVESTIMENTO = "Investimento";
 export const JUROS = "Juros";
@@ -23,6 +27,9 @@ export const RECEITA_EXTRA = "Receita Extra";
 export const SALARIO = "Salário";
 export const SAUDE = "Saúde";
 export const TELEFONIA = "Telefonia";
+export const TRABALHO = "Trabalho";
+export const VAQUINHA = "Vaquinha";
+export const VIAGEM = "Viagem";
 
 /** @type {Naturezas} */
 export const NATUREZAS = [
@@ -30,6 +37,9 @@ export const NATUREZAS = [
   BENEFICIOS,
   COMPRAS,
   CONDOMINIO,
+  EDUCACAO,
+  ENTRETENIMENTO,
+  IMPOSTO,
   INTERNET,
   INVESTIMENTO,
   JUROS,
@@ -42,8 +52,12 @@ export const NATUREZAS = [
   SALARIO,
   SAUDE,
   TELEFONIA,
+  TRABALHO,
+  VAQUINHA,
+  VIAGEM,
 ];
 
+export const BOLETO_BANCARIO = "Boleto Bancário"
 export const CARTAO_DE_BENEFICIOS = "Cartão de Benefícios";
 export const CARTAO_DE_CREDITO = "Cartão de Crédito";
 export const CARTAO_DE_DEBITO = "Cartão de Débito";
@@ -51,9 +65,11 @@ export const DINHEIRO = "Dinheiro";
 export const POUPANCA = "Poupança";
 export const PIX = "PIX";
 export const TRANFERENCIA_BANCARIA = "Transferência Bancária";
+export const OUTRO_MEIO = "Outro"
 
 /** @type {MeiosTransacao} */
 export const MEIOS_FINANCEIRO = [
+  BOLETO_BANCARIO,
   CARTAO_DE_BENEFICIOS,
   CARTAO_DE_CREDITO,
   CARTAO_DE_DEBITO,
@@ -61,6 +77,7 @@ export const MEIOS_FINANCEIRO = [
   PIX,
   POUPANCA,
   TRANFERENCIA_BANCARIA,
+  OUTRO_MEIO,
 ];
 
 export const LancamentoPrevisto = "LancamentoPrevisto";
