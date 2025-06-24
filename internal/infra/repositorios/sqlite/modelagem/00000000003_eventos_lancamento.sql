@@ -10,5 +10,7 @@ VALUES
     ('LancamentoPrevisto'),
     ('LancamentoPago'),
     ('LancamentoRecebido'),
+    ('LancamentoTransferido'),
+    ('LancamentoCorrigido'),
     ('LancamentoCancelado')
 ON CONFLICT DO NOTHING;

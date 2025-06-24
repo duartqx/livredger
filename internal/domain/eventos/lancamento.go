@@ -1,10 +1,12 @@
 package eventos
 
 const (
-	LancamentoPrevisto  = "LancamentoPrevisto"
-	LancamentoPago      = "LancamentoPago"
-	LancamentoRecebido  = "LancamentoRecebido"
-	LancamentoCancelado = "LancamentoCancelado"
+	LancamentoPrevisto    = "LancamentoPrevisto"
+	LancamentoPago        = "LancamentoPago"
+	LancamentoRecebido    = "LancamentoRecebido"
+	LancamentoCancelado   = "LancamentoCancelado"
+	LancamentoCorrigido   = "LancamentoCorrigido"
+	LancamentoTransferido = "LancamentoTransferido"
 )
 
 var EVENTOS_DE_LANCAMENTOS []string = []string{
@@ -12,4 +14,6 @@ var EVENTOS_DE_LANCAMENTOS []string = []string{
 	LancamentoPago,
 	LancamentoRecebido,
 	LancamentoCancelado,
+	LancamentoCorrigido,
+	LancamentoTransferido,
 }

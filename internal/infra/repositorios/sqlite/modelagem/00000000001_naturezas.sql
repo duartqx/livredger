@@ -13,6 +13,12 @@ VALUES
     ('Condomínio'),
     ('Internet'),
     ('Investimento'),
+    ('Imposto'),
+    ('Entretenimento'),
+    ('Educação'),
+    ('Trabalho'),
+    ('Vaquinha'),
+    ('Barbeiro'),
     ('Juros'),
     ('Luz'),
     ('Mercado'),
@@ -22,5 +28,6 @@ VALUES
     ('Receita Extra'),
     ('Salário'),
     ('Saúde'),
+    ('Viagem'),
     ('Telefonia')
 ON CONFLICT DO NOTHING;

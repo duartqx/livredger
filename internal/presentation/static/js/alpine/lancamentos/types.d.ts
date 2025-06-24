@@ -31,6 +31,8 @@ export type EventoLancamento =
   | "LancamentoPrevisto"
   | "LancamentoPago"
   | "LancamentoRecebido"
+  | "LancamentoTransferido"
+  | "LancamentoCorrigido"
   | "LancamentoCancelado";
 
 export type LancamentoApi = {

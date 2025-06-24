@@ -67,6 +67,8 @@ export const LancamentoPrevisto = "LancamentoPrevisto";
 export const LancamentoPago = "LancamentoPago";
 export const LancamentoRecebido = "LancamentoRecebido";
 export const LancamentoCancelado = "LancamentoCancelado";
+export const LancamentoCorrigido = "LancamentoCorrigido";
+export const LancamentoTransferido = "LancamentoTransferido";
 
 /** @type {EventosLancamento} */
 export const LANCAMENTOS = [
@@ -74,6 +76,8 @@ export const LANCAMENTOS = [
   LancamentoPago,
   LancamentoRecebido,
   LancamentoCancelado,
+  LancamentoCorrigido,
+  LancamentoTransferido,
 ];
 
 /** @type { [ key: EventoLancamento ]: string } */
@@ -82,6 +86,8 @@ export const LANCAMENTOS_MAPEADOS_PARA_EXIBICAO = {
   LancamentoPago: "Pago",
   LancamentoRecebido: "Recebido",
   LancamentoCancelado: "Cancelado",
+  LancamentoCorrigido: "Corrigido",
+  LancamentoTransferido: "Transferido",
 };
 
 /** @type {{ label: string, value: EventoLancamento }[]} */
@@ -101,5 +107,13 @@ export const LANCAMENTOS_MAPEADOS_PARA_OPCOES = [
   {
     label: LANCAMENTOS_MAPEADOS_PARA_EXIBICAO[LancamentoCancelado],
     value: LancamentoCancelado,
+  },
+  {
+    label: LANCAMENTOS_MAPEADOS_PARA_EXIBICAO[LancamentoCorrigido],
+    value: LancamentoCorrigido,
+  },
+  {
+    label: LANCAMENTOS_MAPEADOS_PARA_EXIBICAO[LancamentoTransferido],
+    value: LancamentoTransferido,
   },
 ];
