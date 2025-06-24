@@ -15,36 +15,42 @@ type UnidadeDeTrabalho struct {
 }
 
 func (u *UnidadeDeTrabalho) Transaction() (tx *sql.Tx, err error) {
+	if u.Tx != nil {
+		return nil, fmt.Errorf("%w UnidadeDeTrabalho: Já existe uma transação aberta", t.InternalError)
+	}
+
 	tx, err = u.DB.Begin()
 
 	if err != nil {
-		return tx, fmt.Errorf("UnidadeDeTrabalho: Não foi possível iniciar uma transação (%w)", err)
+		return nil, fmt.Errorf("%w UnidadeDeTrabalho: Não foi possível iniciar uma transação (%w)", t.InternalError, err)
 	}
 
 	u.Tx = tx
 
-	return tx, err
+	return tx, nil
 }
 
 func (u *UnidadeDeTrabalho) Commit() error {
-	if u.Tx != nil {
-		errCommit := u.Tx.Commit()
-
-		if errCommit != nil {
-			return fmt.Errorf("UnidadeDeTrabalho: Não foi possível commitar a transação (%w)", errCommit)
-		}
+	if u.Tx == nil {
+		return fmt.Errorf("%w UnidadeDeTrabalho: Nenhuma transação aberta", t.InternalError)
 	}
+
+	if err := u.Tx.Commit(); err != nil {
+		return fmt.Errorf("%w UnidadeDeTrabalho: Não foi possível commitar a transação (%w)", t.InternalError, err)
+	}
+
 	return nil
 }
 
 func (u *UnidadeDeTrabalho) Rollback() error {
-	if u.Tx != nil {
-		err := u.Tx.Rollback()
-
-		if err != nil {
-			return fmt.Errorf("UnidadeDeTrabalho: Não foi possível fazer rollback (%w)", err)
-		}
+	if u.Tx == nil {
+		return fmt.Errorf("%w UnidadeDeTrabalho: Nenhuma transação aberta", t.InternalError)
 	}
+
+	if err := u.Tx.Rollback(); err != nil {
+		return fmt.Errorf("%w UnidadeDeTrabalho: Não foi possível fazer rollback (%w)", t.InternalError, err)
+	}
+
 	return nil
 }
 
