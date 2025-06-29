@@ -17,7 +17,6 @@ VALUES
     ('Entretenimento'),
     ('Educação'),
     ('Trabalho'),
-    ('Saúde'),
     ('Juros'),
     ('Luz'),
     ('Mercado'),

@@ -116,7 +116,7 @@ func (r RepositorioDeConsultaLancamentos) adicionarFiltros(consulta *c.ConsultaL
 	return builder
 }
 
-func (r RepositorioDeConsultaLancamentos) query(db *sql.DB, stmt string, args *[]interface{}) (*sql.Rows, error) {
+func (r RepositorioDeConsultaLancamentos) query(db *sql.DB, stmt string, args *[]any) (*sql.Rows, error) {
 	rows, err := db.Query(stmt, *args...)
 
 	if err != nil {

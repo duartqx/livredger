@@ -2,7 +2,6 @@ package naturezas
 
 const (
 	AGUA_E_GAS     = "Água e Gás"
-	BARBEIRO       = "Barbeiro"
 	BENEFICIOS     = "Benefícios"
 	COMPRAS        = "Compras"
 	CONDOMINIO     = "Condomínio"
@@ -22,13 +21,11 @@ const (
 	SAUDE          = "Saúde"
 	TELEFONIA      = "Telefonia"
 	TRABALHO       = "Trabalho"
-	VAQUINHA       = "Vaquinha"
 	VIAGEM         = "Viagem"
 )
 
 var NATUREZAS []string = []string{
 	AGUA_E_GAS,
-	BARBEIRO,
 	BENEFICIOS,
 	COMPRAS,
 	CONDOMINIO,
@@ -48,6 +45,5 @@ var NATUREZAS []string = []string{
 	SAUDE,
 	TELEFONIA,
 	TRABALHO,
-	VAQUINHA,
 	VIAGEM,
 }

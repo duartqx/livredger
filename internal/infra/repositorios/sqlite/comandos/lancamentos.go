@@ -9,6 +9,7 @@ import (
 	t "github.com/duartqx/livredger/internal/common/types"
 	c "github.com/duartqx/livredger/internal/domain/comandos"
 	e "github.com/duartqx/livredger/internal/domain/entidade"
+	"github.com/google/uuid"
 )
 
 var re = regexp.MustCompile("failed to get next row\nerror code = 1: Error fetching next row: SQLite failure: `(.*?)`")
@@ -27,6 +28,7 @@ type LancamentoCriado struct {
 func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLancamento) (*e.Lancamento, error) {
 
 	lancamento := e.Lancamento{
+		Id:             uuid.New(),
 		Evento:         comando.Evento,
 		Chave:          comando.Chave,
 		Versao:         comando.Versao,
@@ -42,6 +44,7 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLanca
 		// Ele é igual ao lançamento original, mas com valores invertido ( multiplicado por -1 )
 		`
 		INSERT INTO lancamentos (
+			id,
 			evento,
 			chave,
 			versao,
@@ -52,6 +55,7 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLanca
 			vencimento,
 			descricao
 		) VALUES (
+			:id,
 			:evento,
 			:chave,
 			:versao,
@@ -65,8 +69,9 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLanca
 			:vencimento,
 			:descricao
 		)
-		RETURNING id, timestamp, totais
+		RETURNING timestamp, totais
 		`,
+		sql.Named("id", lancamento.Id.String()),
 		sql.Named("evento", comando.Evento),
 		sql.Named("chave", comando.Chave.String()),
 		sql.Named("versao", comando.Versao),
@@ -77,7 +82,7 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLanca
 		sql.Named("descricao", comando.Descricao),
 	)
 
-	if err := row.Scan(&lancamento.Id, &lancamento.Timestamp, &lancamento.Totais); err != nil {
+	if err := row.Scan(&lancamento.Timestamp, &lancamento.Totais); err != nil {
 		if match := re.FindStringSubmatch(err.Error()); len(match) > 1 {
 			return nil, fmt.Errorf("%w: %s", t.BusinessLogicError, match[1])
 		}

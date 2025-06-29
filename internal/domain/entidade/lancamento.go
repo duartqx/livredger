@@ -7,7 +7,7 @@ import (
 )
 
 type Lancamento struct {
-	Id        int       `json:"id"`
+	Id        uuid.UUID `json:"id"`
 	Evento    string    `json:"evento"`
 	Timestamp time.Time `json:"timestamp"`
 

@@ -36,7 +36,7 @@ export type EventoLancamento =
   | "LancamentoCancelado";
 
 export type LancamentoApi = {
-  id: number;
+  id: string;
   evento: EventoLancamento;
   timestamp: string;
   chave: string;
@@ -50,7 +50,7 @@ export type LancamentoApi = {
 };
 
 export type Lancamento = {
-  id: number;
+  id: UUID;
   evento: EventoLancamento;
   timestamp: Date;
   chave: UUID;
