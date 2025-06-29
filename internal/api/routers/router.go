@@ -68,7 +68,11 @@ func Router(dependencies *Dependencies) http.Handler {
 		mux.Group(s.Path, http.StripPrefix("/", http.FileServer(http.FS(s.Fs))))
 	}
 
-	mux.AddRoutes(lancamentosRouter(), viewsRouter())
+	mux.AddRoutes(
+		lancamentosRouter(),
+		contasRouter(),
+		viewsRouter(),
+	)
 
 	return mux.Use(
 		mux,

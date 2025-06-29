@@ -25,3 +25,22 @@ func BuscarLancamentos(uow *infra.UnidadeDeTrabalho, consulta *consultas.Consult
 
 	return resultado, err
 }
+
+func BuscarContas(uow *infra.UnidadeDeTrabalho, consulta *consultas.ConsultaContas) (
+	*types.Resultado[consultas.ConsultaContas, entidade.Conta], error,
+) {
+
+	contas, err := uow.Repositorios.Contas.Consulta.Buscar(uow.DB, consulta)
+
+	if err != nil {
+		return nil, err
+	}
+
+	resultado := &types.Resultado[consultas.ConsultaContas, entidade.Conta]{
+		Total:    len(*contas),
+		Consulta: consulta,
+		Itens:    contas,
+	}
+
+	return resultado, err
+}

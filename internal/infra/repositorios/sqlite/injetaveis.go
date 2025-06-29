@@ -13,3 +13,10 @@ func FabricaDeRepositoriosDeLancamento() *repositorios.RepositoriosLancamentos {
 		Consulta: consultas.NewRepositorioDeConsultaLancamentos(),
 	}
 }
+
+func FabricaDeRepositoriosDeContas() *repositorios.RepositoriosContas {
+	return &repositorios.RepositoriosContas{
+		Comando:  comandos.NewRepositorioDeComandoContas(),
+		Consulta: consultas.NewRepositorioDeConstaContas(),
+	}
+}

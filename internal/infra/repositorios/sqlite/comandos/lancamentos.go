@@ -3,7 +3,6 @@ package comandos
 import (
 	"database/sql"
 	"fmt"
-	"regexp"
 	"time"
 
 	t "github.com/duartqx/livredger/internal/common/types"
@@ -11,8 +10,6 @@ import (
 	e "github.com/duartqx/livredger/internal/domain/entidade"
 	"github.com/google/uuid"
 )
-
-var re = regexp.MustCompile("failed to get next row\nerror code = 1: Error fetching next row: SQLite failure: `(.*?)`")
 
 type RepositorioDeComandoLancamentos struct{}
 
@@ -83,7 +80,7 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLanca
 	)
 
 	if err := row.Scan(&lancamento.Timestamp, &lancamento.Totais); err != nil {
-		if match := re.FindStringSubmatch(err.Error()); len(match) > 1 {
+		if match := sqliteFalhouInserirRow.FindStringSubmatch(err.Error()); len(match) > 1 {
 			return nil, fmt.Errorf("%w: %s", t.BusinessLogicError, match[1])
 		}
 

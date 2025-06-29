@@ -11,6 +11,7 @@ import (
 
 type Repositorios struct {
 	Lancamentos *repositorios.RepositoriosLancamentos
+	Contas      *repositorios.RepositoriosContas
 }
 
 // TODO: Refatorar para ser Build target
@@ -21,6 +22,7 @@ func FabricaDeRepositorios() *Repositorios {
 	case "sqlite":
 		return &Repositorios{
 			Lancamentos: sqlite.FabricaDeRepositoriosDeLancamento(),
+			Contas:      sqlite.FabricaDeRepositoriosDeContas(),
 		}
 	default:
 		panic(fmt.Sprintf("Repositorios não configurados para DBMS: {%s}", DBMS))

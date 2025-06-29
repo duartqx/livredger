@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS lancamentos (
     evento VARCHAR(128) NOT NULL REFERENCES eventos_lancamento(nome),
     timestamp DATETIME DEFAULT (datetime('now')),
 
-    chave VARCHAR(36) NOT NULL REFERENCES contas(id),
+    chave VARCHAR(36) NOT NULL REFERENCES contas(chave),
     versao INTEGER NOT NULL CHECK(versao > 0),
 
     valores REAL NOT NULL, -- Valores desse lançamento específico
