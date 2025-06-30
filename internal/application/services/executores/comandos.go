@@ -13,9 +13,9 @@ import (
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-type Executor[Comando domain.Comando, Entidade any] struct{}
+type Executor[Entidade any] struct{}
 
-func (e Executor[Comando, Entidade]) TransactionalScript(
+func (e Executor[Entidade]) TransactionalScript(
 	uow infra.UnidadeDeTrabalho,
 	fn func(*sql.Tx) (*Entidade, error),
 ) (*Entidade, error) {
@@ -41,7 +41,7 @@ func (e Executor[Comando, Entidade]) TransactionalScript(
 }
 
 func CriarLancamento(uow infra.UnidadeDeTrabalho, comando *comandos.CriarLancamento) (*entidade.Lancamento, error) {
-	var executor Executor[*comandos.CriarLancamento, entidade.Lancamento]
+	var executor Executor[entidade.Lancamento]
 
 	return executor.TransactionalScript(
 		uow,
@@ -70,7 +70,7 @@ func CriarLancamento(uow infra.UnidadeDeTrabalho, comando *comandos.CriarLancame
 }
 
 func AbrirConta(uow infra.UnidadeDeTrabalho, comando *comandos.AbrirConta) (*entidade.Conta, error) {
-	var executor Executor[*comandos.AbrirConta, entidade.Conta]
+	var executor Executor[entidade.Conta]
 
 	return executor.TransactionalScript(
 		uow,
