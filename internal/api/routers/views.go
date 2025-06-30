@@ -7,14 +7,14 @@ import (
 	"net/http"
 
 	"github.com/duartqx/livredger/internal/api/decoders"
-	h "github.com/duartqx/livredger/internal/common/http"
+	"github.com/duartqx/livredger/internal/api/response"
 )
 
 type DataFunc func(r *http.Request) (map[string]any, error)
 
 type ViewContext struct {
 	ViewName  string
-	Templates *h.Templates
+	Templates *response.Templates
 	Data      map[string]any
 	DataFunc  DataFunc
 }
@@ -59,7 +59,7 @@ func View(ctx *ViewContext) http.HandlerFunc {
 				panic(err)
 			}
 		default:
-			h.ErrorResponse(w, err)
+			response.ErrorResponse(w, err)
 		}
 	}
 }

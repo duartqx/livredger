@@ -8,7 +8,8 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/duartqx/livredger/internal/common/types"
+	"github.com/duartqx/livredger/internal/domain"
+
 	"github.com/duartqx/livredger/internal/infra"
 )
 
@@ -17,7 +18,7 @@ var logger = slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
 }))
 
 var MessageBus = bus{
-	registry: make(map[types.Mensagem][]MessageHandler),
+	registry: make(map[domain.Mensagem][]MessageHandler),
 }
 
 type MessageHandler struct {
@@ -26,12 +27,12 @@ type MessageHandler struct {
 }
 
 type bus struct {
-	registry map[types.Mensagem][]MessageHandler
+	registry map[domain.Mensagem][]MessageHandler
 }
 
 func (mb *bus) Subscribe(mensagem any, handler func(infra.UnidadeDeTrabalho, any) error) {
 
-	key := types.Mensagem(reflect.TypeOf(mensagem).Name())
+	key := domain.Mensagem(reflect.TypeOf(mensagem).Name())
 
 	handlers := mb.registry[key]
 
@@ -51,7 +52,7 @@ func (mb *bus) Publish(uow infra.UnidadeDeTrabalho, mensagem any) <-chan error {
 	go func() {
 		defer close(errCh)
 
-		key := types.Mensagem(reflect.TypeOf(mensagem).Name())
+		key := domain.Mensagem(reflect.TypeOf(mensagem).Name())
 
 		logger.Debug(string(key), "Status", "Publishing")
 

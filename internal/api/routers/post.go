@@ -5,13 +5,17 @@ import (
 	"fmt"
 	"net/http"
 
-	h "github.com/duartqx/livredger/internal/common/http"
+	"github.com/duartqx/livredger/internal/api/response"
+
+	"github.com/duartqx/livredger/internal/domain"
+
 	"github.com/duartqx/livredger/internal/common/mimetypes"
 	"github.com/duartqx/livredger/internal/common/types"
+
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-type ApiPostHandler[Comando types.Comando, Entidade any] struct {
+type ApiPostHandler[Comando domain.Comando, Entidade any] struct {
 	Executor func(infra.UnidadeDeTrabalho, *Comando) (*Entidade, error)
 }
 
@@ -19,13 +23,13 @@ func (ph ApiPostHandler[Comando, Entidade]) Handle(w http.ResponseWriter, r *htt
 	var comando Comando
 
 	if err := json.NewDecoder(r.Body).Decode(&comando); err != nil {
-		h.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.BusinessLogicError, err))
+		response.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.BusinessLogicError, err))
 		return
 	}
 	defer r.Body.Close()
 
 	if err := comando.Validar(); err != nil {
-		h.JsonErrorResponse(w, err)
+		response.JsonErrorResponse(w, err)
 		return
 	}
 
@@ -37,7 +41,7 @@ func (ph ApiPostHandler[Comando, Entidade]) Handle(w http.ResponseWriter, r *htt
 	resultado, err := ph.Executor(uow, &comando)
 
 	if err != nil {
-		h.JsonErrorResponse(w, err)
+		response.JsonErrorResponse(w, err)
 		return
 	}
 
@@ -45,7 +49,7 @@ func (ph ApiPostHandler[Comando, Entidade]) Handle(w http.ResponseWriter, r *htt
 	w.WriteHeader(http.StatusCreated)
 
 	if err := json.NewEncoder(w).Encode(map[string]any{"resultado": resultado}); err != nil {
-		h.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.InternalError, err))
+		response.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.InternalError, err))
 		return
 	}
 }

@@ -5,7 +5,7 @@ import (
 
 	"github.com/duartqx/livredger/internal/application/messagebus"
 
-	"github.com/duartqx/livredger/internal/common/types"
+	"github.com/duartqx/livredger/internal/domain"
 	"github.com/duartqx/livredger/internal/domain/comandos"
 	"github.com/duartqx/livredger/internal/domain/entidade"
 	"github.com/duartqx/livredger/internal/domain/mensagens"
@@ -13,7 +13,7 @@ import (
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-type Executor[Comando types.Comando, Entidade any] struct{}
+type Executor[Comando domain.Comando, Entidade any] struct{}
 
 func (e Executor[Comando, Entidade]) TransactionalScript(
 	uow infra.UnidadeDeTrabalho,
@@ -55,7 +55,7 @@ func CriarLancamento(uow infra.UnidadeDeTrabalho, comando *comandos.CriarLancame
 			errCh := messagebus.MessageBus.Publish(
 				uow, mensagens.LancamentoCriado{
 					Id:        lancamento.Id,
-					Evento:    types.Evento(lancamento.Evento),
+					Evento:    domain.Evento(lancamento.Evento),
 					Timestamp: lancamento.Timestamp,
 				},
 			)

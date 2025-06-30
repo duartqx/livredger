@@ -1,11 +1,11 @@
 package eventos
 
-import "github.com/duartqx/livredger/internal/common/types"
+import "github.com/duartqx/livredger/internal/domain"
 
 const (
-	ContaAberta  = types.Evento("ContaAberta")
-	ContaFechada = types.Evento("ContaFechada")
-	ContaPausada = types.Evento("ContaPausada")
+	ContaAberta  = domain.Evento("ContaAberta")
+	ContaFechada = domain.Evento("ContaFechada")
+	ContaPausada = domain.Evento("ContaPausada")
 )
 
 var EVENTOS_DE_CONTA []string = []string{

@@ -3,20 +3,24 @@ package routers
 import (
 	"encoding/json"
 	"fmt"
-
 	"net/http"
 
+	"github.com/google/uuid"
+
 	"github.com/duartqx/livredger/internal/api/decoders"
+	"github.com/duartqx/livredger/internal/api/response"
+
 	"github.com/duartqx/livredger/internal/application/services/executores"
 	"github.com/duartqx/livredger/internal/application/services/visualizadores"
-	h "github.com/duartqx/livredger/internal/common/http"
+
 	"github.com/duartqx/livredger/internal/common/mimetypes"
 	"github.com/duartqx/livredger/internal/common/types"
+
 	"github.com/duartqx/livredger/internal/domain/comandos"
 	"github.com/duartqx/livredger/internal/domain/consultas"
 	"github.com/duartqx/livredger/internal/domain/entidade"
+
 	"github.com/duartqx/livredger/internal/infra"
-	"github.com/google/uuid"
 )
 
 func parseConsultaDoForm(r *http.Request) (*consultas.ConsultaLancamentos, error) {
@@ -46,21 +50,21 @@ func lancamentosRouter() *RouterMap {
 			consulta, err := parseConsultaDoForm(r)
 
 			if err != nil {
-				h.JsonErrorResponse(w, err)
+				response.JsonErrorResponse(w, err)
 				return
 			}
 
 			resultado, err := visualizadores.BuscarLancamentos(uow, consulta)
 
 			if err != nil {
-				h.JsonErrorResponse(w, err)
+				response.JsonErrorResponse(w, err)
 				return
 			}
 
 			w.Header().Set("Content-Type", mimetypes.JSON)
 
 			if err := json.NewEncoder(w).Encode(resultado); err != nil {
-				h.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.InternalError, err))
+				response.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.InternalError, err))
 				return
 			}
 		},

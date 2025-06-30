@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"slices"
 
-	h "github.com/duartqx/livredger/internal/common/http"
+	"github.com/duartqx/livredger/internal/api/response"
 )
 
 func jsonify(v any) template.JS {
@@ -35,14 +35,14 @@ func compose(templates ...string) *template.Template {
 }
 
 type TemplatesLancamento struct {
-	Consulta   *h.Templates
-	Comando    *h.Templates
-	Detalhes   *h.Templates
+	Consulta   *response.Templates
+	Comando    *response.Templates
+	Detalhes   *response.Templates
 	Resultados *template.Template
 }
 
 type TemplateRegistry struct {
-	Index       *h.Templates
+	Index       *response.Templates
 	Lancamentos *TemplatesLancamento
 }
 
@@ -54,13 +54,13 @@ func ObterTemplateRegistry() *TemplateRegistry {
 	}
 
 	templateRegistry = &TemplateRegistry{
-		Index: &h.Templates{
+		Index: &response.Templates{
 			ComBase: compose("index.html", "nav.html"),
 			Partial: nil,
 			Error:   nil,
 		},
 		Lancamentos: &TemplatesLancamento{
-			Consulta: &h.Templates{
+			Consulta: &response.Templates{
 				ComBase: compose(
 					"index.html",
 					"nav.html",
@@ -78,7 +78,7 @@ func ObterTemplateRegistry() *TemplateRegistry {
 					"lancamentos/consulta/consulta.html",
 				),
 			},
-			Comando: &h.Templates{
+			Comando: &response.Templates{
 				ComBase: compose(
 					"index.html",
 					"nav.html",
@@ -91,7 +91,7 @@ func ObterTemplateRegistry() *TemplateRegistry {
 				),
 				Error: nil,
 			},
-			Detalhes: &h.Templates{
+			Detalhes: &response.Templates{
 				ComBase: compose(
 					"index.html",
 					"nav.html",

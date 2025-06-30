@@ -1,14 +1,16 @@
 package visualizadores
 
 import (
-	"github.com/duartqx/livredger/internal/common/types"
+	"github.com/duartqx/livredger/internal/application"
+
 	"github.com/duartqx/livredger/internal/domain/consultas"
 	"github.com/duartqx/livredger/internal/domain/entidade"
+
 	"github.com/duartqx/livredger/internal/infra"
 )
 
 func BuscarLancamentos(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaLancamentos) (
-	*types.Resultado[consultas.ConsultaLancamentos, entidade.Lancamento], error,
+	*application.Resultado[consultas.ConsultaLancamentos, entidade.Lancamento], error,
 ) {
 
 	lancamentos, err := uow.GetRepositorios().Lancamentos().Consulta.Buscar(uow.GetDB(), consulta)
@@ -17,7 +19,7 @@ func BuscarLancamentos(uow infra.UnidadeDeTrabalho, consulta *consultas.Consulta
 		return nil, err
 	}
 
-	resultado := &types.Resultado[consultas.ConsultaLancamentos, entidade.Lancamento]{
+	resultado := &application.Resultado[consultas.ConsultaLancamentos, entidade.Lancamento]{
 		Total:    len(*lancamentos),
 		Consulta: consulta,
 		Itens:    lancamentos,
@@ -27,7 +29,7 @@ func BuscarLancamentos(uow infra.UnidadeDeTrabalho, consulta *consultas.Consulta
 }
 
 func BuscarContas(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaContas) (
-	*types.Resultado[consultas.ConsultaContas, entidade.Conta], error,
+	*application.Resultado[consultas.ConsultaContas, entidade.Conta], error,
 ) {
 
 	contas, err := uow.GetRepositorios().Contas().Consulta.Buscar(uow.GetDB(), consulta)
@@ -36,7 +38,7 @@ func BuscarContas(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaConta
 		return nil, err
 	}
 
-	resultado := &types.Resultado[consultas.ConsultaContas, entidade.Conta]{
+	resultado := &application.Resultado[consultas.ConsultaContas, entidade.Conta]{
 		Total:    len(*contas),
 		Consulta: consulta,
 		Itens:    contas,

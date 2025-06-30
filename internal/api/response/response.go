@@ -1,4 +1,4 @@
-package http
+package response
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/duartqx/livredger/internal/api/decoders"
 	"github.com/duartqx/livredger/internal/common/mimetypes"
-	t "github.com/duartqx/livredger/internal/common/types"
+	"github.com/duartqx/livredger/internal/common/types"
 )
 
 type Templates struct {
@@ -19,9 +19,9 @@ type Templates struct {
 
 func writeHeaderStatus(w http.ResponseWriter, err error) {
 	switch {
-	case errors.Is(err, t.NotFoundError):
+	case errors.Is(err, types.NotFoundError):
 		w.WriteHeader(http.StatusNotFound)
-	case errors.Is(err, t.BusinessLogicError) || errors.Is(err, &json.UnmarshalTypeError{}) || errors.Is(err, decoders.DecoderError):
+	case errors.Is(err, types.BusinessLogicError) || errors.Is(err, &json.UnmarshalTypeError{}) || errors.Is(err, decoders.DecoderError):
 		w.WriteHeader(http.StatusBadRequest)
 	default:
 		panic(err)
