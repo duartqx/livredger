@@ -1,10 +1,10 @@
 -- sql: Cria a tabela de lançamentos
 CREATE TABLE IF NOT EXISTS lancamentos (
     id VARCHAR(36) PRIMARY KEY NOT NULL,
-    evento VARCHAR(128) NOT NULL REFERENCES eventos_lancamento(nome),
+    evento VARCHAR(128) NOT NULL REFERENCES eventos(nome),
     timestamp DATETIME DEFAULT (datetime('now')),
 
-    chave VARCHAR(36) NOT NULL REFERENCES contas(chave),
+    chave VARCHAR(36) NOT NULL REFERENCES contas(chave) DEFERRABLE INITIALLY DEFERRED,
     versao INTEGER NOT NULL CHECK(versao > 0),
 
     valores REAL NOT NULL, -- Valores desse lançamento específico

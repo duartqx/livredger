@@ -3,11 +3,11 @@ package comandos
 import (
 	"database/sql"
 	"fmt"
-	"time"
 
 	t "github.com/duartqx/livredger/internal/common/types"
 	c "github.com/duartqx/livredger/internal/domain/comandos"
 	e "github.com/duartqx/livredger/internal/domain/entidade"
+	"github.com/duartqx/livredger/internal/infra/repositorios/sqlite/regex"
 	"github.com/google/uuid"
 )
 
@@ -17,12 +17,22 @@ func NewRepositorioDeComandoLancamentos() *RepositorioDeComandoLancamentos {
 	return &RepositorioDeComandoLancamentos{}
 }
 
-type LancamentoCriado struct {
-	Id        int       `json:"id"`
-	Timestamp time.Time `json:"timestamp"`
-}
-
 func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLancamento) (*e.Lancamento, error) {
+
+	var exists bool
+
+	check := tx.QueryRow(
+		`SELECT EXISTS(SELECT 1 FROM contas WHERE chave = :chave)`,
+		sql.Named("chave", comando.Chave),
+	)
+
+	if err := check.Scan(&exists); err != nil {
+		return nil, fmt.Errorf("%w: Não foi possível identificar se conta existe: %w", t.InternalError, err)
+	}
+
+	if !exists {
+		return nil, fmt.Errorf("%w: Não encontramos uma conta aberta com essa chave '%s'", t.BusinessLogicError, comando.Chave.String())
+	}
 
 	lancamento := e.Lancamento{
 		Id:             uuid.New(),
@@ -80,7 +90,7 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLanca
 	)
 
 	if err := row.Scan(&lancamento.Timestamp, &lancamento.Totais); err != nil {
-		if match := sqliteFalhouInserirRow.FindStringSubmatch(err.Error()); len(match) > 1 {
+		if match := regex.SqliteFalhouInserirRow.FindStringSubmatch(err.Error()); len(match) > 1 {
 			return nil, fmt.Errorf("%w: %s", t.BusinessLogicError, match[1])
 		}
 

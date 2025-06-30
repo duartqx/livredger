@@ -7,11 +7,11 @@ import (
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-func BuscarLancamentos(uow *infra.UnidadeDeTrabalho, consulta *consultas.ConsultaLancamentos) (
+func BuscarLancamentos(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaLancamentos) (
 	*types.Resultado[consultas.ConsultaLancamentos, entidade.Lancamento], error,
 ) {
 
-	lancamentos, err := uow.Repositorios.Lancamentos.Consulta.Buscar(uow.DB, consulta)
+	lancamentos, err := uow.GetRepositorios().Lancamentos().Consulta.Buscar(uow.GetDB(), consulta)
 
 	if err != nil {
 		return nil, err
@@ -26,11 +26,11 @@ func BuscarLancamentos(uow *infra.UnidadeDeTrabalho, consulta *consultas.Consult
 	return resultado, err
 }
 
-func BuscarContas(uow *infra.UnidadeDeTrabalho, consulta *consultas.ConsultaContas) (
+func BuscarContas(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaContas) (
 	*types.Resultado[consultas.ConsultaContas, entidade.Conta], error,
 ) {
 
-	contas, err := uow.Repositorios.Contas.Consulta.Buscar(uow.DB, consulta)
+	contas, err := uow.GetRepositorios().Contas().Consulta.Buscar(uow.GetDB(), consulta)
 
 	if err != nil {
 		return nil, err

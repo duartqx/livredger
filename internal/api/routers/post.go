@@ -12,7 +12,7 @@ import (
 )
 
 type ApiPostHandler[Comando types.Comando, Entidade any] struct {
-	Executor func(*infra.UnidadeDeTrabalho, *Comando) (*Entidade, error)
+	Executor func(infra.UnidadeDeTrabalho, *Comando) (*Entidade, error)
 }
 
 func (ph ApiPostHandler[Comando, Entidade]) Handle(w http.ResponseWriter, r *http.Request) {
@@ -23,6 +23,11 @@ func (ph ApiPostHandler[Comando, Entidade]) Handle(w http.ResponseWriter, r *htt
 		return
 	}
 	defer r.Body.Close()
+
+	if err := comando.Validar(); err != nil {
+		h.JsonErrorResponse(w, err)
+		return
+	}
 
 	var usuario *types.Usuario
 

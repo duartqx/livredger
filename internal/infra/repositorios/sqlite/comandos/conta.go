@@ -7,6 +7,7 @@ import (
 	"github.com/duartqx/livredger/internal/common/types"
 	c "github.com/duartqx/livredger/internal/domain/comandos"
 	e "github.com/duartqx/livredger/internal/domain/entidade"
+	"github.com/duartqx/livredger/internal/infra/repositorios/sqlite/regex"
 	"github.com/google/uuid"
 )
 
@@ -30,7 +31,7 @@ func (r RepositorioDeComandoContas) Abrir(tx *sql.Tx, comando *c.AbrirConta) (*e
 		sql.Named("chave", conta.Chave.String()),
 		sql.Named("nome", conta.Nome),
 	).Scan(&conta.Timestamp); err != nil {
-		if match := sqliteFalhouInserirRow.FindStringSubmatch(err.Error()); len(match) > 1 {
+		if match := regex.SqliteFalhouInserirRow.FindStringSubmatch(err.Error()); len(match) > 1 {
 			return nil, fmt.Errorf("%w: %s", types.BusinessLogicError, match[1])
 		}
 

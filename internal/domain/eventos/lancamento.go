@@ -1,19 +1,23 @@
 package eventos
 
+import (
+	"github.com/duartqx/livredger/internal/common/types"
+)
+
 const (
-	LancamentoPrevisto    = "LancamentoPrevisto"
-	LancamentoPago        = "LancamentoPago"
-	LancamentoRecebido    = "LancamentoRecebido"
-	LancamentoCancelado   = "LancamentoCancelado"
-	LancamentoCorrigido   = "LancamentoCorrigido"
-	LancamentoTransferido = "LancamentoTransferido"
+	LancamentoPrevisto    = types.Evento("LancamentoPrevisto")
+	LancamentoPago        = types.Evento("LancamentoPago")
+	LancamentoRecebido    = types.Evento("LancamentoRecebido")
+	LancamentoCancelado   = types.Evento("LancamentoCancelado")
+	LancamentoCorrigido   = types.Evento("LancamentoCorrigido")
+	LancamentoTransferido = types.Evento("LancamentoTransferido")
 )
 
 var EVENTOS_DE_LANCAMENTOS []string = []string{
-	LancamentoPrevisto,
-	LancamentoPago,
-	LancamentoRecebido,
-	LancamentoCancelado,
-	LancamentoCorrigido,
-	LancamentoTransferido,
+	string(LancamentoPrevisto),
+	string(LancamentoPago),
+	string(LancamentoRecebido),
+	string(LancamentoCancelado),
+	string(LancamentoCorrigido),
+	string(LancamentoTransferido),
 }

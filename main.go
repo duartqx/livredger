@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/duartqx/livredger/internal/api/routers"
+	"github.com/duartqx/livredger/internal/application/registry"
 )
 
 const (
@@ -26,14 +27,12 @@ var (
 	port      int
 )
 
-func parse() {
+func main() {
 	flag.IntVar(&port, "port", 8000, "The port the server will run at")
 
 	flag.Parse()
-}
 
-func main() {
-	parse()
+	registry.SetupEventHandlers()
 
 	srv := &http.Server{
 		Handler: routers.Router(
