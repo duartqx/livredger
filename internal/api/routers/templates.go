@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"html/template"
 	"slices"
-
-	"github.com/duartqx/livredger/internal/api/response"
 )
 
 func jsonify(v any) template.JS {
@@ -20,7 +18,7 @@ func orEq(key string, values ...string) bool {
 	return slices.Contains(values, key)
 }
 
-func compose(templates ...string) *template.Template {
+func parseTemplates(templates ...string) *template.Template {
 	if len(templates) == 0 {
 		panic("É necessário passar ao menos um template para compose")
 	}
@@ -32,80 +30,4 @@ func compose(templates ...string) *template.Template {
 			"sub":     func(a, b int) int { return a - b },
 		},
 	).ParseFS(templatesFS, templates...))
-}
-
-type TemplatesLancamento struct {
-	Consulta   *response.Templates
-	Comando    *response.Templates
-	Detalhes   *response.Templates
-	Resultados *template.Template
-}
-
-type TemplateRegistry struct {
-	Index       *response.Templates
-	Lancamentos *TemplatesLancamento
-}
-
-var templateRegistry *TemplateRegistry
-
-func ObterTemplateRegistry() *TemplateRegistry {
-	if templateRegistry != nil {
-		return templateRegistry
-	}
-
-	templateRegistry = &TemplateRegistry{
-		Index: &response.Templates{
-			ComBase: compose("index.html", "nav.html"),
-			Partial: nil,
-			Error:   nil,
-		},
-		Lancamentos: &TemplatesLancamento{
-			Consulta: &response.Templates{
-				ComBase: compose(
-					"index.html",
-					"nav.html",
-					"lancamentos/consulta/lancamento.html",
-					"lancamentos/consulta/form.html",
-					"lancamentos/consulta/consulta.html",
-				),
-				Partial: compose(
-					"lancamentos/consulta/lancamento.html",
-					"lancamentos/consulta/form.html",
-					"lancamentos/consulta/consulta.html",
-				),
-				Error: compose(
-					"lancamentos/consulta/form.html",
-					"lancamentos/consulta/consulta.html",
-				),
-			},
-			Comando: &response.Templates{
-				ComBase: compose(
-					"index.html",
-					"nav.html",
-					"lancamentos/comando/form.html",
-					"lancamentos/comando/criar.html",
-				),
-				Partial: compose(
-					"lancamentos/comando/form.html",
-					"lancamentos/comando/criar.html",
-				),
-				Error: nil,
-			},
-			Detalhes: &response.Templates{
-				ComBase: compose(
-					"index.html",
-					"nav.html",
-					"lancamentos/comando/form.html",
-					"lancamentos/detalhes/detalhes.html",
-				),
-				Partial: compose(
-					"lancamentos/comando/form.html",
-					"lancamentos/detalhes/detalhes.html",
-				),
-				Error: nil,
-			},
-		},
-	}
-
-	return templateRegistry
 }

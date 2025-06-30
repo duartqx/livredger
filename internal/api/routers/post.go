@@ -15,41 +15,42 @@ import (
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-type ApiPostHandler[Comando domain.Comando, Entidade any] struct {
-	Executor func(infra.UnidadeDeTrabalho, *Comando) (*Entidade, error)
-}
+func ApiPostHandlerFunc[Comando domain.Comando, Entidade any](
+	executor func(infra.UnidadeDeTrabalho, *Comando) (*Entidade, error),
+) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 
-func (ph ApiPostHandler[Comando, Entidade]) Handle(w http.ResponseWriter, r *http.Request) {
-	var comando Comando
+		var comando Comando
 
-	if err := json.NewDecoder(r.Body).Decode(&comando); err != nil {
-		response.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.BusinessLogicError, err))
-		return
-	}
-	defer r.Body.Close()
+		if err := json.NewDecoder(r.Body).Decode(&comando); err != nil {
+			response.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.BusinessLogicError, err))
+			return
+		}
+		defer r.Body.Close()
 
-	if err := comando.Validar(); err != nil {
-		response.JsonErrorResponse(w, err)
-		return
-	}
+		if err := comando.Validar(); err != nil {
+			response.JsonErrorResponse(w, err)
+			return
+		}
 
-	var usuario *types.Usuario
+		var usuario *types.Usuario
 
-	uow := infra.Bootstrap(usuario)
-	defer uow.Close()
+		uow := infra.Bootstrap(usuario)
+		defer uow.Close()
 
-	resultado, err := ph.Executor(uow, &comando)
+		resultado, err := executor(uow, &comando)
 
-	if err != nil {
-		response.JsonErrorResponse(w, err)
-		return
-	}
+		if err != nil {
+			response.JsonErrorResponse(w, err)
+			return
+		}
 
-	w.Header().Set("Content-Type", mimetypes.JSON)
-	w.WriteHeader(http.StatusCreated)
+		w.Header().Set("Content-Type", mimetypes.JSON)
+		w.WriteHeader(http.StatusCreated)
 
-	if err := json.NewEncoder(w).Encode(map[string]any{"resultado": resultado}); err != nil {
-		response.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.InternalError, err))
-		return
+		if err := json.NewEncoder(w).Encode(map[string]any{"resultado": resultado}); err != nil {
+			response.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.InternalError, err))
+			return
+		}
 	}
 }

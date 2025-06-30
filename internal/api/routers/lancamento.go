@@ -16,9 +16,7 @@ import (
 	"github.com/duartqx/livredger/internal/common/mimetypes"
 	"github.com/duartqx/livredger/internal/common/types"
 
-	"github.com/duartqx/livredger/internal/domain/comandos"
 	"github.com/duartqx/livredger/internal/domain/consultas"
-	"github.com/duartqx/livredger/internal/domain/entidade"
 
 	"github.com/duartqx/livredger/internal/infra"
 )
@@ -38,8 +36,6 @@ func parseConsultaDoForm(r *http.Request) (*consultas.ConsultaLancamentos, error
 }
 
 func lancamentosRouter() *RouterMap {
-	templateRegistry := ObterTemplateRegistry()
-
 	return &RouterMap{
 		"GET /api/lancamentos": func(w http.ResponseWriter, r *http.Request) {
 			var usuario *types.Usuario
@@ -68,17 +64,16 @@ func lancamentosRouter() *RouterMap {
 				return
 			}
 		},
-		"POST /api/lancamentos": func(w http.ResponseWriter, r *http.Request) {
-
-			handler := ApiPostHandler[comandos.CriarLancamento, entidade.Lancamento]{
-				Executor: executores.CriarLancamento,
-			}
-
-			handler.Handle(w, r)
-		},
+		"POST /api/lancamentos": ApiPostHandlerFunc(executores.CriarLancamento),
 		"GET /lancamentos": View(&ViewContext{
-			ViewName:  "ConsultarLancamentos",
-			Templates: templateRegistry.Lancamentos.Consulta,
+			ViewName: "ConsultarLancamentos",
+			Template: parseTemplates(
+				"index.html",
+				"nav.html",
+				"lancamentos/consulta/lancamento.html",
+				"lancamentos/consulta/form.html",
+				"lancamentos/consulta/consulta.html",
+			),
 			DataFunc: func(r *http.Request) (map[string]any, error) {
 				var usuario *types.Usuario
 
@@ -104,8 +99,13 @@ func lancamentosRouter() *RouterMap {
 			},
 		}),
 		"GET /lancamentos/{chave}": View(&ViewContext{
-			ViewName:  "DetalhesLancamentos",
-			Templates: templateRegistry.Lancamentos.Detalhes,
+			ViewName: "DetalhesLancamentos",
+			Template: parseTemplates(
+				"index.html",
+				"nav.html",
+				"lancamentos/comando/form.html",
+				"lancamentos/detalhes/detalhes.html",
+			),
 			DataFunc: func(r *http.Request) (map[string]any, error) {
 
 				var usuario *types.Usuario
@@ -136,9 +136,14 @@ func lancamentosRouter() *RouterMap {
 			},
 		}),
 		"GET /lancamentos/criar": View(&ViewContext{
-			ViewName:  "CriarLancamento",
-			Templates: templateRegistry.Lancamentos.Comando,
-			Data:      map[string]any{"Active": "Lancamentos"},
+			ViewName: "CriarLancamento",
+			Template: parseTemplates(
+				"index.html",
+				"nav.html",
+				"lancamentos/comando/form.html",
+				"lancamentos/comando/criar.html",
+			),
+			Data: map[string]any{"Active": "Lancamentos"},
 		}),
 	}
 }

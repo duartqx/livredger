@@ -13,9 +13,7 @@ import (
 	"github.com/duartqx/livredger/internal/common/mimetypes"
 	"github.com/duartqx/livredger/internal/common/types"
 
-	"github.com/duartqx/livredger/internal/domain/comandos"
 	"github.com/duartqx/livredger/internal/domain/consultas"
-	"github.com/duartqx/livredger/internal/domain/entidade"
 
 	"github.com/duartqx/livredger/internal/infra"
 )
@@ -43,13 +41,6 @@ func contasRouter() *RouterMap {
 				return
 			}
 		},
-		"POST /api/contas": func(w http.ResponseWriter, r *http.Request) {
-
-			handler := ApiPostHandler[comandos.AbrirConta, entidade.Conta]{
-				Executor: executores.AbrirConta,
-			}
-
-			handler.Handle(w, r)
-		},
+		"POST /api/contas": ApiPostHandlerFunc(executores.AbrirConta),
 	}
 }

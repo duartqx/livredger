@@ -7,9 +7,9 @@ CREATE TABLE IF NOT EXISTS eventos (
 -- sql: Insere eventos lancamento
 INSERT INTO eventos (nome)
 VALUES
-	('ContaAberta'),
-	('ContaFechada'),
-	('ContaPausada'),
+    ('ContaAberta'),
+    ('ContaFechada'),
+    ('ContaPausada'),
     ('LancamentoPrevisto'),
     ('LancamentoPago'),
     ('LancamentoRecebido'),
