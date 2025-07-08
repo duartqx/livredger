@@ -1,7 +1,7 @@
 package consultas
 
 type ConsultaContas struct {
-	Nome string `json:"nome"`
+	Nome string `json:"nome" form:"nome"`
 }
 
 func ConsultaContasPadrao() *ConsultaContas {

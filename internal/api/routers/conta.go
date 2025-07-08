@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/duartqx/livredger/internal/api/decoders"
 	"github.com/duartqx/livredger/internal/api/response"
 
 	"github.com/duartqx/livredger/internal/application/services/executores"
@@ -27,6 +28,16 @@ func contasRouter() *RouterMap {
 			defer uow.Close()
 
 			consulta := consultas.ConsultaContasPadrao()
+
+			if err := r.ParseForm(); err != nil {
+				response.JsonErrorResponse(w, fmt.Errorf("%w: %w", decoders.DecoderError, err))
+				return
+			}
+
+			if err := decoders.Decoder().Decode(consulta, r.Form); err != nil {
+				response.JsonErrorResponse(w, fmt.Errorf("%w: %w", decoders.DecoderError, err))
+				return
+			}
 
 			resultado, err := visualizadores.BuscarContas(uow, consulta)
 
