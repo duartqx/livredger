@@ -18,7 +18,9 @@ func NewRepositorioDeConstaContas() *RepositorioDeConsultaContas {
 	return &RepositorioDeConsultaContas{}
 }
 
-func (r RepositorioDeConsultaContas) Buscar(db *sql.DB, consulta *consultas.ConsultaContas) (*[]*entidade.Conta, error) {
+func (r RepositorioDeConsultaContas) Buscar(
+	db *sql.DB, consulta *consultas.ConsultaContas,
+) (*[]*entidade.Conta, error) {
 
 	totais, _, err := squirrel.
 		Select("totais").
@@ -43,27 +45,26 @@ func (r RepositorioDeConsultaContas) Buscar(db *sql.DB, consulta *consultas.Cons
 		OrderBy("timestamp ASC")
 
 	if strings.Trim(consulta.Nome, " ") != "" {
-		builder = builder.Where("contas.nome = :nome")
+		builder = builder.Where(squirrel.Eq{"contas.nome": consulta.Nome})
 	}
 
-	stmt, _, err := builder.ToSql()
+	stmt, args, err := builder.ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", types.InternalError, err)
 	}
 
-	rows, err := db.Query(
-		stmt,
-		sql.Named("nome", consulta.Nome),
-	)
+	rows, err := db.Query(stmt, args...)
+
+	contas := make([]*entidade.Conta, 0)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("%w: Contas não encontradas", types.NotFoundError)
+			return &contas, nil
 		}
 		return nil, fmt.Errorf("%w: %w", types.InternalError, err)
 	}
 
-	contas := make([]*entidade.Conta, 0)
+	defer rows.Close()
 
 	for rows.Next() {
 

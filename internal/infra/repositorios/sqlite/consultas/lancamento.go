@@ -22,9 +22,7 @@ func NewRepositorioDeConsultaLancamentos() *RepositorioDeConsultaLancamentos {
 
 func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.ConsultaLancamentos) (*[]*e.Lancamento, error) {
 
-	sql := squirrel.StatementBuilder.PlaceholderFormat(squirrel.Question)
-
-	builder := sql.
+	builder := squirrel.
 		Select(
 			"id",
 			"evento",
@@ -45,21 +43,24 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 		builder = builder.GroupBy("chave").Having("max(versao)")
 	}
 
-	builder = r.adicionarFiltros(consulta, builder)
-
-	stmt, args, err := builder.ToSql()
+	stmt, args, err := r.condicoes(consulta, builder).ToSql()
 
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", t.InternalError, err)
 	}
 
-	rows, err := r.query(db, stmt, &args)
-
-	if err != nil {
-		return nil, fmt.Errorf("%w: %w", t.InternalError, err)
-	}
+	rows, err := db.Query(stmt, args...)
 
 	lancamentos := make([]*e.Lancamento, 0)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &lancamentos, nil
+		}
+		return nil, fmt.Errorf("%w: %w", t.InternalError, err)
+	}
+
+	defer rows.Close()
 
 	for rows.Next() {
 
@@ -89,7 +90,9 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 	return &lancamentos, nil
 }
 
-func (r RepositorioDeConsultaLancamentos) adicionarFiltros(consulta *c.ConsultaLancamentos, builder squirrel.SelectBuilder) squirrel.SelectBuilder {
+func (r RepositorioDeConsultaLancamentos) condicoes(
+	consulta *c.ConsultaLancamentos, builder squirrel.SelectBuilder,
+) squirrel.SelectBuilder {
 
 	if consulta.Chave != uuid.Nil {
 		return builder.Where(squirrel.Eq{"chave": consulta.Chave})
@@ -114,17 +117,4 @@ func (r RepositorioDeConsultaLancamentos) adicionarFiltros(consulta *c.ConsultaL
 	}
 
 	return builder
-}
-
-func (r RepositorioDeConsultaLancamentos) query(db *sql.DB, stmt string, args *[]any) (*sql.Rows, error) {
-	rows, err := db.Query(stmt, *args...)
-
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("%w: Lançamentos não encontrados", t.NotFoundError)
-		}
-		return nil, fmt.Errorf("%w: %w", t.InternalError, err)
-	}
-
-	return rows, nil
 }
