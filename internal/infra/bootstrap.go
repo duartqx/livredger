@@ -27,10 +27,13 @@ const DBMS string = "sqlite"
 
 type UnidadeDeTrabalho interface {
 	GetUsuario() *types.Usuario
-	GetDB() *sql.DB
 	GetRepositorios() repositorios.Repositorios
-	GetTransaction() *sql.Tx
+
+	GetDB() *sql.DB
+
 	BeginTransaction() (*sql.Tx, error)
+	GetTransaction() *sql.Tx
+
 	Commit() error
 	Rollback() error
 	Close()
