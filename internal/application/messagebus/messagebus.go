@@ -2,6 +2,7 @@ package messagebus
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"os"
 	"reflect"
@@ -13,9 +14,18 @@ import (
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-var logger = slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
-	Level: func() *slog.LevelVar { lv := slog.LevelVar{}; lv.Set(slog.LevelDebug); return &lv }(),
-}))
+var logger = slog.New(
+	slog.NewJSONHandler(
+		os.Stderr,
+		&slog.HandlerOptions{
+			Level: func() *slog.LevelVar {
+				lv := slog.LevelVar{}
+				lv.Set(slog.LevelDebug)
+				return &lv
+			}(),
+		},
+	),
+)
 
 var MessageBus = bus{
 	registry: make(map[domain.Mensagem][]MessageHandler),
@@ -32,7 +42,13 @@ type bus struct {
 
 func (mb *bus) Subscribe(mensagem any, handler func(infra.UnidadeDeTrabalho, any) error) {
 
-	key := domain.Mensagem(reflect.TypeOf(mensagem).Name())
+	typ := reflect.TypeOf(mensagem)
+
+	if typ.Kind() != reflect.Struct {
+		panic(fmt.Sprintf("Mensagem não permitida, não é Struct"))
+	}
+
+	key := domain.Mensagem(typ.Name())
 
 	handlers := mb.registry[key]
 
@@ -54,13 +70,13 @@ func (mb *bus) Publish(uow infra.UnidadeDeTrabalho, mensagem any) <-chan error {
 
 		key := domain.Mensagem(reflect.TypeOf(mensagem).Name())
 
-		logger.Debug(string(key), "Status", "Publishing")
-
 		handlers, ok := mb.registry[key]
 
 		if !ok || len(handlers) == 0 {
 			errCh <- nil
 			return
+		} else {
+			logger.Debug(string(key), "Status", "Publishing")
 		}
 
 		ctx, cancel := context.WithCancel(context.Background())
