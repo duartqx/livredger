@@ -17,6 +17,7 @@ const (
 	OUTRO          = "Outro"
 	PETSHOP        = "Petshop"
 	RECEITA_EXTRA  = "Receita Extra"
+	RESTAURANTE    = "Restaurante"
 	SALARIO        = "Salário"
 	SAUDE          = "Saúde"
 	TELEFONIA      = "Telefonia"
@@ -41,6 +42,7 @@ var NATUREZAS []string = []string{
 	OUTRO,
 	PETSHOP,
 	RECEITA_EXTRA,
+	RESTAURANTE,
 	SALARIO,
 	SAUDE,
 	TELEFONIA,
