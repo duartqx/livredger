@@ -17,6 +17,13 @@ func FabricaDeRepositoriosDeLancamento() *repositorios.RepositoriosLancamentos {
 func FabricaDeRepositoriosDeContas() *repositorios.RepositoriosContas {
 	return &repositorios.RepositoriosContas{
 		Comando:  comandos.NewRepositorioDeComandoContas(),
-		Consulta: consultas.NewRepositorioDeConstaContas(),
+		Consulta: consultas.NewRepositorioDeConsultaContas(),
+	}
+}
+
+func FabricaDeRepositoriosDeDemonstrativos() *repositorios.RepositoriosDemonstrativos {
+	return &repositorios.RepositoriosDemonstrativos{
+		Comando:  comandos.NewRepositorioDeComandoDemonstrativos(),
+		Consulta: consultas.NewRepositorioDeConsultaDemonstrativos(),
 	}
 }

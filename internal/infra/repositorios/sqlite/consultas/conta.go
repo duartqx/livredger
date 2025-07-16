@@ -14,7 +14,7 @@ import (
 
 type RepositorioDeConsultaContas struct{}
 
-func NewRepositorioDeConstaContas() *RepositorioDeConsultaContas {
+func NewRepositorioDeConsultaContas() *RepositorioDeConsultaContas {
 	return &RepositorioDeConsultaContas{}
 }
 

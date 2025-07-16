@@ -10,8 +10,9 @@ import (
 )
 
 type Repositorios struct {
-	lancamentos *repositorios.RepositoriosLancamentos
-	contas      *repositorios.RepositoriosContas
+	lancamentos    *repositorios.RepositoriosLancamentos
+	contas         *repositorios.RepositoriosContas
+	demonstrativos *repositorios.RepositoriosDemonstrativos
 }
 
 func (r Repositorios) Lancamentos() *repositorios.RepositoriosLancamentos {
@@ -20,6 +21,10 @@ func (r Repositorios) Lancamentos() *repositorios.RepositoriosLancamentos {
 
 func (r Repositorios) Contas() *repositorios.RepositoriosContas {
 	return r.contas
+}
+
+func (r Repositorios) Demonstrativos() *repositorios.RepositoriosDemonstrativos {
+	return r.demonstrativos
 }
 
 // TODO: Refatorar para ser Build target
@@ -51,8 +56,9 @@ func FabricaDeRepositorios() repositorios.Repositorios {
 	switch DBMS {
 	case "sqlite":
 		return &Repositorios{
-			lancamentos: sqlite.FabricaDeRepositoriosDeLancamento(),
-			contas:      sqlite.FabricaDeRepositoriosDeContas(),
+			lancamentos:    sqlite.FabricaDeRepositoriosDeLancamento(),
+			contas:         sqlite.FabricaDeRepositoriosDeContas(),
+			demonstrativos: sqlite.FabricaDeRepositoriosDeDemonstrativos(),
 		}
 	default:
 		panic(fmt.Sprintf("Repositorios não configurados para DBMS: {%s}", DBMS))
