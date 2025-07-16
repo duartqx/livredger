@@ -7,6 +7,8 @@ import (
 	"github.com/duartqx/livredger/internal/domain/comandos"
 	"github.com/duartqx/livredger/internal/domain/eventos"
 	"github.com/duartqx/livredger/internal/domain/mensagens"
+	"github.com/duartqx/livredger/internal/domain/value/meios"
+	"github.com/duartqx/livredger/internal/domain/value/naturezas"
 	"github.com/duartqx/livredger/internal/infra"
 )
 
@@ -24,9 +26,10 @@ func LancamentoContaCriada(uow infra.UnidadeDeTrabalho, mensagem any) error {
 		Chave:          evento.Chave,
 		Versao:         1,
 		Valores:        0,
-		Natureza:       "Outro",
-		MeioFinanceiro: "Outro",
+		Natureza:       naturezas.OUTRO,
+		MeioFinanceiro: meios.OUTRO,
 		Descricao:      "Abertura da Conta",
+		Vencimento:     evento.Timestamp,
 	})
 
 	return err
