@@ -23,6 +23,8 @@ func (r RepositorioDeConsultaDemonstrativos) DemonstrativosDosUltimosTresMeses(d
 		SELECT id, chave, mes, despesa, receita, saldo, timestamp
 		FROM demonstrativos_mensais
 		WHERE chave = :chave
+		GROUP BY mes
+		HAVING MAX(timestamp)
 		ORDER BY mes DESC
 		LIMIT 3
 		`,
@@ -71,6 +73,8 @@ func (r RepositorioDeConsultaDemonstrativos) DemonstrativoMensal(db *sql.DB, con
 		SELECT id, chave, mes, despesa, receita, saldo, timestamp
 		FROM demonstrativos_mensais
 		WHERE chave = :chave AND mes = :mes
+		ORDER BY timestamp DESC
+		LIMIT 1
 		`,
 		sql.Named("chave", consulta.Chave.String()),
 		sql.Named("mes", consulta.Mes.Format("2006-01")),
