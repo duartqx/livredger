@@ -4,11 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"io/fs"
 	"log"
 	"net/http"
 
 	"github.com/duartqx/livredger/internal/api/decoders"
 	"github.com/duartqx/livredger/internal/api/response"
+	"github.com/duartqx/livredger/internal/api/templates"
 )
 
 type DataFunc func(r *http.Request) (map[string]any, error)
@@ -67,11 +69,11 @@ func View(ctx *ViewContext) http.HandlerFunc {
 	}
 }
 
-func viewsRouter() *RouterMap {
-	return &RouterMap{
+func ViewsRouter(fs fs.FS) *map[string]http.HandlerFunc {
+	return &map[string]http.HandlerFunc{
 		"GET /{$}": View(&ViewContext{
 			ViewName: "Index",
-			Template: parseTemplates("index.html", "nav.html"),
+			Template: templates.Templates(fs, "index.html", "nav.html"),
 			Data:     map[string]any{"Active": "Index"},
 		}),
 	}

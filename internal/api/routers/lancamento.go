@@ -3,12 +3,15 @@ package routers
 import (
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"net/http"
 
 	"github.com/google/uuid"
 
+	"github.com/duartqx/livredger/internal/api/comandos"
 	"github.com/duartqx/livredger/internal/api/decoders"
 	"github.com/duartqx/livredger/internal/api/response"
+	"github.com/duartqx/livredger/internal/api/templates"
 
 	"github.com/duartqx/livredger/internal/application/services/executores"
 	"github.com/duartqx/livredger/internal/application/services/visualizadores"
@@ -35,8 +38,8 @@ func parseConsultaDoForm(r *http.Request) (*consultas.ConsultaLancamentos, error
 	return consulta, nil
 }
 
-func lancamentosRouter() *RouterMap {
-	return &RouterMap{
+func LancamentosRouter(fs fs.FS) *map[string]http.HandlerFunc {
+	return &map[string]http.HandlerFunc{
 		"GET /api/lancamentos": func(w http.ResponseWriter, r *http.Request) {
 			var usuario *types.Usuario
 
@@ -64,10 +67,11 @@ func lancamentosRouter() *RouterMap {
 				return
 			}
 		},
-		"POST /api/lancamentos": ApiPostHandlerFunc(executores.CriarLancamento),
+		"POST /api/lancamentos": comandos.GenericComandoHandlerFunc(executores.CriarLancamento),
 		"GET /lancamentos": View(&ViewContext{
 			ViewName: "ConsultarLancamentos",
-			Template: parseTemplates(
+			Template: templates.Templates(
+				fs,
 				"index.html",
 				"nav.html",
 				"lancamentos/consulta/lancamento.html",
@@ -100,7 +104,8 @@ func lancamentosRouter() *RouterMap {
 		}),
 		"GET /lancamentos/{chave}": View(&ViewContext{
 			ViewName: "DetalhesLancamentos",
-			Template: parseTemplates(
+			Template: templates.Templates(
+				fs,
 				"index.html",
 				"nav.html",
 				"lancamentos/comando/form.html",
@@ -137,7 +142,8 @@ func lancamentosRouter() *RouterMap {
 		}),
 		"GET /lancamentos/criar": View(&ViewContext{
 			ViewName: "CriarLancamento",
-			Template: parseTemplates(
+			Template: templates.Templates(
+				fs,
 				"index.html",
 				"nav.html",
 				"lancamentos/comando/form.html",

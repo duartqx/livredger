@@ -1,4 +1,4 @@
-package routers
+package comandos
 
 import (
 	"encoding/json"
@@ -15,7 +15,7 @@ import (
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-func ApiPostHandlerFunc[Comando domain.Comando, Entidade any](
+func GenericComandoHandlerFunc[Comando domain.Comando, Entidade any](
 	executor func(infra.UnidadeDeTrabalho, *Comando) (*Entidade, error),
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

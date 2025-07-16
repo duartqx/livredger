@@ -12,7 +12,7 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/duartqx/livredger/internal/api/routers"
+	"github.com/duartqx/livredger/internal/api"
 	"github.com/duartqx/livredger/internal/application/registry"
 )
 
@@ -35,10 +35,10 @@ func main() {
 	registry.SetupEventHandlers()
 
 	srv := &http.Server{
-		Handler: routers.Router(
-			&routers.Dependencies{
+		Handler: api.Router(
+			&api.Dependencies{
 				Templates: templates,
-				Static: &[]routers.Static{
+				Static: &[]api.Static{
 					{Path: "/static/", Fs: static},
 				},
 			},

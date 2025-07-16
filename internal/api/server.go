@@ -1,4 +1,4 @@
-package routers
+package api
 
 import (
 	"fmt"
@@ -11,9 +11,9 @@ import (
 	lm "github.com/duartqx/ddgomiddlewares/logger"
 	rm "github.com/duartqx/ddgomiddlewares/recovery"
 	tr "github.com/duartqx/ddgomiddlewares/trailling"
-)
 
-var templatesFS fs.FS
+	"github.com/duartqx/livredger/internal/api/routers"
+)
 
 type Static struct {
 	Fs   fs.FS
@@ -43,9 +43,9 @@ func (m *Mux) Group(pattern string, handler http.Handler) error {
 	return nil
 }
 
-func (m *Mux) AddRoutes(rms ...*RouterMap) {
+func (m *Mux) AddRoutes(rms ...RouterMap) {
 	for _, rm := range rms {
-		for pattern, router := range *rm {
+		for pattern, router := range rm {
 			m.HandleFunc(pattern, router)
 		}
 	}
@@ -60,8 +60,6 @@ func (m Mux) Use(mux http.Handler, middlewares ...i.Middleware) http.Handler {
 }
 
 func Router(dependencies *Dependencies) http.Handler {
-	templatesFS = dependencies.Templates
-
 	mux := Mux{ServeMux: http.NewServeMux()}
 
 	for _, s := range *dependencies.Static {
@@ -69,9 +67,9 @@ func Router(dependencies *Dependencies) http.Handler {
 	}
 
 	mux.AddRoutes(
-		lancamentosRouter(),
-		contasRouter(),
-		viewsRouter(),
+		RouterMap(*routers.LancamentosRouter(dependencies.Templates)),
+		RouterMap(*routers.ContasRouter(dependencies.Templates)),
+		RouterMap(*routers.ViewsRouter(dependencies.Templates)),
 	)
 
 	return mux.Use(

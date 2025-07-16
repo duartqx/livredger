@@ -3,8 +3,10 @@ package routers
 import (
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"net/http"
 
+	"github.com/duartqx/livredger/internal/api/comandos"
 	"github.com/duartqx/livredger/internal/api/decoders"
 	"github.com/duartqx/livredger/internal/api/response"
 
@@ -19,8 +21,8 @@ import (
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-func contasRouter() *RouterMap {
-	return &RouterMap{
+func ContasRouter(fs fs.FS) *map[string]http.HandlerFunc {
+	return &map[string]http.HandlerFunc{
 		"GET /api/contas": func(w http.ResponseWriter, r *http.Request) {
 			var usuario *types.Usuario
 
@@ -52,6 +54,6 @@ func contasRouter() *RouterMap {
 				return
 			}
 		},
-		"POST /api/contas": ApiPostHandlerFunc(executores.AbrirConta),
+		"POST /api/contas": comandos.GenericComandoHandlerFunc(executores.AbrirConta),
 	}
 }
