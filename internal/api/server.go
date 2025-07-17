@@ -43,9 +43,9 @@ func (m *Mux) Group(pattern string, handler http.Handler) error {
 	return nil
 }
 
-func (m *Mux) AddRoutes(rms ...RouterMap) {
+func (m *Mux) AddRoutes(rms ...*RouterMap) {
 	for _, rm := range rms {
-		for pattern, router := range rm {
+		for pattern, router := range *rm {
 			m.HandleFunc(pattern, router)
 		}
 	}
@@ -67,9 +67,9 @@ func Router(dependencies *Dependencies) http.Handler {
 	}
 
 	mux.AddRoutes(
-		RouterMap(*routers.LancamentosRouter(dependencies.Templates)),
-		RouterMap(*routers.ContasRouter(dependencies.Templates)),
-		RouterMap(*routers.ViewsRouter(dependencies.Templates)),
+		(*RouterMap)(routers.LancamentosRouter(dependencies.Templates)),
+		(*RouterMap)(routers.ContasRouter(dependencies.Templates)),
+		(*RouterMap)(routers.ViewsRouter(dependencies.Templates)),
 	)
 
 	return mux.Use(
