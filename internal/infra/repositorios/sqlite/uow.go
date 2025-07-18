@@ -1,6 +1,7 @@
 package sqlite
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 
@@ -10,10 +11,15 @@ import (
 )
 
 type UnidadeDeTrabalhoSqlite struct {
+	Context      context.Context
 	Usuario      *types.Usuario
 	DB           *sql.DB
 	Tx           *sql.Tx
 	Repositorios repositorios.Repositorios
+}
+
+func (u UnidadeDeTrabalhoSqlite) GetContext() context.Context {
+	return u.Context
 }
 
 func (u UnidadeDeTrabalhoSqlite) GetUsuario() *types.Usuario {

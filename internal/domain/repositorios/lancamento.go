@@ -1,6 +1,7 @@
 package repositorios
 
 import (
+	"context"
 	"database/sql"
 
 	"github.com/duartqx/livredger/internal/domain/comandos"
@@ -9,7 +10,7 @@ import (
 )
 
 type RepositorioDeConsultaLancamentos interface {
-	Buscar(db *sql.DB, consulta *consultas.ConsultaLancamentos) (*[]*entidade.Lancamento, error)
+	Buscar(ctx context.Context, db *sql.DB, consulta *consultas.ConsultaLancamentos) (*[]*entidade.Lancamento, error)
 }
 
 type RepositorioDeComandoLancamentos interface {

@@ -45,7 +45,12 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 		"GET /api/lancamentos": func(w http.ResponseWriter, r *http.Request) {
 			var usuario *types.Usuario
 
-			uow := infra.Bootstrap(usuario)
+			uow, err := infra.Bootstrap(r.Context(), usuario)
+			if err != nil {
+				response.JsonErrorResponse(w, err)
+
+				return
+			}
 			defer uow.Close()
 
 			consulta, err := parseConsultaDoForm(r)
@@ -84,7 +89,10 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 			DataFunc: func(r *http.Request) (map[string]any, error) {
 				var usuario *types.Usuario
 
-				uow := infra.Bootstrap(usuario)
+				uow, err := infra.Bootstrap(r.Context(), usuario)
+				if err != nil {
+					return nil, err
+				}
 				defer uow.Close()
 
 				consulta, err := parseConsultaDoForm(r)
@@ -118,7 +126,10 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 
 				var usuario *types.Usuario
 
-				uow := infra.Bootstrap(usuario)
+				uow, err := infra.Bootstrap(r.Context(), usuario)
+				if err != nil {
+					return nil, err
+				}
 				defer uow.Close()
 
 				chave, err := uuid.Parse(r.PathValue("chave"))

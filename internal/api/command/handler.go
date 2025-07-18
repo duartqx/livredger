@@ -35,7 +35,12 @@ func GenericCommandHandlerFunc[Command domain.Command, Entidade any](
 
 		var usuario *types.Usuario
 
-		uow := infra.Bootstrap(usuario)
+		uow, err := infra.Bootstrap(r.Context(), usuario)
+		if err != nil {
+			response.JsonErrorResponse(w, err)
+
+			return
+		}
 		defer uow.Close()
 
 		resultado, err := executor(uow, &comando)

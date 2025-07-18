@@ -1,6 +1,7 @@
 package consultas
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -20,7 +21,7 @@ func NewRepositorioDeConsultaLancamentos() *RepositorioDeConsultaLancamentos {
 	return &RepositorioDeConsultaLancamentos{}
 }
 
-func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.ConsultaLancamentos) (*[]*e.Lancamento, error) {
+func (r RepositorioDeConsultaLancamentos) Buscar(ctx context.Context, db *sql.DB, consulta *c.ConsultaLancamentos) (*[]*e.Lancamento, error) {
 
 	builder := squirrel.
 		Select(
@@ -49,7 +50,7 @@ func (r RepositorioDeConsultaLancamentos) Buscar(db *sql.DB, consulta *c.Consult
 		return nil, fmt.Errorf("%w: %w", t.InternalError, err)
 	}
 
-	rows, err := db.Query(stmt, args...)
+	rows, err := db.QueryContext(ctx, stmt, args...)
 
 	lancamentos := make([]*e.Lancamento, 0)
 

@@ -1,10 +1,13 @@
 package api
 
 import (
+	"cmp"
+	"context"
 	"fmt"
 	"io/fs"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/duartqx/ddgomiddlewares/cors"
 	"github.com/duartqx/ddgomiddlewares/interfaces"
@@ -22,8 +25,9 @@ type Static struct {
 }
 
 type Dependencies struct {
-	Static    *[]Static
-	Templates fs.FS
+	Static         *[]Static
+	Templates      fs.FS
+	RequestTimeout int
 }
 
 type Mux struct {
@@ -73,6 +77,18 @@ func Router(dependencies *Dependencies) http.Handler {
 
 	return mux.Use(
 		mux,
+		func(next http.Handler) http.Handler {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+				ctx, cancel := context.WithTimeout(
+					r.Context(),
+					time.Second*time.Duration(cmp.Or(dependencies.RequestTimeout, 5)),
+				)
+				defer cancel()
+
+				next.ServeHTTP(w, r.WithContext(ctx))
+			})
+		},
 		trailling.TrailingSlashMiddleware,
 		logger.LoggerMiddleware,
 		recovery.RecoveryMiddleware,

@@ -12,7 +12,7 @@ import (
 func BuscarLancamentos(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaLancamentos) (
 	*Resultado[entidade.Lancamento], error,
 ) {
-	lancamentos, err := uow.GetRepositorios().Lancamentos().Consulta.Buscar(uow.GetDB(), consulta)
+	lancamentos, err := uow.GetRepositorios().Lancamentos().Consulta.Buscar(uow.GetContext(), uow.GetDB(), consulta)
 
 	lancamentos = cmp.Or(lancamentos, &[]*entidade.Lancamento{})
 
@@ -27,7 +27,7 @@ func BuscarLancamentos(uow infra.UnidadeDeTrabalho, consulta *consultas.Consulta
 func BuscarContas(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaContas) (
 	*Resultado[entidade.Conta], error,
 ) {
-	contas, err := uow.GetRepositorios().Contas().Consulta.Buscar(uow.GetDB(), consulta)
+	contas, err := uow.GetRepositorios().Contas().Consulta.Buscar(uow.GetContext(), uow.GetDB(), consulta)
 
 	contas = cmp.Or(contas, &[]*entidade.Conta{})
 

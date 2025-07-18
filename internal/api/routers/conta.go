@@ -25,7 +25,12 @@ func ContasRouter(fs fs.FS) *common.RouterMap {
 		"GET /api/contas": func(w http.ResponseWriter, r *http.Request) {
 			var usuario *types.Usuario
 
-			uow := infra.Bootstrap(usuario)
+			uow, err := infra.Bootstrap(r.Context(), usuario)
+			if err != nil {
+				response.JsonErrorResponse(w, err)
+
+				return
+			}
 			defer uow.Close()
 
 			if err := r.ParseForm(); err != nil {

@@ -66,33 +66,33 @@ func dbFilename(usuario *t.Usuario) string {
 	return "./local.db"
 }
 
-func Connect(usuario *t.Usuario) (db *sql.DB) {
+func Connect(usuario *t.Usuario) (db *sql.DB, err error) {
 
 	dbFilenameStr := dbFilename(usuario)
 
 	_, errDbFileExists := os.Stat(dbFilenameStr)
 
-	db, err := sql.Open("libsql", fmt.Sprintf("file:%s", dbFilenameStr))
+	db, err = sql.Open("libsql", fmt.Sprintf("file:%s", dbFilenameStr))
 
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	if os.IsNotExist(errDbFileExists) {
 		if err := executarMigracoes(db); err != nil {
-			panic(err.Error())
+			return nil, err
 		}
 	}
 
 	_, err = db.Exec("PRAGMA foreign_keys = ON;")
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	_, err = db.Exec("PRAGMA strict = ON;")
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
-	return db
+	return db, nil
 }

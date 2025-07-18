@@ -24,23 +24,30 @@ func JsonResponse[C any](w http.ResponseWriter, response *visualizadores.Respost
 
 	w.Header().Set("Content-Type", mimetypes.JSON)
 
-	writeHeaderStatus(w, response.Error)
+	status := getStatusByError(response.Error)
+
+	if status == http.StatusInternalServerError && response.Error != nil {
+		panic(response.Error)
+	}
+
+	w.WriteHeader(status)
 
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		panic(err)
 	}
+
 }
 
-func writeHeaderStatus(w http.ResponseWriter, err error) {
+func getStatusByError(err error) int {
 	switch {
 	case err == nil:
-		return
+		return http.StatusOK
 	case errors.Is(err, types.NotFoundError):
-		w.WriteHeader(http.StatusNotFound)
+		return http.StatusNotFound
 	case errors.Is(err, types.BusinessLogicError) || errors.Is(err, &json.UnmarshalTypeError{}) || errors.Is(err, decoders.DecoderError):
-		w.WriteHeader(http.StatusBadRequest)
+		return http.StatusBadRequest
 	default:
-		panic(err)
+		return http.StatusInternalServerError
 	}
 }
 
@@ -48,16 +55,18 @@ func JsonErrorResponse(w http.ResponseWriter, err error) {
 
 	w.Header().Set("Content-Type", mimetypes.JSON)
 
-	writeHeaderStatus(w, err)
+	status := getStatusByError(err)
 
+	w.WriteHeader(status)
 	w.Write(*marshal(err))
 }
 
 func ErrorResponse(w http.ResponseWriter, err error) {
 	w.Header().Set("Content-Type", mimetypes.HTML)
 
-	writeHeaderStatus(w, err)
+	status := getStatusByError(err)
 
+	w.WriteHeader(status)
 	w.Write([]byte(err.Error()))
 }
 

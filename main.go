@@ -21,14 +21,24 @@ const (
 	templatesPath = "internal/presentation/templates"
 )
 
+type config struct {
+	Port           int
+	ServerTimeout  int
+	RequestTimeout int
+}
+
+var cfg config
+
 var (
 	static    fs.FS
 	templates fs.FS
-	port      int
 )
 
 func main() {
-	flag.IntVar(&port, "port", 8000, "The port the server will run at")
+
+	flag.IntVar(&cfg.Port, "port", 8000, "The port the server will run at")
+	flag.IntVar(&cfg.ServerTimeout, "servertm", 15, "The time in seconds for server timeout")
+	flag.IntVar(&cfg.RequestTimeout, "requesttm", 5, "The time in seconds for request timeout")
 
 	flag.Parse()
 
@@ -41,11 +51,12 @@ func main() {
 				Static: &[]api.Static{
 					{Path: "/static/", Fs: static},
 				},
+				RequestTimeout: cfg.RequestTimeout,
 			},
 		),
-		Addr:         fmt.Sprintf(":%d", port),
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+		Addr:         fmt.Sprintf(":%d", cfg.Port),
+		WriteTimeout: time.Duration(cfg.ServerTimeout) * time.Second,
+		ReadTimeout:  time.Duration(cfg.ServerTimeout) * time.Second,
 	}
 
 	go func() {
@@ -54,14 +65,14 @@ func main() {
 		}
 	}()
 
-	log.Println("Listening and Serving at:", port)
+	log.Println("Listening and Serving at:", cfg.Port)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
 	<-c
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*time.Duration(cfg.ServerTimeout))
 	defer cancel()
 
 	srv.Shutdown(ctx)

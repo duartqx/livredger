@@ -1,6 +1,7 @@
 package infra
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 
@@ -31,6 +32,8 @@ func (r Repositorios) Demonstrativos() *repositorios.RepositoriosDemonstrativos 
 const DBMS string = "sqlite"
 
 type UnidadeDeTrabalho interface {
+	GetContext() context.Context
+
 	GetUsuario() *types.Usuario
 	GetRepositorios() repositorios.Repositorios
 
@@ -44,12 +47,21 @@ type UnidadeDeTrabalho interface {
 	Close()
 }
 
-func Bootstrap(usuario *types.Usuario) UnidadeDeTrabalho {
-	return &sqlite.UnidadeDeTrabalhoSqlite{
+func Bootstrap(ctx context.Context, usuario *types.Usuario) (UnidadeDeTrabalho, error) {
+	db, err := Connect(ctx, usuario)
+
+	if err != nil {
+		return nil, err
+	}
+
+	uow := &sqlite.UnidadeDeTrabalhoSqlite{
+		Context:      ctx,
 		Usuario:      usuario,
-		DB:           Connect(usuario),
+		DB:           db,
 		Repositorios: FabricaDeRepositorios(),
 	}
+
+	return uow, nil
 }
 
 func FabricaDeRepositorios() repositorios.Repositorios {
@@ -65,11 +77,34 @@ func FabricaDeRepositorios() repositorios.Repositorios {
 	}
 }
 
-func Connect(usuario *types.Usuario) *sql.DB {
-	switch DBMS {
-	case "sqlite":
-		return sqlite.Connect(usuario)
-	default:
-		panic(fmt.Sprintf("Conexão para {%s} não configurada", DBMS))
+func Connect(ctx context.Context, usuario *types.Usuario) (*sql.DB, error) {
+
+	type conn struct {
+		Err error
+		Db  *sql.DB
+	}
+
+	connChan := make(chan *conn)
+
+	go func(dbChan chan *conn) {
+
+		var conn conn
+
+		switch DBMS {
+		case "sqlite":
+			conn.Db, conn.Err = sqlite.Connect(usuario)
+		default:
+			conn.Err = fmt.Errorf("%w: Conexão para {%s} não configurada", types.InternalError, DBMS)
+		}
+
+		dbChan <- &conn
+
+	}(connChan)
+
+	select {
+	case conn := <-connChan:
+		return conn.Db, conn.Err
+	case <-ctx.Done():
+		return nil, fmt.Errorf("%w: Não foi possível iniciar uma conexão para {%s}", types.TimeOut, DBMS)
 	}
 }
