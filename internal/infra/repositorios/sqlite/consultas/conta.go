@@ -10,6 +10,7 @@ import (
 	"github.com/duartqx/livredger/internal/common/types"
 	"github.com/duartqx/livredger/internal/domain/consultas"
 	"github.com/duartqx/livredger/internal/domain/entidade"
+	"github.com/google/uuid"
 )
 
 type RepositorioDeConsultaContas struct{}
@@ -22,29 +23,33 @@ func (r RepositorioDeConsultaContas) Buscar(
 	db *sql.DB, consulta *consultas.ConsultaContas,
 ) (*[]*entidade.Conta, error) {
 
-	totais, _, err := squirrel.
-		Select("totais").
-		From("lancamentos").
-		Where("lancamentos.chave = contas.chave").
-		OrderBy("lancamentos.timestamp DESC").
-		Limit(1).
-		ToSql()
-
-	if err != nil {
-		return nil, fmt.Errorf("%w: %w", types.InternalError, err)
-	}
-
 	builder := squirrel.
 		Select(
 			"chave",
 			"nome",
 			"timestamp",
-			fmt.Sprintf("COALESCE((%s), 0) as totais", totais),
+			`
+			COALESCE(
+				(
+					SELECT
+						totais
+					FROM lancamentos
+					WHERE
+						lancamentos.evento not in ('ContaAberta')
+						AND lancamentos.chave = contas.chave
+					GROUP BY chave
+					HAVING max(vencimento)
+				),
+				0
+			) AS totais
+			`,
 		).
 		From("contas").
 		OrderBy("timestamp ASC")
 
-	if strings.Trim(consulta.Nome, " ") != "" {
+	if consulta.Chave != uuid.Nil {
+		builder = builder.Where(squirrel.Eq{"contas.chave": consulta.Chave.String()})
+	} else if strings.Trim(consulta.Nome, " ") != "" {
 		builder = builder.Where(squirrel.Eq{"contas.nome": consulta.Nome})
 	}
 
