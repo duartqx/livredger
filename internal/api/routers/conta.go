@@ -1,7 +1,6 @@
 package routers
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/fs"
 	"net/http"
@@ -14,7 +13,6 @@ import (
 	"github.com/duartqx/livredger/internal/application/services/executores"
 	"github.com/duartqx/livredger/internal/application/services/visualizadores"
 
-	"github.com/duartqx/livredger/internal/common/mimetypes"
 	"github.com/duartqx/livredger/internal/common/types"
 
 	"github.com/duartqx/livredger/internal/domain/consultas"
@@ -30,30 +28,39 @@ func ContasRouter(fs fs.FS) *common.RouterMap {
 			uow := infra.Bootstrap(usuario)
 			defer uow.Close()
 
-			consulta := consultas.ConsultaContasPadrao()
-
 			if err := r.ParseForm(); err != nil {
-				response.JsonErrorResponse(w, fmt.Errorf("%w: %w", decoders.DecoderError, err))
+				response.JsonErrorResponse(w, err)
+
 				return
 			}
 
+			consulta := consultas.ConsultaContasPadrao()
+
 			if err := decoders.Decoder().Decode(consulta, r.Form); err != nil {
-				response.JsonErrorResponse(w, fmt.Errorf("%w: %w", decoders.DecoderError, err))
+
+				response.JsonResponse(w, &response.Response[consultas.ConsultaContas]{
+					Error: fmt.Errorf("%w: %w", decoders.DecoderError, err),
+					Consulta: &consultas.Consulta[consultas.ConsultaContas]{
+						Parsed: consulta,
+						Raw:    r.Form,
+					},
+				})
+
 				return
 			}
 
 			resultado, err := visualizadores.BuscarContas(uow, consulta)
 
-			if err != nil {
-				response.JsonErrorResponse(w, err)
-				return
-			}
+			response.JsonResponse(w, &response.Response[consultas.ConsultaContas]{
+				Resultado: resultado,
+				Error:     err,
+				Consulta: &consultas.Consulta[consultas.ConsultaContas]{
+					Parsed: consulta,
+					Raw:    r.Form,
+				},
+			})
 
-			w.Header().Set("Content-Type", mimetypes.JSON)
-			if err := json.NewEncoder(w).Encode(resultado); err != nil {
-				response.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.InternalError, err))
-				return
-			}
+			return
 		},
 		"POST /api/contas": command.GenericCommandHandlerFunc(executores.AbrirConta),
 	}

@@ -1,7 +1,6 @@
 package routers
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/fs"
 	"net/http"
@@ -17,7 +16,6 @@ import (
 	"github.com/duartqx/livredger/internal/application/services/executores"
 	"github.com/duartqx/livredger/internal/application/services/visualizadores"
 
-	"github.com/duartqx/livredger/internal/common/mimetypes"
 	"github.com/duartqx/livredger/internal/common/types"
 
 	"github.com/duartqx/livredger/internal/domain/consultas"
@@ -25,15 +23,18 @@ import (
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-func parseConsultaDoForm(r *http.Request) (*consultas.ConsultaLancamentos, error) {
+func parseConsultaDoForm(r *http.Request) (*consultas.Consulta[consultas.ConsultaLancamentos], error) {
 	if err := r.ParseForm(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %w", types.BusinessLogicError, err)
 	}
 
-	consulta := consultas.ConsultaLancamentosPadrao()
+	consulta := &consultas.Consulta[consultas.ConsultaLancamentos]{
+		Raw:    r.Form,
+		Parsed: consultas.ConsultaLancamentosPadrao(),
+	}
 
 	if err := decoders.Decoder().Decode(consulta, r.Form); err != nil {
-		return nil, fmt.Errorf("%w: %w", decoders.DecoderError, err)
+		return consulta, fmt.Errorf("%w: %w", decoders.DecoderError, err)
 	}
 
 	return consulta, nil
@@ -50,23 +51,24 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 			consulta, err := parseConsultaDoForm(r)
 
 			if err != nil {
-				response.JsonErrorResponse(w, err)
+
+				response.JsonResponse(w, &response.Response[consultas.ConsultaLancamentos]{
+					Consulta: consulta,
+					Error:    err,
+				})
+
 				return
 			}
 
-			resultado, err := visualizadores.BuscarLancamentos(uow, consulta)
+			resultado, err := visualizadores.BuscarLancamentos(uow, consulta.Parsed)
 
-			if err != nil {
-				response.JsonErrorResponse(w, err)
-				return
-			}
+			response.JsonResponse(w, &response.Response[consultas.ConsultaLancamentos]{
+				Consulta:  consulta,
+				Resultado: resultado,
+				Error:     err,
+			})
 
-			w.Header().Set("Content-Type", mimetypes.JSON)
-
-			if err := json.NewEncoder(w).Encode(resultado); err != nil {
-				response.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.InternalError, err))
-				return
-			}
+			return
 		},
 		"POST /api/lancamentos": command.GenericCommandHandlerFunc(executores.CriarLancamento),
 		"GET /lancamentos": View(&ViewContext{
@@ -91,7 +93,7 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 					return nil, err
 				}
 
-				resultado, err := visualizadores.BuscarLancamentos(uow, consulta)
+				resultado, err := visualizadores.BuscarLancamentos(uow, consulta.Parsed)
 
 				if err != nil {
 					return nil, err

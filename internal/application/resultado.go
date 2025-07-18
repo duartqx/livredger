@@ -7,13 +7,12 @@ type Enumerated[Item any] struct {
 	IsLast  bool
 }
 
-type Resultado[Consulta, Item any] struct {
-	Total    int       `json:"total"`
-	Consulta *Consulta `json:"consulta"`
-	Itens    *[]*Item  `json:"itens"`
+type Resultado[Item any] struct {
+	Total int      `json:"total"`
+	Itens *[]*Item `json:"itens"`
 }
 
-func (r Resultado[Consulta, Item]) Enumerated() *[]Enumerated[Item] {
+func (r Resultado[Item]) Enumerated() *[]Enumerated[Item] {
 	enumerated := []Enumerated[Item]{}
 
 	for index, item := range *r.Itens {
