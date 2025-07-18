@@ -21,7 +21,7 @@ func LancamentoContaCriada(uow infra.UnidadeDeTrabalho, mensagem any) error {
 
 	tx := uow.GetTransaction()
 
-	_, err := uow.GetRepositorios().Lancamentos().Comando.Criar(tx, &comandos.CriarLancamento{
+	_, err := uow.GetRepositorios().Lancamentos.Comando.Criar(tx, &comandos.CriarLancamento{
 		Evento:         string(eventos.ContaAberta),
 		Chave:          evento.Chave,
 		Versao:         1,

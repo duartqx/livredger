@@ -15,7 +15,7 @@ type UnidadeDeTrabalhoSqlite struct {
 	Usuario      *types.Usuario
 	DB           *sql.DB
 	Tx           *sql.Tx
-	Repositorios repositorios.Repositorios
+	Repositorios *repositorios.Repositorios
 }
 
 func (u UnidadeDeTrabalhoSqlite) GetContext() context.Context {
@@ -26,7 +26,7 @@ func (u UnidadeDeTrabalhoSqlite) GetUsuario() *types.Usuario {
 	return u.Usuario
 }
 
-func (u UnidadeDeTrabalhoSqlite) GetRepositorios() repositorios.Repositorios {
+func (u UnidadeDeTrabalhoSqlite) GetRepositorios() *repositorios.Repositorios {
 	return u.Repositorios
 }
 

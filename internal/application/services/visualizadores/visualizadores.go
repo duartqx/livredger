@@ -12,7 +12,7 @@ import (
 func BuscarLancamentos(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaLancamentos) (
 	*Resultado[entidade.Lancamento], error,
 ) {
-	lancamentos, err := uow.GetRepositorios().Lancamentos().Consulta.Buscar(uow.GetContext(), uow.GetDB(), consulta)
+	lancamentos, err := uow.GetRepositorios().Lancamentos.Consulta.Buscar(uow.GetContext(), uow.GetDB(), consulta)
 
 	lancamentos = cmp.Or(lancamentos, &[]*entidade.Lancamento{})
 
@@ -27,7 +27,7 @@ func BuscarLancamentos(uow infra.UnidadeDeTrabalho, consulta *consultas.Consulta
 func BuscarContas(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaContas) (
 	*Resultado[entidade.Conta], error,
 ) {
-	contas, err := uow.GetRepositorios().Contas().Consulta.Buscar(uow.GetContext(), uow.GetDB(), consulta)
+	contas, err := uow.GetRepositorios().Contas.Consulta.Buscar(uow.GetContext(), uow.GetDB(), consulta)
 
 	contas = cmp.Or(contas, &[]*entidade.Conta{})
 
@@ -45,7 +45,7 @@ func ConsultarDemonstrativoMensal(uow infra.UnidadeDeTrabalho, consulta *consult
 
 	demonstrativoSlice := make([]*entidade.DemonstrativoMensal, 0, 1)
 
-	demonstrativo, err := uow.GetRepositorios().Demonstrativos().Consulta.DemonstrativoMensal(uow.GetDB(), consulta)
+	demonstrativo, err := uow.GetRepositorios().Demonstrativos.Consulta.DemonstrativoMensal(uow.GetDB(), consulta)
 
 	if demonstrativo != nil {
 		demonstrativoSlice = append(demonstrativoSlice[:0], demonstrativo)
@@ -62,7 +62,7 @@ func ConsultarDemonstrativoMensal(uow infra.UnidadeDeTrabalho, consulta *consult
 func ConsultarDemonstrativoDosUltimosTresMeses(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaDemonstrativoMensal) (
 	*Resultado[entidade.DemonstrativoMensal], error,
 ) {
-	demonstrativos, err := uow.GetRepositorios().Demonstrativos().Consulta.DemonstrativosDosUltimosTresMeses(uow.GetDB(), consulta)
+	demonstrativos, err := uow.GetRepositorios().Demonstrativos.Consulta.DemonstrativosDosUltimosTresMeses(uow.GetDB(), consulta)
 
 	demonstrativos = cmp.Or(demonstrativos, &[]*entidade.DemonstrativoMensal{})
 

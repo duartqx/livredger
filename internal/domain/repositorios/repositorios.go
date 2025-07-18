@@ -1,7 +1,7 @@
 package repositorios
 
-type Repositorios interface {
-	Lancamentos() *RepositoriosLancamentos
-	Contas() *RepositoriosContas
-	Demonstrativos() *RepositoriosDemonstrativos
+type Repositorios struct {
+	Lancamentos    *RepositoriosLancamentos
+	Contas         *RepositoriosContas
+	Demonstrativos *RepositoriosDemonstrativos
 }

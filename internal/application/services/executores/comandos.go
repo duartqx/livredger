@@ -41,7 +41,7 @@ func CriarLancamento(uow infra.UnidadeDeTrabalho, comando *comandos.CriarLancame
 	return TransactionalScript(
 		uow,
 		func(tx *sql.Tx) (*entidade.Lancamento, error) {
-			lancamento, err := uow.GetRepositorios().Lancamentos().Comando.Criar(tx, comando)
+			lancamento, err := uow.GetRepositorios().Lancamentos.Comando.Criar(tx, comando)
 
 			if err != nil {
 				return nil, err
@@ -68,7 +68,7 @@ func AbrirConta(uow infra.UnidadeDeTrabalho, comando *comandos.AbrirConta) (*ent
 	return TransactionalScript(
 		uow,
 		func(tx *sql.Tx) (*entidade.Conta, error) {
-			conta, err := uow.GetRepositorios().Contas().Comando.Abrir(tx, comando)
+			conta, err := uow.GetRepositorios().Contas.Comando.Abrir(tx, comando)
 
 			if err != nil {
 				return nil, err
