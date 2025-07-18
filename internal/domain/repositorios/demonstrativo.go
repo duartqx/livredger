@@ -13,8 +13,8 @@ type RepositorioDeComandoDemonstrativoMensal interface {
 }
 
 type RepositorioDeConsultaDemonstrativoMensal interface {
-	DemonstrativosDosUltimosTresMeses(db *sql.DB, consulta *consultas.DemonstrativoMensal) (*[]*entidade.DemonstrativoMensal, error)
-	DemonstrativoMensal(db *sql.DB, consulta *consultas.DemonstrativoMensal) (*entidade.DemonstrativoMensal, error)
+	DemonstrativosDosUltimosTresMeses(db *sql.DB, consulta *consultas.ConsultaDemonstrativoMensal) (*[]*entidade.DemonstrativoMensal, error)
+	DemonstrativoMensal(db *sql.DB, consulta *consultas.ConsultaDemonstrativoMensal) (*entidade.DemonstrativoMensal, error)
 }
 
 type RepositoriosDemonstrativos struct {

@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type DemonstrativoMensal struct {
+type ConsultaDemonstrativoMensal struct {
 	Chave uuid.UUID `json:"chave"`
 	Mes   time.Time `json:"mes"`
 }

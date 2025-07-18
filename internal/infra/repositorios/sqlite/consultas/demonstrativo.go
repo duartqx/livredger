@@ -16,7 +16,7 @@ func NewRepositorioDeConsultaDemonstrativos() *RepositorioDeConsultaDemonstrativ
 	return &RepositorioDeConsultaDemonstrativos{}
 }
 
-func (r RepositorioDeConsultaDemonstrativos) DemonstrativosDosUltimosTresMeses(db *sql.DB, consulta *consultas.DemonstrativoMensal) (*[]*entidade.DemonstrativoMensal, error) {
+func (r RepositorioDeConsultaDemonstrativos) DemonstrativosDosUltimosTresMeses(db *sql.DB, consulta *consultas.ConsultaDemonstrativoMensal) (*[]*entidade.DemonstrativoMensal, error) {
 
 	rows, err := db.Query(
 		`
@@ -65,7 +65,7 @@ func (r RepositorioDeConsultaDemonstrativos) DemonstrativosDosUltimosTresMeses(d
 	return &demonstrativos, nil
 }
 
-func (r RepositorioDeConsultaDemonstrativos) DemonstrativoMensal(db *sql.DB, consulta *consultas.DemonstrativoMensal) (*entidade.DemonstrativoMensal, error) {
+func (r RepositorioDeConsultaDemonstrativos) DemonstrativoMensal(db *sql.DB, consulta *consultas.ConsultaDemonstrativoMensal) (*entidade.DemonstrativoMensal, error) {
 	var demonstrativo entidade.DemonstrativoMensal
 
 	if err := db.QueryRow(
