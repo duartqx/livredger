@@ -23,12 +23,12 @@ import (
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-func parseConsultaDoForm(r *http.Request) (*consultas.Consulta[consultas.ConsultaLancamentos], error) {
+func parseConsultaDoForm(r *http.Request) (*visualizadores.Consulta[consultas.ConsultaLancamentos], error) {
 	if err := r.ParseForm(); err != nil {
 		return nil, fmt.Errorf("%w: %w", types.BusinessLogicError, err)
 	}
 
-	consulta := &consultas.Consulta[consultas.ConsultaLancamentos]{
+	consulta := &visualizadores.Consulta[consultas.ConsultaLancamentos]{
 		Raw:    r.Form,
 		Parsed: consultas.ConsultaLancamentosPadrao(),
 	}
@@ -52,7 +52,7 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 
 			if err != nil {
 
-				response.JsonResponse(w, &response.Response[consultas.ConsultaLancamentos]{
+				response.JsonResponse(w, &visualizadores.Resposta[consultas.ConsultaLancamentos]{
 					Consulta: consulta,
 					Error:    err,
 				})
@@ -62,7 +62,7 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 
 			resultado, err := visualizadores.BuscarLancamentos(uow, consulta.Parsed)
 
-			response.JsonResponse(w, &response.Response[consultas.ConsultaLancamentos]{
+			response.JsonResponse(w, &visualizadores.Resposta[consultas.ConsultaLancamentos]{
 				Consulta:  consulta,
 				Resultado: resultado,
 				Error:     err,

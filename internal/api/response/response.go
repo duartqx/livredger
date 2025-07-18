@@ -7,9 +7,11 @@ import (
 	"net/http"
 
 	"github.com/duartqx/livredger/internal/api/decoders"
+
+	"github.com/duartqx/livredger/internal/application/services/visualizadores"
+
 	"github.com/duartqx/livredger/internal/common/mimetypes"
 	"github.com/duartqx/livredger/internal/common/types"
-	"github.com/duartqx/livredger/internal/domain/consultas"
 )
 
 type Templates struct {
@@ -18,31 +20,7 @@ type Templates struct {
 	Error   *template.Template
 }
 
-type Response[C any] struct {
-	Consulta  *consultas.Consulta[C] `json:"consulta"`
-	Resultado any                    `json:"resultado"`
-	Error     error                  `json:"error"`
-}
-
-func (r Response[C]) MarshalJSON() ([]byte, error) {
-	type Alias Response[C]
-
-	var errStr *string
-	if r.Error != nil {
-		s := r.Error.Error()
-		errStr = &s
-	}
-
-	return json.Marshal(&struct {
-		Alias
-		Error *string `json:"error"`
-	}{
-		Alias: Alias(r),
-		Error: errStr,
-	})
-}
-
-func JsonResponse[C any](w http.ResponseWriter, response *Response[C]) {
+func JsonResponse[C any](w http.ResponseWriter, response *visualizadores.Resposta[C]) {
 
 	w.Header().Set("Content-Type", mimetypes.JSON)
 

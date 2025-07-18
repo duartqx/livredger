@@ -38,9 +38,9 @@ func ContasRouter(fs fs.FS) *common.RouterMap {
 
 			if err := decoders.Decoder().Decode(consulta, r.Form); err != nil {
 
-				response.JsonResponse(w, &response.Response[consultas.ConsultaContas]{
+				response.JsonResponse(w, &visualizadores.Resposta[consultas.ConsultaContas]{
 					Error: fmt.Errorf("%w: %w", decoders.DecoderError, err),
-					Consulta: &consultas.Consulta[consultas.ConsultaContas]{
+					Consulta: &visualizadores.Consulta[consultas.ConsultaContas]{
 						Parsed: consulta,
 						Raw:    r.Form,
 					},
@@ -51,10 +51,10 @@ func ContasRouter(fs fs.FS) *common.RouterMap {
 
 			resultado, err := visualizadores.BuscarContas(uow, consulta)
 
-			response.JsonResponse(w, &response.Response[consultas.ConsultaContas]{
+			response.JsonResponse(w, &visualizadores.Resposta[consultas.ConsultaContas]{
 				Resultado: resultado,
 				Error:     err,
-				Consulta: &consultas.Consulta[consultas.ConsultaContas]{
+				Consulta: &visualizadores.Consulta[consultas.ConsultaContas]{
 					Parsed: consulta,
 					Raw:    r.Form,
 				},

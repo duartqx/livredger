@@ -3,8 +3,6 @@ package visualizadores
 import (
 	"cmp"
 
-	"github.com/duartqx/livredger/internal/application"
-
 	"github.com/duartqx/livredger/internal/domain/consultas"
 	"github.com/duartqx/livredger/internal/domain/entidade"
 
@@ -12,13 +10,13 @@ import (
 )
 
 func BuscarLancamentos(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaLancamentos) (
-	*application.Resultado[entidade.Lancamento], error,
+	*Resultado[entidade.Lancamento], error,
 ) {
 	lancamentos, err := uow.GetRepositorios().Lancamentos().Consulta.Buscar(uow.GetDB(), consulta)
 
 	lancamentos = cmp.Or(lancamentos, &[]*entidade.Lancamento{})
 
-	resultado := &application.Resultado[entidade.Lancamento]{
+	resultado := &Resultado[entidade.Lancamento]{
 		Total: len(*lancamentos),
 		Itens: lancamentos,
 	}
@@ -27,13 +25,13 @@ func BuscarLancamentos(uow infra.UnidadeDeTrabalho, consulta *consultas.Consulta
 }
 
 func BuscarContas(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaContas) (
-	*application.Resultado[entidade.Conta], error,
+	*Resultado[entidade.Conta], error,
 ) {
 	contas, err := uow.GetRepositorios().Contas().Consulta.Buscar(uow.GetDB(), consulta)
 
 	contas = cmp.Or(contas, &[]*entidade.Conta{})
 
-	resultado := &application.Resultado[entidade.Conta]{
+	resultado := &Resultado[entidade.Conta]{
 		Total: len(*contas),
 		Itens: contas,
 	}
@@ -42,19 +40,19 @@ func BuscarContas(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaConta
 }
 
 func ConsultarDemonstrativoMensal(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaDemonstrativoMensal) (
-	*application.Resultado[entidade.DemonstrativoMensal], error,
+	*Resultado[entidade.DemonstrativoMensal], error,
 ) {
 
-	var demonstrativoSlice []*entidade.DemonstrativoMensal
+	demonstrativoSlice := make([]*entidade.DemonstrativoMensal, 0, 1)
 
 	demonstrativo, err := uow.GetRepositorios().Demonstrativos().Consulta.DemonstrativoMensal(uow.GetDB(), consulta)
 
 	if demonstrativo != nil {
-		demonstrativoSlice = append(demonstrativoSlice, demonstrativo)
+		demonstrativoSlice = append(demonstrativoSlice[:0], demonstrativo)
 	}
 
-	resultado := &application.Resultado[entidade.DemonstrativoMensal]{
-		Total: 0,
+	resultado := &Resultado[entidade.DemonstrativoMensal]{
+		Total: len(demonstrativoSlice),
 		Itens: &demonstrativoSlice,
 	}
 
@@ -62,13 +60,13 @@ func ConsultarDemonstrativoMensal(uow infra.UnidadeDeTrabalho, consulta *consult
 }
 
 func ConsultarDemonstrativoDosUltimosTresMeses(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaDemonstrativoMensal) (
-	*application.Resultado[entidade.DemonstrativoMensal], error,
+	*Resultado[entidade.DemonstrativoMensal], error,
 ) {
 	demonstrativos, err := uow.GetRepositorios().Demonstrativos().Consulta.DemonstrativosDosUltimosTresMeses(uow.GetDB(), consulta)
 
 	demonstrativos = cmp.Or(demonstrativos, &[]*entidade.DemonstrativoMensal{})
 
-	resultado := &application.Resultado[entidade.DemonstrativoMensal]{
+	resultado := &Resultado[entidade.DemonstrativoMensal]{
 		Total: len(*demonstrativos),
 		Itens: demonstrativos,
 	}
