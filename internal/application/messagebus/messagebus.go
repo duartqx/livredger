@@ -2,7 +2,6 @@ package messagebus
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"os"
 	"reflect"
@@ -40,15 +39,21 @@ type bus struct {
 	registry map[domain.Message][]MessageHandler
 }
 
-func (mb *bus) Subscribe(mensagem any, handler func(infra.UnidadeDeTrabalho, any) error) {
+func (mb *bus) Subscribe(msgType reflect.Type, handler func(infra.UnidadeDeTrabalho, any) error) {
 
-	typ := reflect.TypeOf(mensagem)
-
-	if typ.Kind() != reflect.Struct {
-		panic(fmt.Sprintf("Mensagem não permitida, não é Struct"))
+	if msgType == nil {
+		panic("Mensagem não pode ser nil")
 	}
 
-	key := domain.Message(typ.Name())
+	if msgType.Kind() == reflect.Ptr {
+		msgType = msgType.Elem()
+	}
+
+	if msgType.Kind() != reflect.Struct {
+		panic("Mensagem não permitida, não é Struct")
+	}
+
+	key := domain.Message(msgType.Name())
 
 	handlers := mb.registry[key]
 
