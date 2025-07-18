@@ -1,4 +1,4 @@
-package comandos
+package command
 
 import (
 	"encoding/json"
@@ -15,12 +15,12 @@ import (
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-func GenericComandoHandlerFunc[Comando domain.Comando, Entidade any](
-	executor func(infra.UnidadeDeTrabalho, *Comando) (*Entidade, error),
+func GenericCommandHandlerFunc[Command domain.Command, Entidade any](
+	executor func(infra.UnidadeDeTrabalho, *Command) (*Entidade, error),
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		var comando Comando
+		var comando Command
 
 		if err := json.NewDecoder(r.Body).Decode(&comando); err != nil {
 			response.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.BusinessLogicError, err))

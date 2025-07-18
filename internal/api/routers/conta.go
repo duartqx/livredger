@@ -6,7 +6,8 @@ import (
 	"io/fs"
 	"net/http"
 
-	"github.com/duartqx/livredger/internal/api/comandos"
+	"github.com/duartqx/livredger/internal/api/command"
+	"github.com/duartqx/livredger/internal/api/common"
 	"github.com/duartqx/livredger/internal/api/decoders"
 	"github.com/duartqx/livredger/internal/api/response"
 
@@ -21,8 +22,8 @@ import (
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-func ContasRouter(fs fs.FS) *map[string]http.HandlerFunc {
-	return &map[string]http.HandlerFunc{
+func ContasRouter(fs fs.FS) *common.RouterMap {
+	return &common.RouterMap{
 		"GET /api/contas": func(w http.ResponseWriter, r *http.Request) {
 			var usuario *types.Usuario
 
@@ -54,6 +55,6 @@ func ContasRouter(fs fs.FS) *map[string]http.HandlerFunc {
 				return
 			}
 		},
-		"POST /api/contas": comandos.GenericComandoHandlerFunc(executores.AbrirConta),
+		"POST /api/contas": command.GenericCommandHandlerFunc(executores.AbrirConta),
 	}
 }

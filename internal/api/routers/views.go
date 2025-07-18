@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/duartqx/livredger/internal/api/common"
 	"github.com/duartqx/livredger/internal/api/decoders"
 	"github.com/duartqx/livredger/internal/api/response"
 	"github.com/duartqx/livredger/internal/api/templates"
@@ -69,8 +70,8 @@ func View(ctx *ViewContext) http.HandlerFunc {
 	}
 }
 
-func ViewsRouter(fs fs.FS) *map[string]http.HandlerFunc {
-	return &map[string]http.HandlerFunc{
+func ViewsRouter(fs fs.FS) *common.RouterMap {
+	return &common.RouterMap{
 		"GET /{$}": View(&ViewContext{
 			ViewName: "Index",
 			Template: templates.Templates(fs, "index.html", "nav.html"),

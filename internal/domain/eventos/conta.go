@@ -3,9 +3,9 @@ package eventos
 import "github.com/duartqx/livredger/internal/domain"
 
 const (
-	ContaAberta  = domain.Evento("ContaAberta")
-	ContaFechada = domain.Evento("ContaFechada")
-	ContaPausada = domain.Evento("ContaPausada")
+	ContaAberta  = domain.Event("ContaAberta")
+	ContaFechada = domain.Event("ContaFechada")
+	ContaPausada = domain.Event("ContaPausada")
 )
 
 var EVENTOS_DE_CONTA []string = []string{

@@ -5,12 +5,12 @@ import (
 )
 
 const (
-	LancamentoPrevisto    = domain.Evento("LancamentoPrevisto")
-	LancamentoPago        = domain.Evento("LancamentoPago")
-	LancamentoRecebido    = domain.Evento("LancamentoRecebido")
-	LancamentoCancelado   = domain.Evento("LancamentoCancelado")
-	LancamentoCorrigido   = domain.Evento("LancamentoCorrigido")
-	LancamentoTransferido = domain.Evento("LancamentoTransferido")
+	LancamentoPrevisto    = domain.Event("LancamentoPrevisto")
+	LancamentoPago        = domain.Event("LancamentoPago")
+	LancamentoRecebido    = domain.Event("LancamentoRecebido")
+	LancamentoCancelado   = domain.Event("LancamentoCancelado")
+	LancamentoCorrigido   = domain.Event("LancamentoCorrigido")
+	LancamentoTransferido = domain.Event("LancamentoTransferido")
 )
 
 var EVENTOS_DE_LANCAMENTOS []string = []string{

@@ -6,12 +6,13 @@ import (
 	"net/http"
 	"strings"
 
-	cm "github.com/duartqx/ddgomiddlewares/cors"
-	i "github.com/duartqx/ddgomiddlewares/interfaces"
-	lm "github.com/duartqx/ddgomiddlewares/logger"
-	rm "github.com/duartqx/ddgomiddlewares/recovery"
-	tr "github.com/duartqx/ddgomiddlewares/trailling"
+	"github.com/duartqx/ddgomiddlewares/cors"
+	"github.com/duartqx/ddgomiddlewares/interfaces"
+	"github.com/duartqx/ddgomiddlewares/logger"
+	"github.com/duartqx/ddgomiddlewares/recovery"
+	"github.com/duartqx/ddgomiddlewares/trailling"
 
+	"github.com/duartqx/livredger/internal/api/common"
 	"github.com/duartqx/livredger/internal/api/routers"
 )
 
@@ -24,8 +25,6 @@ type Dependencies struct {
 	Static    *[]Static
 	Templates fs.FS
 }
-
-type RouterMap map[string]http.HandlerFunc
 
 type Mux struct {
 	*http.ServeMux
@@ -43,7 +42,7 @@ func (m *Mux) Group(pattern string, handler http.Handler) error {
 	return nil
 }
 
-func (m *Mux) AddRoutes(rms ...*RouterMap) {
+func (m *Mux) AddRoutes(rms ...*common.RouterMap) {
 	for _, rm := range rms {
 		for pattern, router := range *rm {
 			m.HandleFunc(pattern, router)
@@ -51,7 +50,7 @@ func (m *Mux) AddRoutes(rms ...*RouterMap) {
 	}
 }
 
-func (m Mux) Use(mux http.Handler, middlewares ...i.Middleware) http.Handler {
+func (m Mux) Use(mux http.Handler, middlewares ...interfaces.Middleware) http.Handler {
 	wrapped := mux
 	for _, middleware := range middlewares {
 		wrapped = middleware(wrapped)
@@ -67,16 +66,16 @@ func Router(dependencies *Dependencies) http.Handler {
 	}
 
 	mux.AddRoutes(
-		(*RouterMap)(routers.LancamentosRouter(dependencies.Templates)),
-		(*RouterMap)(routers.ContasRouter(dependencies.Templates)),
-		(*RouterMap)(routers.ViewsRouter(dependencies.Templates)),
+		routers.LancamentosRouter(dependencies.Templates),
+		routers.ContasRouter(dependencies.Templates),
+		routers.ViewsRouter(dependencies.Templates),
 	)
 
 	return mux.Use(
 		mux,
-		tr.TrailingSlashMiddleware,
-		lm.LoggerMiddleware,
-		rm.RecoveryMiddleware,
-		cm.CorsMiddleware,
+		trailling.TrailingSlashMiddleware,
+		logger.LoggerMiddleware,
+		recovery.RecoveryMiddleware,
+		cors.CorsMiddleware,
 	)
 }

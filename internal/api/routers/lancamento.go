@@ -8,7 +8,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/duartqx/livredger/internal/api/comandos"
+	"github.com/duartqx/livredger/internal/api/command"
+	"github.com/duartqx/livredger/internal/api/common"
 	"github.com/duartqx/livredger/internal/api/decoders"
 	"github.com/duartqx/livredger/internal/api/response"
 	"github.com/duartqx/livredger/internal/api/templates"
@@ -38,8 +39,8 @@ func parseConsultaDoForm(r *http.Request) (*consultas.ConsultaLancamentos, error
 	return consulta, nil
 }
 
-func LancamentosRouter(fs fs.FS) *map[string]http.HandlerFunc {
-	return &map[string]http.HandlerFunc{
+func LancamentosRouter(fs fs.FS) *common.RouterMap {
+	return &common.RouterMap{
 		"GET /api/lancamentos": func(w http.ResponseWriter, r *http.Request) {
 			var usuario *types.Usuario
 
@@ -67,7 +68,7 @@ func LancamentosRouter(fs fs.FS) *map[string]http.HandlerFunc {
 				return
 			}
 		},
-		"POST /api/lancamentos": comandos.GenericComandoHandlerFunc(executores.CriarLancamento),
+		"POST /api/lancamentos": command.GenericCommandHandlerFunc(executores.CriarLancamento),
 		"GET /lancamentos": View(&ViewContext{
 			ViewName: "ConsultarLancamentos",
 			Template: templates.Templates(

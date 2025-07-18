@@ -1,9 +1,9 @@
 package domain
 
-type Evento string
+type Event string
 
-type Mensagem string
+type Message string
 
-type Comando interface {
+type Command interface {
 	Validar() error
 }

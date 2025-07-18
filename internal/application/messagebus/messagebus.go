@@ -28,7 +28,7 @@ var logger = slog.New(
 )
 
 var MessageBus = bus{
-	registry: make(map[domain.Mensagem][]MessageHandler),
+	registry: make(map[domain.Message][]MessageHandler),
 }
 
 type MessageHandler struct {
@@ -37,7 +37,7 @@ type MessageHandler struct {
 }
 
 type bus struct {
-	registry map[domain.Mensagem][]MessageHandler
+	registry map[domain.Message][]MessageHandler
 }
 
 func (mb *bus) Subscribe(mensagem any, handler func(infra.UnidadeDeTrabalho, any) error) {
@@ -48,7 +48,7 @@ func (mb *bus) Subscribe(mensagem any, handler func(infra.UnidadeDeTrabalho, any
 		panic(fmt.Sprintf("Mensagem não permitida, não é Struct"))
 	}
 
-	key := domain.Mensagem(typ.Name())
+	key := domain.Message(typ.Name())
 
 	handlers := mb.registry[key]
 
@@ -68,7 +68,7 @@ func (mb *bus) Publish(uow infra.UnidadeDeTrabalho, mensagem any) <-chan error {
 	go func() {
 		defer close(errCh)
 
-		key := domain.Mensagem(reflect.TypeOf(mensagem).Name())
+		key := domain.Message(reflect.TypeOf(mensagem).Name())
 
 		handlers, ok := mb.registry[key]
 

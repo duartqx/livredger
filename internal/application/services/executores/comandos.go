@@ -50,7 +50,7 @@ func CriarLancamento(uow infra.UnidadeDeTrabalho, comando *comandos.CriarLancame
 			errCh := messagebus.MessageBus.Publish(
 				uow, mensagens.LancamentoCriado{
 					Id:        lancamento.Id,
-					Evento:    domain.Evento(lancamento.Evento),
+					Evento:    domain.Event(lancamento.Evento),
 					Timestamp: lancamento.Timestamp,
 				},
 			)

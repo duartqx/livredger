@@ -9,7 +9,7 @@ import (
 )
 
 type LancamentoCriado struct {
-	Id        uuid.UUID     `json:"id"`
-	Evento    domain.Evento `json:"evento"`
-	Timestamp time.Time     `json:"timestamp"`
+	Id        uuid.UUID    `json:"id"`
+	Evento    domain.Event `json:"evento"`
+	Timestamp time.Time    `json:"timestamp"`
 }
