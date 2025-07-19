@@ -36,6 +36,12 @@ github.com/duartqx/ddgomiddlewares v0.0.0-20250718230248-2578bb116214 h1:pTEBywc
 github.com/duartqx/ddgomiddlewares v0.0.0-20250718230248-2578bb116214/go.mod h1:bfYjzvbZuP7ENqbZ5UbDyB1Nm4ckGOQaJrFTy+69eZI=
 github.com/duartqx/ddgomiddlewares v0.0.0-20250718232508-3a101c42c5f8 h1:QugcZVp3nlIrlnZRF7qYS6Gvb3tAxu8hvnMV2urxht4=
 github.com/duartqx/ddgomiddlewares v0.0.0-20250718232508-3a101c42c5f8/go.mod h1:bfYjzvbZuP7ENqbZ5UbDyB1Nm4ckGOQaJrFTy+69eZI=
+github.com/duartqx/ddgomiddlewares v0.0.0-20250719010552-d131b41c6f03 h1:r5KkBtVBefKXlax8KDpvTrBSt8y7uAwXDMFsoztgU2E=
+github.com/duartqx/ddgomiddlewares v0.0.0-20250719010552-d131b41c6f03/go.mod h1:bfYjzvbZuP7ENqbZ5UbDyB1Nm4ckGOQaJrFTy+69eZI=
+github.com/duartqx/ddgomiddlewares v0.0.0-20250719011836-f04feaebc164 h1:xTKGLU0u0DHo1lDEx1L61mpTVTHv7Q38xdop+r8+jyk=
+github.com/duartqx/ddgomiddlewares v0.0.0-20250719011836-f04feaebc164/go.mod h1:bfYjzvbZuP7ENqbZ5UbDyB1Nm4ckGOQaJrFTy+69eZI=
+github.com/duartqx/ddgomiddlewares v0.0.0-20250719014645-02ec50f1192a h1:DlKg5xtN43dOC3v8rfjY+GtykPa34wTnPLVkZQXz6LQ=
+github.com/duartqx/ddgomiddlewares v0.0.0-20250719014645-02ec50f1192a/go.mod h1:bfYjzvbZuP7ENqbZ5UbDyB1Nm4ckGOQaJrFTy+69eZI=
 github.com/go-playground/form v3.1.4+incompatible h1:lvKiHVxE2WvzDIoyMnWcjyiBxKt2+uFJyZcPYWsLnjI=
 github.com/go-playground/form v3.1.4+incompatible/go.mod h1:lhcKXfTuhRtIZCIKUeJ0b5F207aeQCPbZU09ScKjwWg=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
