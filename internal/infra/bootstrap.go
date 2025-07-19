@@ -67,6 +67,7 @@ func Connect(ctx context.Context, usuario *types.Usuario) (*sql.DB, error) {
 	}
 
 	connChan := make(chan *conn)
+	defer close(connChan)
 
 	go func(dbChan chan *conn) {
 
