@@ -28,26 +28,26 @@ func ContasRouter(fs fs.FS) *common.RouterMap {
 
 			consulta := consultas.ConsultaContasPadrao()
 
-			res := &visualizadores.Resposta[consultas.ConsultaContas]{
+			res := &visualizadores.Response[consultas.ConsultaContas]{
 				Consulta: &visualizadores.Consulta[consultas.ConsultaContas]{Parsed: consulta, Raw: &r.Form},
 			}
 
 			uow, err := infra.Bootstrap(r.Context(), usuario)
 			if err != nil {
-				response.JsonResponse(r.Context(), w, res.WithError(err))
+				response.QueryJsonResponse(r.Context(), w, res.WithError(err))
 
 				return
 			}
 			defer uow.Close()
 
 			if err := cmp.Or(r.ParseForm(), decoders.Decoder().Decode(consulta, r.Form)); err != nil {
-				response.JsonResponse(r.Context(), w, res.WithError(fmt.Errorf("%w: %w", types.RequestError, err)))
+				response.QueryJsonResponse(r.Context(), w, res.WithError(fmt.Errorf("%w: %w", types.RequestError, err)))
 				return
 			}
 
 			resultado, err := visualizadores.BuscarContas(uow, consulta)
 
-			response.JsonResponse(r.Context(), w, res.WithResultado(resultado).WithError(err))
+			response.QueryJsonResponse(r.Context(), w, res.WithResultado(resultado).WithError(err))
 
 			return
 		},

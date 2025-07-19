@@ -31,25 +31,28 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 
 			consulta := consultas.ConsultaLancamentosPadrao()
 
-			res := &visualizadores.Resposta[consultas.ConsultaLancamentos]{
-				Consulta: &visualizadores.Consulta[consultas.ConsultaLancamentos]{Parsed: consulta, Raw: &r.Form},
+			res := &visualizadores.Response[consultas.ConsultaLancamentos]{
+				Consulta: &visualizadores.Consulta[consultas.ConsultaLancamentos]{
+					Parsed: consulta,
+					Raw:    &r.Form,
+				},
 			}
 
 			uow, err := infra.Bootstrap(r.Context(), usuario)
 			if err != nil {
-				response.JsonResponse(r.Context(), w, res.WithError(err))
+				response.QueryJsonResponse(r.Context(), w, res.WithError(err))
 				return
 			}
 			defer uow.Close()
 
 			if err := cmp.Or(r.ParseForm(), decoders.Decoder().Decode(consulta, r.Form)); err != nil {
-				response.JsonResponse(r.Context(), w, res.WithError(fmt.Errorf("%w: %w", types.RequestError, err)))
+				response.QueryJsonResponse(r.Context(), w, res.WithError(fmt.Errorf("%w: %w", types.RequestError, err)))
 				return
 			}
 
 			resultado, err := visualizadores.BuscarLancamentos(uow, consulta)
 
-			response.JsonResponse(r.Context(), w, res.WithResultado(resultado).WithError(err))
+			response.QueryJsonResponse(r.Context(), w, res.WithResultado(resultado).WithError(err))
 
 			return
 		},

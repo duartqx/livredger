@@ -1,6 +1,10 @@
 package visualizadores
 
-import "encoding/json"
+import (
+	"encoding/json"
+
+	"github.com/duartqx/livredger/internal/common/errors"
+)
 
 type Enumerated[Item any] struct {
 	Index   int
@@ -37,41 +41,34 @@ type Consulta[C any] struct {
 	Raw    any `json:"raw"`
 }
 
-type Resposta[C any] struct {
+type Response[C any] struct {
 	Consulta  *Consulta[C] `json:"consulta"`
 	Resultado any          `json:"resultado"`
 	Error     error        `json:"error"`
 }
 
-func (r Resposta[C]) MarshalJSON() ([]byte, error) {
-	type Alias Resposta[C]
-
-	var errStr *string
-	if r.Error != nil {
-		s := r.Error.Error()
-		errStr = &s
-	}
-
+func (r Response[C]) MarshalJSON() ([]byte, error) {
+	type Alias Response[C]
 	return json.Marshal(&struct {
 		Alias
 		Error *string `json:"error"`
 	}{
 		Alias: Alias(r),
-		Error: errStr,
+		Error: errors.Stringer(r.Error),
 	})
 }
 
-func (r *Resposta[C]) WithError(err error) *Resposta[C] {
+func (r *Response[C]) WithError(err error) *Response[C] {
 	r.Error = err
 	return r
 }
 
-func (r *Resposta[C]) WithConsulta(consulta *Consulta[C]) *Resposta[C] {
+func (r *Response[C]) WithConsulta(consulta *Consulta[C]) *Response[C] {
 	r.Consulta = consulta
 	return r
 }
 
-func (r *Resposta[C]) WithResultado(resultado any) *Resposta[C] {
+func (r *Response[C]) WithResultado(resultado any) *Response[C] {
 	r.Resultado = resultado
 	return r
 }

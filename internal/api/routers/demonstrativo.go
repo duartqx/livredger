@@ -38,23 +38,23 @@ func getDemonstrativosHandler[C interface {
 
 		var consulta C
 
-		res := &visualizadores.Resposta[C]{Consulta: &visualizadores.Consulta[C]{Parsed: &consulta, Raw: &r.Form}}
+		res := &visualizadores.Response[C]{Consulta: &visualizadores.Consulta[C]{Parsed: &consulta, Raw: &r.Form}}
 
 		uow, err := infra.Bootstrap(r.Context(), usuario)
 		if err != nil {
-			response.JsonResponse(r.Context(), w, res.WithError(err))
+			response.QueryJsonResponse(r.Context(), w, res.WithError(err))
 			return
 		}
 		defer uow.Close()
 
 		if err := cmp.Or(r.ParseForm(), decoders.Decoder().Decode(&consulta, r.Form), consulta.Validar()); err != nil {
-			response.JsonResponse(r.Context(), w, res.WithError(fmt.Errorf("%w: %w", types.RequestError, err)))
+			response.QueryJsonResponse(r.Context(), w, res.WithError(fmt.Errorf("%w: %w", types.RequestError, err)))
 			return
 		}
 
 		resultado, err := visualizador(uow, &consulta)
 
-		response.JsonResponse(r.Context(), w, res.WithResultado(resultado).WithError(err))
+		response.QueryJsonResponse(r.Context(), w, res.WithResultado(resultado).WithError(err))
 
 		return
 	}

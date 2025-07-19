@@ -40,9 +40,9 @@ type bus struct {
 	registry map[domain.Message][]MessageHandler
 }
 
-func (mb *bus) Subscribe(msgType reflect.Type, handler func(infra.UnidadeDeTrabalho, any) error) {
+func (mb *bus) Subscribe(typ reflect.Type, handler func(infra.UnidadeDeTrabalho, any) error) {
 
-	key, err := events.GenerateMessageKey(msgType)
+	key, err := events.GenerateMessageKey(typ)
 
 	if err != nil {
 		panic(err)
