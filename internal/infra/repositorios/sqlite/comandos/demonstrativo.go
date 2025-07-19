@@ -29,19 +29,21 @@ func (r RepositorioDeComandoDemonstrativos) Gerar(ctx context.Context, tx *sql.T
 
 	stmt, args := helpers.SelectContaComTotais(&consultas.ConsultaContas{Chave: comando.Chave})
 
-	if err := tx.QueryRowContext(ctx, stmt, args...).Scan(
+	err := tx.QueryRowContext(ctx, stmt, args...).Scan(
 		&demonstrativo.Conta.Chave,
 		&demonstrativo.Conta.Nome,
 		&demonstrativo.Conta.Timestamp,
 		&demonstrativo.Conta.Totais,
-	); err != nil {
+	)
+
+	if err != nil {
 		if errors.Is(sql.ErrNoRows, err) {
 			return nil, fmt.Errorf("%w: Chave inválida {%s}", types.BusinessLogicError, comando.Chave.String())
 		}
 		return nil, err
 	}
 
-	if err := tx.QueryRowContext(ctx, `
+	err = tx.QueryRowContext(ctx, `
 		WITH calculo_do_demonstrativo AS (
 			SELECT
 				coalesce(sum(lancamentos.valores) FILTER (WHERE lancamentos.valores < 0), 0) as despesa,
@@ -66,7 +68,9 @@ func (r RepositorioDeComandoDemonstrativos) Gerar(ctx context.Context, tx *sql.T
 		&demonstrativo.Despesa,
 		&demonstrativo.Receita,
 		&demonstrativo.Saldo,
-	); err != nil {
+	)
+
+	if err != nil {
 		if match := regex.SqliteFalhouInserirRow.FindStringSubmatch(err.Error()); len(match) > 1 {
 			return nil, fmt.Errorf("%w: %s", types.BusinessLogicError, match[1])
 		}

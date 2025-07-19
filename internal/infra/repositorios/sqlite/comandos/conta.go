@@ -25,13 +25,15 @@ func (r RepositorioDeComandoContas) Abrir(ctx context.Context, tx *sql.Tx, coman
 		Nome:  comando.Nome,
 	}
 
-	if err := tx.QueryRowContext(ctx, `
+	err := tx.QueryRowContext(ctx, `
 		INSERT INTO contas (chave, nome)
 		VALUES (:chave, :nome)
 		RETURNING timestamp`,
 		sql.Named("chave", conta.Chave.String()),
 		sql.Named("nome", conta.Nome),
-	).Scan(&conta.Timestamp); err != nil {
+	).Scan(&conta.Timestamp)
+
+	if err != nil {
 		if match := regex.SqliteFalhouInserirRow.FindStringSubmatch(err.Error()); len(match) > 1 {
 			return nil, fmt.Errorf("%w: %s", types.BusinessLogicError, match[1])
 		}
