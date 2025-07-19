@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"sync"
 
+	"github.com/duartqx/livredger/internal/common/events"
 	"github.com/duartqx/livredger/internal/domain"
 
 	"github.com/duartqx/livredger/internal/infra"
@@ -41,93 +42,82 @@ type bus struct {
 
 func (mb *bus) Subscribe(msgType reflect.Type, handler func(infra.UnidadeDeTrabalho, any) error) {
 
-	if msgType == nil {
-		panic("Mensagem não pode ser nil")
+	key, err := events.GenerateMessageKey(msgType)
+
+	if err != nil {
+		panic(err)
 	}
 
-	if msgType.Kind() == reflect.Ptr {
-		msgType = msgType.Elem()
-	}
+	handlers, ok := mb.registry[domain.Message(key)]
 
-	if msgType.Kind() != reflect.Struct {
-		panic("Mensagem não permitida, não é Struct")
-	}
-
-	key := domain.Message(msgType.Name())
-
-	handlers := mb.registry[key]
-
-	if handlers == nil {
+	if !ok {
 		handlers = []MessageHandler{}
 	}
 
-	mb.registry[key] = append(handlers, MessageHandler{
+	mb.registry[domain.Message(key)] = append(handlers, MessageHandler{
 		Handle: handler,
 		Name:   runtime.FuncForPC(reflect.ValueOf(handler).Pointer()).Name(),
 	})
 }
 
-func (mb *bus) Publish(uow infra.UnidadeDeTrabalho, mensagem any) <-chan error {
+func (mb *bus) Publish(uow infra.UnidadeDeTrabalho, mensagem any) error {
+
+	key := events.GetMessageKey(mensagem)
+
+	handlers, ok := mb.registry[domain.Message(key)]
+
+	if !ok || len(handlers) == 0 {
+		return nil
+	}
+
 	errCh := make(chan error, 1)
+	defer close(errCh)
 
-	go func() {
-		defer close(errCh)
+	logger.Debug(key, "Status", "Publishing")
 
-		key := domain.Message(reflect.TypeOf(mensagem).Name())
+	ctx, cancel := context.WithCancel(uow.GetContext())
+	defer cancel()
 
-		handlers, ok := mb.registry[key]
+	var wg sync.WaitGroup
 
-		if !ok || len(handlers) == 0 {
-			errCh <- nil
-			return
-		} else {
-			logger.Debug(string(key), "Status", "Publishing")
-		}
+	for _, handler := range handlers {
 
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
+		wg.Add(1)
 
-		var wg sync.WaitGroup
+		go func(handler MessageHandler) {
+			logger.Debug(key, "Status", "Handling", "Handler", handler.Name)
 
-		for _, handler := range handlers {
+			defer wg.Done()
 
-			wg.Add(1)
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
 
-			go func() {
-				logger.Debug(string(key), "Status", "Handling", "Handler", handler.Name)
+			if err := handler.Handle(uow, mensagem); err != nil {
 
-				defer wg.Done()
+				logger.Error(key, "Status", "Error", "Reason", err.Error(), "Handler", handler.Name)
 
 				select {
-				case <-ctx.Done():
-					return
+				case errCh <- err:
+					cancel()
 				default:
 				}
 
-				if err := handler.Handle(uow, mensagem); err != nil {
+				return
+			}
 
-					logger.Error(string(key), "Status", "Error", "Reason", err.Error(), "Handler", handler.Name)
+			logger.Debug(key, "Status", "Success", "Handler", handler.Name)
+		}(handler)
+	}
 
-					select {
-					case errCh <- err:
-						cancel()
-					default:
-					}
+	wg.Wait()
 
-					return
-				}
-
-				logger.Debug(string(key), "Status", "Success", "Handler", handler.Name)
-			}()
-		}
-
-		wg.Wait()
-
-		select {
-		case errCh <- nil:
-		default:
-		}
-	}()
-
-	return errCh
+	select {
+	case err := <-errCh:
+		return err
+	default:
+		return nil
+	}
 }

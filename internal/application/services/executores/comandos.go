@@ -41,21 +41,19 @@ func CriarLancamento(uow infra.UnidadeDeTrabalho, comando *comandos.CriarLancame
 	return TransactionalScript(
 		uow,
 		func(tx *sql.Tx) (*entidade.Lancamento, error) {
-			lancamento, err := uow.GetRepositorios().Lancamentos.Comando.Criar(tx, comando)
+			lancamento, err := uow.GetRepositorios().Lancamentos.Comando.Criar(uow.GetContext(), tx, comando)
 
 			if err != nil {
 				return nil, err
 			}
 
-			errCh := messagebus.MessageBus.Publish(
-				uow, mensagens.LancamentoCriado{
+			if err := messagebus.MessageBus.Publish(
+				uow, &mensagens.LancamentoCriado{
 					Id:        lancamento.Id,
 					Evento:    domain.Event(lancamento.Evento),
 					Timestamp: lancamento.Timestamp,
 				},
-			)
-
-			if err := <-errCh; err != nil {
+			); err != nil {
 				return nil, err
 			}
 
@@ -68,17 +66,15 @@ func AbrirConta(uow infra.UnidadeDeTrabalho, comando *comandos.AbrirConta) (*ent
 	return TransactionalScript(
 		uow,
 		func(tx *sql.Tx) (*entidade.Conta, error) {
-			conta, err := uow.GetRepositorios().Contas.Comando.Abrir(tx, comando)
+			conta, err := uow.GetRepositorios().Contas.Comando.Abrir(uow.GetContext(), tx, comando)
 
 			if err != nil {
 				return nil, err
 			}
 
-			errCh := messagebus.MessageBus.Publish(
-				uow, mensagens.ContaAberta{Chave: conta.Chave, Timestamp: conta.Timestamp},
-			)
-
-			if err := <-errCh; err != nil {
+			if err := messagebus.MessageBus.Publish(
+				uow, &mensagens.ContaAberta{Chave: conta.Chave, Timestamp: conta.Timestamp},
+			); err != nil {
 				return nil, err
 			}
 
