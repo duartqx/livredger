@@ -14,7 +14,7 @@ type RepositorioDeConsultaContas interface {
 }
 
 type RepositorioDeComandoContas interface {
-	Abrir(tx *sql.Tx, comando *comandos.AbrirConta) (*e.Conta, error)
+	Abrir(ctx context.Context, tx *sql.Tx, comando *comandos.AbrirConta) (*e.Conta, error)
 }
 
 type RepositoriosContas struct {

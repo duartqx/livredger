@@ -1,6 +1,7 @@
 package comandos
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -20,7 +21,7 @@ func NewRepositorioDeComandoDemonstrativos() *RepositorioDeComandoDemonstrativos
 	return &RepositorioDeComandoDemonstrativos{}
 }
 
-func (r RepositorioDeComandoDemonstrativos) Gerar(tx *sql.Tx, comando *comandos.GerarDemonstrativoMensal) (*entidade.DemonstrativoMensal, error) {
+func (r RepositorioDeComandoDemonstrativos) Gerar(ctx context.Context, tx *sql.Tx, comando *comandos.GerarDemonstrativoMensal) (*entidade.DemonstrativoMensal, error) {
 	demonstrativo := &entidade.DemonstrativoMensal{
 		Id:  uuid.New(),
 		Mes: comando.Mes.Format("2006-01"),
@@ -28,7 +29,7 @@ func (r RepositorioDeComandoDemonstrativos) Gerar(tx *sql.Tx, comando *comandos.
 
 	stmt, args := helpers.SelectContaComTotais(&consultas.ConsultaContas{Chave: comando.Chave})
 
-	if err := tx.QueryRow(stmt, args...).Scan(
+	if err := tx.QueryRowContext(ctx, stmt, args...).Scan(
 		&demonstrativo.Conta.Chave,
 		&demonstrativo.Conta.Nome,
 		&demonstrativo.Conta.Timestamp,
@@ -40,8 +41,7 @@ func (r RepositorioDeComandoDemonstrativos) Gerar(tx *sql.Tx, comando *comandos.
 		return nil, err
 	}
 
-	if err := tx.QueryRow(
-		`
+	if err := tx.QueryRowContext(ctx, `
 		WITH calculo_do_demonstrativo AS (
 			SELECT
 				coalesce(sum(lancamentos.valores) FILTER (WHERE lancamentos.valores < 0), 0) as despesa,

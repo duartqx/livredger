@@ -10,7 +10,7 @@ import (
 )
 
 type RepositorioDeComandoDemonstrativoMensal interface {
-	Gerar(tx *sql.Tx, comando *comandos.GerarDemonstrativoMensal) (*entidade.DemonstrativoMensal, error)
+	Gerar(ctx context.Context, tx *sql.Tx, comando *comandos.GerarDemonstrativoMensal) (*entidade.DemonstrativoMensal, error)
 }
 
 type RepositorioDeConsultaDemonstrativoMensal interface {

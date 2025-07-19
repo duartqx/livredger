@@ -14,8 +14,8 @@ type RepositorioDeConsultaLancamentos interface {
 }
 
 type RepositorioDeComandoLancamentos interface {
-	Criar(tx *sql.Tx, comando *comandos.CriarLancamento) (*entidade.Lancamento, error)
-	RecalcularTotais(tx *sql.Tx, comando *comandos.RecalcularTotais) (int64, error)
+	Criar(ctx context.Context, tx *sql.Tx, comando *comandos.CriarLancamento) (*entidade.Lancamento, error)
+	RecalcularTotais(ctx context.Context, tx *sql.Tx, comando *comandos.RecalcularTotais) (int64, error)
 }
 
 type RepositoriosLancamentos struct {

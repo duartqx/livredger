@@ -1,6 +1,7 @@
 package comandos
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 
@@ -17,14 +18,14 @@ func NewRepositorioDeComandoContas() *RepositorioDeComandoContas {
 	return &RepositorioDeComandoContas{}
 }
 
-func (r RepositorioDeComandoContas) Abrir(tx *sql.Tx, comando *c.AbrirConta) (*e.Conta, error) {
+func (r RepositorioDeComandoContas) Abrir(ctx context.Context, tx *sql.Tx, comando *c.AbrirConta) (*e.Conta, error) {
 
 	conta := e.Conta{
 		Chave: uuid.New(),
 		Nome:  comando.Nome,
 	}
 
-	if err := tx.QueryRow(`
+	if err := tx.QueryRowContext(ctx, `
 		INSERT INTO contas (chave, nome)
 		VALUES (:chave, :nome)
 		RETURNING timestamp`,

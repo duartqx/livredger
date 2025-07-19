@@ -1,6 +1,7 @@
 package comandos
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 
@@ -17,11 +18,12 @@ func NewRepositorioDeComandoLancamentos() *RepositorioDeComandoLancamentos {
 	return &RepositorioDeComandoLancamentos{}
 }
 
-func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLancamento) (*e.Lancamento, error) {
+func (r RepositorioDeComandoLancamentos) Criar(ctx context.Context, tx *sql.Tx, comando *c.CriarLancamento) (*e.Lancamento, error) {
 
 	var exists bool
 
-	check := tx.QueryRow(
+	check := tx.QueryRowContext(
+		ctx,
 		`SELECT EXISTS(SELECT 1 FROM contas WHERE chave = :chave)`,
 		sql.Named("chave", comando.Chave),
 	)
@@ -46,7 +48,8 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLanca
 		Descricao:      comando.Descricao,
 	}
 
-	row := tx.QueryRow(
+	row := tx.QueryRowContext(
+		ctx,
 		// TODO: LancamentoCancelado aponta via fk para o lançamento cancelado
 		// Ele é igual ao lançamento original, mas com valores invertido ( multiplicado por -1 )
 		`
@@ -100,10 +103,9 @@ func (r RepositorioDeComandoLancamentos) Criar(tx *sql.Tx, comando *c.CriarLanca
 	return &lancamento, nil
 }
 
-func (r RepositorioDeComandoLancamentos) RecalcularTotais(tx *sql.Tx, comando *c.RecalcularTotais) (int64, error) {
+func (r RepositorioDeComandoLancamentos) RecalcularTotais(ctx context.Context, tx *sql.Tx, comando *c.RecalcularTotais) (int64, error) {
 
-	res, err := tx.Exec(
-		`
+	res, err := tx.ExecContext(ctx, `
 		WITH totais_recalculados_por_chave AS (
 			SELECT
 				l1.id AS id,
@@ -121,8 +123,7 @@ func (r RepositorioDeComandoLancamentos) RecalcularTotais(tx *sql.Tx, comando *c
 			FROM totais_recalculados_por_chave AS trpc
 			WHERE trpc.id = lancamentos.id
 		)
-		WHERE chave = :chave
-		`,
+		WHERE chave = :chave`,
 		sql.Named("chave", comando.Chave.String()),
 	)
 
