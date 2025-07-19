@@ -24,7 +24,7 @@ func GenericCommandHandlerFunc[Command domain.Command, Entidade entidade.Entidad
 		var comando Command
 
 		if err := json.NewDecoder(r.Body).Decode(&comando); err != nil {
-			response.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.BusinessLogicError, err))
+			response.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.RequestError, err))
 			return
 		}
 		defer r.Body.Close()
@@ -54,7 +54,7 @@ func GenericCommandHandlerFunc[Command domain.Command, Entidade entidade.Entidad
 		w.Header().Set("Content-Type", mimetypes.JSON)
 		w.WriteHeader(http.StatusCreated)
 
-		if err := json.NewEncoder(w).Encode(map[string]any{"resultado": resultado}); err != nil {
+		if err := json.NewEncoder(w).Encode(map[string]any{"comando": comando, "resultado": resultado}); err != nil {
 			response.JsonErrorResponse(w, fmt.Errorf("%w: %w", types.InternalError, err))
 			return
 		}

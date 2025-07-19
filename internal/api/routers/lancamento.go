@@ -113,7 +113,7 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 				chave, err := uuid.Parse(r.PathValue("chave"))
 
 				if err != nil {
-					return nil, fmt.Errorf("%w: UUID Inválido: %w", types.BusinessLogicError, err)
+					return nil, fmt.Errorf("%w: UUID Inválido: %w", types.RequestError, err)
 				}
 
 				resultado, err := visualizadores.BuscarLancamentos(uow, &consultas.ConsultaLancamentos{
