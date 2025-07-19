@@ -9,6 +9,7 @@ import (
 	"github.com/duartqx/livredger/internal/common/types"
 	"github.com/duartqx/livredger/internal/domain/consultas"
 	"github.com/duartqx/livredger/internal/domain/entidade"
+	"github.com/duartqx/livredger/internal/infra/repositorios/sqlite/helpers"
 )
 
 type RepositorioDeConsultaDemonstrativos struct{}
@@ -17,21 +18,33 @@ func NewRepositorioDeConsultaDemonstrativos() *RepositorioDeConsultaDemonstrativ
 	return &RepositorioDeConsultaDemonstrativos{}
 }
 
-func (r RepositorioDeConsultaDemonstrativos) DemonstrativosDosUltimosTresMeses(
-	ctx context.Context, db *sql.DB, consulta *consultas.ConsultaDemonstrativoMensal,
+func (r RepositorioDeConsultaDemonstrativos) DemonstrativosDosUltimosSeisMeses(
+	ctx context.Context, db *sql.DB, consulta *consultas.ConsultaDemonstrativoUltimosSeisMeses,
 ) (*[]*entidade.DemonstrativoMensal, error) {
 
 	rows, err := db.QueryContext(
 		ctx,
-		`
-		SELECT id, chave, mes, despesa, receita, saldo, timestamp
-		FROM demonstrativos_mensais
-		WHERE chave = :chave
-		GROUP BY mes
-		HAVING MAX(timestamp)
-		ORDER BY mes DESC
-		LIMIT 3
-		`,
+		fmt.Sprintf(`
+			SELECT
+				demonstrativos.id,
+				contas.chave,
+				contas.nome,
+				contas.timestamp,
+				%s,
+				demonstrativos.mes,
+				demonstrativos.despesa,
+				demonstrativos.receita,
+				demonstrativos.saldo,
+				demonstrativos.timestamp
+			FROM demonstrativos_mensais AS demonstrativos
+			JOIN contas AS contas ON demonstrativos.chave = contas.chave
+			WHERE demonstrativos.chave = :chave
+			GROUP BY demonstrativos.mes
+			HAVING MAX(demonstrativos.timestamp)
+			ORDER BY demonstrativos.mes DESC
+			LIMIT 6`,
+			helpers.CoalesceTotaisDaConta("demonstrativos.mes", "totais"),
+		),
 		sql.Named("chave", consulta.Chave.String()),
 	)
 
@@ -51,7 +64,10 @@ func (r RepositorioDeConsultaDemonstrativos) DemonstrativosDosUltimosTresMeses(
 
 		err := rows.Scan(
 			&demonstrativo.Id,
-			&demonstrativo.Chave,
+			&demonstrativo.Conta.Chave,
+			&demonstrativo.Conta.Nome,
+			&demonstrativo.Conta.Timestamp,
+			&demonstrativo.Conta.Totais,
 			&demonstrativo.Mes,
 			&demonstrativo.Despesa,
 			&demonstrativo.Receita,
@@ -76,18 +92,35 @@ func (r RepositorioDeConsultaDemonstrativos) DemonstrativoMensal(
 
 	if err := db.QueryRowContext(
 		ctx,
-		`
-		SELECT id, chave, mes, despesa, receita, saldo, timestamp
-		FROM demonstrativos_mensais
-		WHERE chave = :chave AND mes = :mes
-		ORDER BY timestamp DESC
-		LIMIT 1
-		`,
+		fmt.Sprintf(`
+			SELECT
+				demonstrativos.id,
+				contas.chave,
+				contas.nome,
+				contas.timestamp,
+				%s,
+				demonstrativos.mes,
+				demonstrativos.despesa,
+				demonstrativos.receita,
+				demonstrativos.saldo,
+				demonstrativos.timestamp
+			FROM demonstrativos_mensais as demonstrativos
+			JOIN contas AS contas ON demonstrativos.chave = contas.chave
+			WHERE
+				demonstrativos.chave = :chave
+				AND demonstrativos.mes = :mes
+			ORDER BY demonstrativos.timestamp DESC
+			LIMIT 1`,
+			helpers.CoalesceTotaisDaConta("demonstrativos.mes", "totais"),
+		),
 		sql.Named("chave", consulta.Chave.String()),
-		sql.Named("mes", consulta.Mes.Format("2006-01")),
+		sql.Named("mes", consulta.Mes),
 	).Scan(
 		&demonstrativo.Id,
-		&demonstrativo.Chave,
+		&demonstrativo.Conta.Chave,
+		&demonstrativo.Conta.Nome,
+		&demonstrativo.Conta.Timestamp,
+		&demonstrativo.Conta.Totais,
 		&demonstrativo.Mes,
 		&demonstrativo.Despesa,
 		&demonstrativo.Receita,
@@ -97,7 +130,7 @@ func (r RepositorioDeConsultaDemonstrativos) DemonstrativoMensal(
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf(
 				"%w: Não existe demonstrativo gerado para esse mês %s: %w",
-				types.NotFoundError, consulta.Mes.Format("2006-01"), err,
+				types.NotFoundError, consulta.Mes, err,
 			)
 		}
 		return nil, fmt.Errorf("%w: %w", types.InternalError, err)

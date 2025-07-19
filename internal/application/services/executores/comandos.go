@@ -13,7 +13,7 @@ import (
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-func TransactionalScript[Entidade any](
+func TransactionalScript[Entidade entidade.Entidade](
 	uow infra.UnidadeDeTrabalho, fn func(*sql.Tx) (*Entidade, error),
 ) (*Entidade, error) {
 	tx, err := uow.BeginTransaction()

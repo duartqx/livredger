@@ -1,12 +1,38 @@
 package consultas
 
 import (
+	"fmt"
 	"time"
 
+	"github.com/duartqx/livredger/internal/common/types"
 	"github.com/google/uuid"
 )
 
 type ConsultaDemonstrativoMensal struct {
-	Chave uuid.UUID `json:"chave"`
-	Mes   time.Time `json:"mes"`
+	Chave uuid.UUID `json:"chave" form:"chave"`
+	Mes   string    `json:"mes" form:"mes" help:"Date in the format YYYY-MM"`
+}
+
+func (c ConsultaDemonstrativoMensal) Validar() error {
+	if c.Chave == uuid.Nil {
+		return fmt.Errorf("%w: É necessário informar a chave da conta para obter um demonstrativo", types.BusinessLogicError)
+	}
+
+	if _, err := time.Parse("2006-01", c.Mes); err != nil {
+		return fmt.Errorf("%w: Mês no formato errado, deve ser YYYY-MM", types.BusinessLogicError)
+	}
+
+	return nil
+}
+
+type ConsultaDemonstrativoUltimosSeisMeses struct {
+	Chave uuid.UUID `json:"chave" form:"chave"`
+}
+
+func (c ConsultaDemonstrativoUltimosSeisMeses) Validar() error {
+	if c.Chave == uuid.Nil {
+		return fmt.Errorf("%w: É necessário informar a chave da conta para obter um demonstrativo", types.BusinessLogicError)
+	}
+
+	return nil
 }

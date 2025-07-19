@@ -14,8 +14,8 @@ type RepositorioDeComandoDemonstrativoMensal interface {
 }
 
 type RepositorioDeConsultaDemonstrativoMensal interface {
-	DemonstrativosDosUltimosTresMeses(
-		ctx context.Context, db *sql.DB, consulta *consultas.ConsultaDemonstrativoMensal,
+	DemonstrativosDosUltimosSeisMeses(
+		ctx context.Context, db *sql.DB, consulta *consultas.ConsultaDemonstrativoUltimosSeisMeses,
 	) (*[]*entidade.DemonstrativoMensal, error)
 
 	DemonstrativoMensal(

@@ -8,7 +8,7 @@ import (
 
 type DemonstrativoMensal struct {
 	Id        uuid.UUID `json:"id"`
-	Chave     uuid.UUID `json:"chave"`
+	Conta     Conta     `json:"conta"`
 	Mes       string    `json:"mes"`
 	Despesa   float64   `json:"despesa"`
 	Receita   float64   `json:"receita"`

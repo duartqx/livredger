@@ -2,11 +2,14 @@ package comandos
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/duartqx/livredger/internal/common/types"
 	"github.com/duartqx/livredger/internal/domain/comandos"
+	"github.com/duartqx/livredger/internal/domain/consultas"
 	"github.com/duartqx/livredger/internal/domain/entidade"
+	"github.com/duartqx/livredger/internal/infra/repositorios/sqlite/helpers"
 	"github.com/duartqx/livredger/internal/infra/repositorios/sqlite/regex"
 	"github.com/google/uuid"
 )
@@ -19,9 +22,22 @@ func NewRepositorioDeComandoDemonstrativos() *RepositorioDeComandoDemonstrativos
 
 func (r RepositorioDeComandoDemonstrativos) Gerar(tx *sql.Tx, comando *comandos.GerarDemonstrativoMensal) (*entidade.DemonstrativoMensal, error) {
 	demonstrativo := &entidade.DemonstrativoMensal{
-		Id:    uuid.New(),
-		Chave: comando.Chave,
-		Mes:   comando.Mes.Format("2006-01"),
+		Id:  uuid.New(),
+		Mes: comando.Mes.Format("2006-01"),
+	}
+
+	stmt, args := helpers.SelectContaComTotais(&consultas.ConsultaContas{Chave: comando.Chave})
+
+	if err := tx.QueryRow(stmt, args...).Scan(
+		&demonstrativo.Conta.Chave,
+		&demonstrativo.Conta.Nome,
+		&demonstrativo.Conta.Timestamp,
+		&demonstrativo.Conta.Totais,
+	); err != nil {
+		if errors.Is(sql.ErrNoRows, err) {
+			return nil, fmt.Errorf("%w: Chave inválida {%s}", types.BusinessLogicError, comando.Chave.String())
+		}
+		return nil, err
 	}
 
 	if err := tx.QueryRow(
@@ -43,7 +59,7 @@ func (r RepositorioDeComandoDemonstrativos) Gerar(tx *sql.Tx, comando *comandos.
 		RETURNING timestamp, despesa, receita, saldo;
 		`,
 		sql.Named("id", demonstrativo.Id.String()),
-		sql.Named("chave", demonstrativo.Chave.String()),
+		sql.Named("chave", demonstrativo.Conta.Chave.String()),
 		sql.Named("mes", demonstrativo.Mes),
 	).Scan(
 		&demonstrativo.Timestamp,

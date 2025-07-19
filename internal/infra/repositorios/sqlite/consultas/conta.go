@@ -5,13 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"strings"
 
-	"github.com/Masterminds/squirrel"
 	"github.com/duartqx/livredger/internal/common/types"
 	"github.com/duartqx/livredger/internal/domain/consultas"
 	"github.com/duartqx/livredger/internal/domain/entidade"
-	"github.com/google/uuid"
+	"github.com/duartqx/livredger/internal/infra/repositorios/sqlite/helpers"
 )
 
 type RepositorioDeConsultaContas struct{}
@@ -24,40 +22,7 @@ func (r RepositorioDeConsultaContas) Buscar(
 	ctx context.Context, db *sql.DB, consulta *consultas.ConsultaContas,
 ) (*[]*entidade.Conta, error) {
 
-	builder := squirrel.
-		Select(
-			"chave",
-			"nome",
-			"timestamp",
-			`
-			COALESCE(
-				(
-					SELECT
-						totais
-					FROM lancamentos
-					WHERE
-						lancamentos.evento not in ('ContaAberta')
-						AND lancamentos.chave = contas.chave
-					GROUP BY chave
-					HAVING max(vencimento)
-				),
-				0
-			) AS totais
-			`,
-		).
-		From("contas").
-		OrderBy("timestamp ASC")
-
-	if consulta.Chave != uuid.Nil {
-		builder = builder.Where(squirrel.Eq{"contas.chave": consulta.Chave.String()})
-	} else if strings.Trim(consulta.Nome, " ") != "" {
-		builder = builder.Where(squirrel.Eq{"contas.nome": consulta.Nome})
-	}
-
-	stmt, args, err := builder.ToSql()
-	if err != nil {
-		return nil, fmt.Errorf("%w: %w", types.InternalError, err)
-	}
+	stmt, args := helpers.SelectContaComTotais(consulta)
 
 	rows, err := db.QueryContext(ctx, stmt, args...)
 

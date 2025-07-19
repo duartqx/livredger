@@ -71,6 +71,7 @@ func Router(dependencies *Dependencies) http.Handler {
 	mux.AddRoutes(
 		routers.LancamentosRouter(dependencies.Templates),
 		routers.ContasRouter(dependencies.Templates),
+		routers.DemonstrativosRouter(dependencies.Templates),
 		routers.ViewsRouter(dependencies.Templates),
 	)
 

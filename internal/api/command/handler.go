@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/duartqx/livredger/internal/api/response"
+	"github.com/duartqx/livredger/internal/domain/entidade"
 
 	"github.com/duartqx/livredger/internal/domain"
 
@@ -15,7 +16,7 @@ import (
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-func GenericCommandHandlerFunc[Command domain.Command, Entidade any](
+func GenericCommandHandlerFunc[Command domain.Command, Entidade entidade.Entidade](
 	executor func(infra.UnidadeDeTrabalho, *Command) (*Entidade, error),
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
