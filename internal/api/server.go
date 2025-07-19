@@ -1,8 +1,6 @@
 package api
 
 import (
-	"cmp"
-	"context"
 	"fmt"
 	"io/fs"
 	"net/http"
@@ -12,11 +10,12 @@ import (
 	"github.com/duartqx/ddgomiddlewares/cors"
 	"github.com/duartqx/ddgomiddlewares/interfaces"
 	"github.com/duartqx/ddgomiddlewares/logger"
-	"github.com/duartqx/ddgomiddlewares/recovery"
+	"github.com/duartqx/ddgomiddlewares/timeout"
 	"github.com/duartqx/ddgomiddlewares/trailling"
 
 	"github.com/duartqx/livredger/internal/api/common"
 	"github.com/duartqx/livredger/internal/api/routers"
+	"github.com/duartqx/livredger/internal/common/types"
 )
 
 type Static struct {
@@ -77,21 +76,9 @@ func Router(dependencies *Dependencies) http.Handler {
 
 	return mux.Use(
 		mux,
-		func(next http.Handler) http.Handler {
-			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-				ctx, cancel := context.WithTimeout(
-					r.Context(),
-					time.Second*time.Duration(cmp.Or(dependencies.RequestTimeout, 5)),
-				)
-				defer cancel()
-
-				next.ServeHTTP(w, r.WithContext(ctx))
-			})
-		},
 		trailling.TrailingSlashMiddleware,
+		timeout.TimeoutMiddleware(time.Duration(dependencies.RequestTimeout), fmt.Errorf("%w: Requisição excedeu tempo limite", types.TimeOut)),
 		logger.LoggerMiddleware,
-		recovery.RecoveryMiddleware,
 		cors.CorsMiddleware,
 	)
 }

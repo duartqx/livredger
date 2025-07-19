@@ -1,6 +1,7 @@
 package consultas
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -16,9 +17,12 @@ func NewRepositorioDeConsultaDemonstrativos() *RepositorioDeConsultaDemonstrativ
 	return &RepositorioDeConsultaDemonstrativos{}
 }
 
-func (r RepositorioDeConsultaDemonstrativos) DemonstrativosDosUltimosTresMeses(db *sql.DB, consulta *consultas.ConsultaDemonstrativoMensal) (*[]*entidade.DemonstrativoMensal, error) {
+func (r RepositorioDeConsultaDemonstrativos) DemonstrativosDosUltimosTresMeses(
+	ctx context.Context, db *sql.DB, consulta *consultas.ConsultaDemonstrativoMensal,
+) (*[]*entidade.DemonstrativoMensal, error) {
 
-	rows, err := db.Query(
+	rows, err := db.QueryContext(
+		ctx,
 		`
 		SELECT id, chave, mes, despesa, receita, saldo, timestamp
 		FROM demonstrativos_mensais
@@ -65,10 +69,13 @@ func (r RepositorioDeConsultaDemonstrativos) DemonstrativosDosUltimosTresMeses(d
 	return &demonstrativos, nil
 }
 
-func (r RepositorioDeConsultaDemonstrativos) DemonstrativoMensal(db *sql.DB, consulta *consultas.ConsultaDemonstrativoMensal) (*entidade.DemonstrativoMensal, error) {
+func (r RepositorioDeConsultaDemonstrativos) DemonstrativoMensal(
+	ctx context.Context, db *sql.DB, consulta *consultas.ConsultaDemonstrativoMensal,
+) (*entidade.DemonstrativoMensal, error) {
 	var demonstrativo entidade.DemonstrativoMensal
 
-	if err := db.QueryRow(
+	if err := db.QueryRowContext(
+		ctx,
 		`
 		SELECT id, chave, mes, despesa, receita, saldo, timestamp
 		FROM demonstrativos_mensais

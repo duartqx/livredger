@@ -1,6 +1,7 @@
 package repositorios
 
 import (
+	"context"
 	"database/sql"
 
 	"github.com/duartqx/livredger/internal/domain/comandos"
@@ -13,8 +14,13 @@ type RepositorioDeComandoDemonstrativoMensal interface {
 }
 
 type RepositorioDeConsultaDemonstrativoMensal interface {
-	DemonstrativosDosUltimosTresMeses(db *sql.DB, consulta *consultas.ConsultaDemonstrativoMensal) (*[]*entidade.DemonstrativoMensal, error)
-	DemonstrativoMensal(db *sql.DB, consulta *consultas.ConsultaDemonstrativoMensal) (*entidade.DemonstrativoMensal, error)
+	DemonstrativosDosUltimosTresMeses(
+		ctx context.Context, db *sql.DB, consulta *consultas.ConsultaDemonstrativoMensal,
+	) (*[]*entidade.DemonstrativoMensal, error)
+
+	DemonstrativoMensal(
+		ctx context.Context, db *sql.DB, consulta *consultas.ConsultaDemonstrativoMensal,
+	) (*entidade.DemonstrativoMensal, error)
 }
 
 type RepositoriosDemonstrativos struct {

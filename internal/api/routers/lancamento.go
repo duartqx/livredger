@@ -57,7 +57,7 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 
 			if err != nil {
 
-				response.JsonResponse(w, &visualizadores.Resposta[consultas.ConsultaLancamentos]{
+				response.JsonResponse(r.Context(), w, &visualizadores.Resposta[consultas.ConsultaLancamentos]{
 					Consulta: consulta,
 					Error:    err,
 				})
@@ -67,7 +67,7 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 
 			resultado, err := visualizadores.BuscarLancamentos(uow, consulta.Parsed)
 
-			response.JsonResponse(w, &visualizadores.Resposta[consultas.ConsultaLancamentos]{
+			response.JsonResponse(r.Context(), w, &visualizadores.Resposta[consultas.ConsultaLancamentos]{
 				Consulta:  consulta,
 				Resultado: resultado,
 				Error:     err,

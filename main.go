@@ -37,8 +37,8 @@ var (
 func main() {
 
 	flag.IntVar(&cfg.Port, "port", 8000, "The port the server will run at")
-	flag.IntVar(&cfg.ServerTimeout, "servertm", 15, "The time in seconds for server timeout")
-	flag.IntVar(&cfg.RequestTimeout, "requesttm", 5, "The time in seconds for request timeout")
+	flag.IntVar(&cfg.ServerTimeout, "servertm", 5, "The time in seconds for server timeout")
+	flag.IntVar(&cfg.RequestTimeout, "requesttm", 1, "The time in seconds for request timeout")
 
 	flag.Parse()
 

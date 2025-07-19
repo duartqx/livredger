@@ -1,6 +1,7 @@
 package response
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"html/template"
@@ -20,7 +21,11 @@ type Templates struct {
 	Error   *template.Template
 }
 
-func JsonResponse[C any](w http.ResponseWriter, response *visualizadores.Resposta[C]) {
+func JsonResponse[C any](ctx context.Context, w http.ResponseWriter, response *visualizadores.Resposta[C]) {
+
+	if ctx.Err() != nil {
+		return
+	}
 
 	w.Header().Set("Content-Type", mimetypes.JSON)
 
@@ -35,7 +40,6 @@ func JsonResponse[C any](w http.ResponseWriter, response *visualizadores.Respost
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		panic(err)
 	}
-
 }
 
 func getStatusByError(err error) int {
