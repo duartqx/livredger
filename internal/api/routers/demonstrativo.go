@@ -22,61 +22,39 @@ func DemonstrativosRouter(fs fs.FS) *common.RouterMap {
 			visualizadores.ConsultarDemonstrativoMensal,
 		),
 		"GET /api/demonstrativos/ultimos": getDemonstrativosHandler(
-			visualizadores.ConsultarDemonstrativoDosUltimosTresMeses,
+			visualizadores.ConsultarDemonstrativoDosUltimosSeisMeses,
 		),
 	}
 }
 
-type consultaDemonstrativo interface {
+func getDemonstrativosHandler[C interface {
 	consultas.ConsultaDemonstrativoMensal | consultas.ConsultaDemonstrativoUltimosSeisMeses
 	Validar() error
-}
-
-func getDemonstrativosHandler[C consultaDemonstrativo](
+}](
 	visualizador func(infra.UnidadeDeTrabalho, *C) (*visualizadores.Resultado[entidade.DemonstrativoMensal], error),
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var usuario *types.Usuario
 
+		var consulta C
+
+		res := &visualizadores.Resposta[C]{Consulta: &visualizadores.Consulta[C]{Parsed: &consulta, Raw: &r.Form}}
+
 		uow, err := infra.Bootstrap(r.Context(), usuario)
 		if err != nil {
-			response.JsonErrorResponse(w, err)
-
+			response.JsonResponse(r.Context(), w, res.WithError(err))
 			return
 		}
 		defer uow.Close()
 
-		if err := r.ParseForm(); err != nil {
-			response.JsonErrorResponse(w, err)
-
+		if err := cmp.Or(r.ParseForm(), decoders.Decoder().Decode(&consulta, r.Form), consulta.Validar()); err != nil {
+			response.JsonResponse(r.Context(), w, res.WithError(fmt.Errorf("%w: %w", types.RequestError, err)))
 			return
 		}
 
-		consulta := new(C)
+		resultado, err := visualizador(uow, &consulta)
 
-		if err := cmp.Or(decoders.Decoder().Decode(consulta, r.Form), (*consulta).Validar()); err != nil {
-
-			response.JsonResponse(r.Context(), w, &visualizadores.Resposta[C]{
-				Error: fmt.Errorf("%w: %w", decoders.DecoderError, err),
-				Consulta: &visualizadores.Consulta[C]{
-					Parsed: consulta,
-					Raw:    r.Form,
-				},
-			})
-
-			return
-		}
-
-		resultado, err := visualizador(uow, consulta)
-
-		response.JsonResponse(r.Context(), w, &visualizadores.Resposta[C]{
-			Resultado: resultado,
-			Error:     err,
-			Consulta: &visualizadores.Consulta[C]{
-				Parsed: consulta,
-				Raw:    r.Form,
-			},
-		})
+		response.JsonResponse(r.Context(), w, res.WithResultado(resultado).WithError(err))
 
 		return
 	}

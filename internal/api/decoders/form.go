@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	DecoderError = fmt.Errorf("%w: DecoderError", types.BusinessLogicError)
+	DecoderError = fmt.Errorf("%w: DecoderError", types.RequestError)
 	decoder      *form.Decoder
 )
 

@@ -34,7 +34,7 @@ func SelectContaComTotais(consulta *consultas.ConsultaContas) (string, []any) {
 
 func CoalesceTotaisDaConta(noMes string, alias string) string {
 
-	fMes := noMes
+	fMes := ""
 	if noMes != "" {
 		fMes = fmt.Sprintf("AND strftime('%%Y-%%m', lancamentos.vencimento) = %s", noMes)
 	}

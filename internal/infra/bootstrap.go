@@ -88,6 +88,6 @@ func Connect(ctx context.Context, usuario *types.Usuario) (*sql.DB, error) {
 	case conn := <-connChan:
 		return conn.Db, conn.Err
 	case <-ctx.Done():
-		return nil, fmt.Errorf("%w: Não foi possível iniciar uma conexão para {%s}", types.TimeOut, DBMS)
+		return nil, fmt.Errorf("%w: Não foi possível iniciar uma conexão para {%s}", types.TimeOutError, DBMS)
 	}
 }

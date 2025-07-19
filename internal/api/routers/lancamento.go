@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"cmp"
 	"fmt"
 	"io/fs"
 	"net/http"
@@ -23,55 +24,32 @@ import (
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-func parseConsultaDoForm(r *http.Request) (*visualizadores.Consulta[consultas.ConsultaLancamentos], error) {
-	if err := r.ParseForm(); err != nil {
-		return nil, fmt.Errorf("%w: %w", types.BusinessLogicError, err)
-	}
-
-	consulta := &visualizadores.Consulta[consultas.ConsultaLancamentos]{
-		Raw:    r.Form,
-		Parsed: consultas.ConsultaLancamentosPadrao(),
-	}
-
-	if err := decoders.Decoder().Decode(consulta, r.Form); err != nil {
-		return consulta, fmt.Errorf("%w: %w", decoders.DecoderError, err)
-	}
-
-	return consulta, nil
-}
-
 func LancamentosRouter(fs fs.FS) *common.RouterMap {
 	return &common.RouterMap{
 		"GET /api/lancamentos": func(w http.ResponseWriter, r *http.Request) {
 			var usuario *types.Usuario
 
+			consulta := consultas.ConsultaLancamentosPadrao()
+
+			res := &visualizadores.Resposta[consultas.ConsultaLancamentos]{
+				Consulta: &visualizadores.Consulta[consultas.ConsultaLancamentos]{Parsed: consulta, Raw: &r.Form},
+			}
+
 			uow, err := infra.Bootstrap(r.Context(), usuario)
 			if err != nil {
-				response.JsonErrorResponse(w, err)
-
+				response.JsonResponse(r.Context(), w, res.WithError(err))
 				return
 			}
 			defer uow.Close()
 
-			consulta, err := parseConsultaDoForm(r)
-
-			if err != nil {
-
-				response.JsonResponse(r.Context(), w, &visualizadores.Resposta[consultas.ConsultaLancamentos]{
-					Consulta: consulta,
-					Error:    err,
-				})
-
+			if err := cmp.Or(r.ParseForm(), decoders.Decoder().Decode(consulta, r.Form)); err != nil {
+				response.JsonResponse(r.Context(), w, res.WithError(fmt.Errorf("%w: %w", types.RequestError, err)))
 				return
 			}
 
-			resultado, err := visualizadores.BuscarLancamentos(uow, consulta.Parsed)
+			resultado, err := visualizadores.BuscarLancamentos(uow, consulta)
 
-			response.JsonResponse(r.Context(), w, &visualizadores.Resposta[consultas.ConsultaLancamentos]{
-				Consulta:  consulta,
-				Resultado: resultado,
-				Error:     err,
-			})
+			response.JsonResponse(r.Context(), w, res.WithResultado(resultado).WithError(err))
 
 			return
 		},
@@ -95,13 +73,13 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 				}
 				defer uow.Close()
 
-				consulta, err := parseConsultaDoForm(r)
+				consulta := consultas.ConsultaLancamentosPadrao()
 
-				if err != nil {
-					return nil, err
+				if err := cmp.Or(r.ParseForm(), decoders.Decoder().Decode(consulta, r.Form)); err != nil {
+					return nil, fmt.Errorf("%w: %w", types.RequestError, err)
 				}
 
-				resultado, err := visualizadores.BuscarLancamentos(uow, consulta.Parsed)
+				resultado, err := visualizadores.BuscarLancamentos(uow, consulta)
 
 				if err != nil {
 					return nil, err

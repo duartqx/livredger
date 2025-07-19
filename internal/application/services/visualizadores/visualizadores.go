@@ -44,7 +44,9 @@ func ConsultarDemonstrativoMensal(uow infra.UnidadeDeTrabalho, consulta *consult
 ) {
 	demonstrativoSlice := make([]*entidade.DemonstrativoMensal, 0, 1)
 
-	demonstrativo, err := uow.GetRepositorios().Demonstrativos.Consulta.DemonstrativoMensal(uow.GetContext(), uow.GetDB(), consulta)
+	demonstrativo, err := uow.GetRepositorios().Demonstrativos.Consulta.DemonstrativoMensal(
+		uow.GetContext(), uow.GetDB(), consulta,
+	)
 
 	if demonstrativo != nil {
 		demonstrativoSlice = append(demonstrativoSlice[:0], demonstrativo)
@@ -58,10 +60,12 @@ func ConsultarDemonstrativoMensal(uow infra.UnidadeDeTrabalho, consulta *consult
 	return resultado, err
 }
 
-func ConsultarDemonstrativoDosUltimosTresMeses(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaDemonstrativoUltimosSeisMeses) (
+func ConsultarDemonstrativoDosUltimosSeisMeses(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaDemonstrativoUltimosSeisMeses) (
 	*Resultado[entidade.DemonstrativoMensal], error,
 ) {
-	demonstrativos, err := uow.GetRepositorios().Demonstrativos.Consulta.DemonstrativosDosUltimosSeisMeses(uow.GetContext(), uow.GetDB(), consulta)
+	demonstrativos, err := uow.GetRepositorios().Demonstrativos.Consulta.DemonstrativosDosUltimosSeisMeses(
+		uow.GetContext(), uow.GetDB(), consulta,
+	)
 
 	demonstrativos = cmp.Or(demonstrativos, &[]*entidade.DemonstrativoMensal{})
 

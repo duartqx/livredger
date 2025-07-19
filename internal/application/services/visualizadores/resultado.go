@@ -60,3 +60,18 @@ func (r Resposta[C]) MarshalJSON() ([]byte, error) {
 		Error: errStr,
 	})
 }
+
+func (r *Resposta[C]) WithError(err error) *Resposta[C] {
+	r.Error = err
+	return r
+}
+
+func (r *Resposta[C]) WithConsulta(consulta *Consulta[C]) *Resposta[C] {
+	r.Consulta = consulta
+	return r
+}
+
+func (r *Resposta[C]) WithResultado(resultado any) *Resposta[C] {
+	r.Resultado = resultado
+	return r
+}

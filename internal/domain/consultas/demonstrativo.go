@@ -10,7 +10,7 @@ import (
 
 type ConsultaDemonstrativoMensal struct {
 	Chave uuid.UUID `json:"chave" form:"chave"`
-	Mes   string    `json:"mes" form:"mes" help:"Date in the format YYYY-MM"`
+	Mes   string    `json:"mes" form:"mes" help:"Date string formatted as YYYY-MM"`
 }
 
 func (c ConsultaDemonstrativoMensal) Validar() error {

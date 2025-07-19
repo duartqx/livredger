@@ -78,7 +78,7 @@ func Router(dependencies *Dependencies) http.Handler {
 	return mux.Use(
 		mux,
 		trailling.TrailingSlashMiddleware,
-		timeout.TimeoutMiddleware(time.Duration(dependencies.RequestTimeout), fmt.Errorf("%w: Requisição excedeu tempo limite", types.TimeOut)),
+		timeout.TimeoutMiddleware(time.Duration(dependencies.RequestTimeout), fmt.Errorf("%w: Requisição excedeu tempo limite", types.TimeOutError)),
 		logger.LoggerMiddleware,
 		cors.CorsMiddleware,
 	)
