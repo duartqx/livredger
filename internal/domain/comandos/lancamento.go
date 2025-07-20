@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/duartqx/livredger/internal/common/types"
+	ce "github.com/duartqx/livredger/internal/common/errors"
 	"github.com/duartqx/livredger/internal/domain/eventos"
 	"github.com/duartqx/livredger/internal/domain/value/meios"
 	"github.com/duartqx/livredger/internal/domain/value/naturezas"
@@ -26,38 +26,38 @@ type CriarLancamento struct {
 
 func (c CriarLancamento) Validar() error {
 	if uuid.Nil == c.Chave {
-		return fmt.Errorf("%w: Chave é obrigatória", types.BusinessLogicError)
+		return fmt.Errorf("%w: Chave é obrigatória", ce.BusinessLogicError)
 	}
 
 	if c.Descricao == "" {
-		return fmt.Errorf("%w: Descrição é obrigatória", types.BusinessLogicError)
+		return fmt.Errorf("%w: Descrição é obrigatória", ce.BusinessLogicError)
 	}
 
 	if len(c.Descricao) > 500 {
 		return fmt.Errorf(
 			"%w: Descrição muito longa, deve ter no máximo 500 caracteres",
-			types.BusinessLogicError,
+			ce.BusinessLogicError,
 		)
 	}
 
 	if !slices.Contains(eventos.EVENTOS_DE_LANCAMENTOS, c.Evento) {
 		return fmt.Errorf(
 			"%w: Evento não é válido, opções: [%s]",
-			types.BusinessLogicError,
+			ce.BusinessLogicError,
 			strings.Join(eventos.EVENTOS_DE_LANCAMENTOS, ", "),
 		)
 	}
 
 	if c.Versao == 0 {
-		return fmt.Errorf("%w: Versão não pode ser igual a 0", types.BusinessLogicError)
+		return fmt.Errorf("%w: Versão não pode ser igual a 0", ce.BusinessLogicError)
 	}
 
 	if !slices.Contains(meios.MEIOS_FINANCEIRO, c.MeioFinanceiro) {
-		return fmt.Errorf("%w: Meio Financeiro inválido: %s", types.BusinessLogicError, c.MeioFinanceiro)
+		return fmt.Errorf("%w: Meio Financeiro inválido: %s", ce.BusinessLogicError, c.MeioFinanceiro)
 	}
 
 	if !slices.Contains(naturezas.NATUREZAS, c.Natureza) {
-		return fmt.Errorf("%w: Natureza da transação inválida: %s", types.BusinessLogicError, c.Natureza)
+		return fmt.Errorf("%w: Natureza da transação inválida: %s", ce.BusinessLogicError, c.Natureza)
 	}
 
 	return nil

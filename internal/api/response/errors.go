@@ -6,21 +6,34 @@ import (
 	"net/http"
 
 	"github.com/duartqx/livredger/internal/api/decoders"
-	"github.com/duartqx/livredger/internal/common/types"
+	ce "github.com/duartqx/livredger/internal/common/errors"
 )
 
 func GetStatusCodeFromError(err error) int {
-	switch {
-	case err == nil:
+	if err == nil {
 		return http.StatusOK
-	case errors.Is(err, types.NotFoundError):
+	}
+
+	switch {
+	case is(err, notFound...):
 		return http.StatusNotFound
-	case errors.Is(err, types.BusinessLogicError),
-		errors.Is(err, types.RequestError),
-		errors.Is(err, &json.UnmarshalTypeError{}),
-		errors.Is(err, decoders.DecoderError):
+	case is(err, badRequest...):
 		return http.StatusBadRequest
 	default:
 		panic(err)
 	}
 }
+
+func is(err error, errTypes ...error) bool {
+	for _, errType := range errTypes {
+		if errors.Is(err, errType) {
+			return true
+		}
+	}
+	return false
+}
+
+var (
+	badRequest []error = []error{ce.BusinessLogicError, ce.RequestError, &json.UnmarshalTypeError{}, decoders.DecoderError}
+	notFound   []error = []error{ce.NotFoundError}
+)

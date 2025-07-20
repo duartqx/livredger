@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/duartqx/livredger/internal/common/types"
+	ce "github.com/duartqx/livredger/internal/common/errors"
 	"github.com/duartqx/livredger/internal/domain/consultas"
 	"github.com/duartqx/livredger/internal/domain/entidade"
 	"github.com/duartqx/livredger/internal/infra/repositorios/sqlite/helpers"
@@ -54,7 +54,7 @@ func (r RepositorioDeConsultaDemonstrativos) DemonstrativosDosUltimosSeisMeses(
 		if errors.Is(err, sql.ErrNoRows) {
 			return &demonstrativos, nil
 		}
-		return nil, fmt.Errorf("%w: %w", types.InternalError, err)
+		return nil, fmt.Errorf("%w: %w", ce.InternalError, err)
 	}
 
 	defer rows.Close()
@@ -76,7 +76,7 @@ func (r RepositorioDeConsultaDemonstrativos) DemonstrativosDosUltimosSeisMeses(
 		)
 
 		if err != nil {
-			return nil, fmt.Errorf("%w: Não foi possível mapear demonstrativo: %w", types.InternalError, err)
+			return nil, fmt.Errorf("%w: Não foi possível mapear demonstrativo: %w", ce.InternalError, err)
 		}
 
 		demonstrativos = append(demonstrativos, &demonstrativo)
@@ -130,10 +130,10 @@ func (r RepositorioDeConsultaDemonstrativos) DemonstrativoMensal(
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf(
 				"%w: Não existe demonstrativo gerado para esse mês %s: %w",
-				types.NotFoundError, consulta.Mes, err,
+				ce.NotFoundError, consulta.Mes, err,
 			)
 		}
-		return nil, fmt.Errorf("%w: %w", types.InternalError, err)
+		return nil, fmt.Errorf("%w: %w", ce.InternalError, err)
 	}
 
 	return &demonstrativo, nil

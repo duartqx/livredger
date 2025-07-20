@@ -15,7 +15,7 @@ import (
 
 	"github.com/duartqx/livredger/internal/api/common"
 	"github.com/duartqx/livredger/internal/api/routers"
-	"github.com/duartqx/livredger/internal/common/types"
+	ce "github.com/duartqx/livredger/internal/common/errors"
 )
 
 type Static struct {
@@ -78,7 +78,7 @@ func Router(dependencies *Dependencies) http.Handler {
 	return mux.Use(
 		mux,
 		trailling.TrailingSlashMiddleware,
-		timeout.TimeoutMiddleware(time.Duration(dependencies.RequestTimeout), fmt.Errorf("%w: Requisição excedeu tempo limite", types.TimeOutError)),
+		timeout.TimeoutMiddleware(time.Duration(dependencies.RequestTimeout), fmt.Errorf("%w: Requisição excedeu tempo limite", ce.TimeOutError)),
 		logger.LoggerMiddleware,
 		cors.CorsMiddleware,
 	)

@@ -3,10 +3,10 @@ package comandos
 import (
 	"context"
 	"database/sql"
-	"errors"
+	e "errors"
 	"fmt"
 
-	"github.com/duartqx/livredger/internal/common/types"
+	ce "github.com/duartqx/livredger/internal/common/errors"
 	"github.com/duartqx/livredger/internal/domain/comandos"
 	"github.com/duartqx/livredger/internal/domain/consultas"
 	"github.com/duartqx/livredger/internal/domain/entidade"
@@ -37,8 +37,8 @@ func (r RepositorioDeComandoDemonstrativos) Gerar(ctx context.Context, tx *sql.T
 	)
 
 	if err != nil {
-		if errors.Is(sql.ErrNoRows, err) {
-			return nil, fmt.Errorf("%w: Chave inválida {%s}", types.BusinessLogicError, comando.Chave.String())
+		if e.Is(sql.ErrNoRows, err) {
+			return nil, fmt.Errorf("%w: Chave inválida {%s}", ce.BusinessLogicError, comando.Chave.String())
 		}
 		return nil, err
 	}
@@ -72,12 +72,12 @@ func (r RepositorioDeComandoDemonstrativos) Gerar(ctx context.Context, tx *sql.T
 
 	if err != nil {
 		if match := regex.SqliteFalhouInserirRow.FindStringSubmatch(err.Error()); len(match) > 1 {
-			return nil, fmt.Errorf("%w: %s", types.BusinessLogicError, match[1])
+			return nil, fmt.Errorf("%w: %s", ce.BusinessLogicError, match[1])
 		}
 
 		return nil, fmt.Errorf(
 			"%w: Não foi possível gerar um demonstrativo para o mês %s: %w",
-			types.InternalError, demonstrativo.Mes, err,
+			ce.InternalError, demonstrativo.Mes, err,
 		)
 	}
 

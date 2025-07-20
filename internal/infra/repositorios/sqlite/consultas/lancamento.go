@@ -10,7 +10,7 @@ import (
 	"github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
 
-	t "github.com/duartqx/livredger/internal/common/types"
+	ce "github.com/duartqx/livredger/internal/common/errors"
 	c "github.com/duartqx/livredger/internal/domain/consultas"
 	e "github.com/duartqx/livredger/internal/domain/entidade"
 )
@@ -47,7 +47,7 @@ func (r RepositorioDeConsultaLancamentos) Buscar(ctx context.Context, db *sql.DB
 	stmt, args, err := r.condicoes(consulta, builder).ToSql()
 
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", t.InternalError, err)
+		return nil, fmt.Errorf("%w: %w", ce.InternalError, err)
 	}
 
 	rows, err := db.QueryContext(ctx, stmt, args...)
@@ -58,7 +58,7 @@ func (r RepositorioDeConsultaLancamentos) Buscar(ctx context.Context, db *sql.DB
 		if errors.Is(err, sql.ErrNoRows) {
 			return &lancamentos, nil
 		}
-		return nil, fmt.Errorf("%w: %w", t.InternalError, err)
+		return nil, fmt.Errorf("%w: %w", ce.InternalError, err)
 	}
 
 	defer rows.Close()
@@ -82,7 +82,7 @@ func (r RepositorioDeConsultaLancamentos) Buscar(ctx context.Context, db *sql.DB
 		)
 
 		if err != nil {
-			return nil, fmt.Errorf("%w: Não foi possível mapear lançamento: %w", t.InternalError, err)
+			return nil, fmt.Errorf("%w: Não foi possível mapear lançamento: %w", ce.InternalError, err)
 		}
 
 		lancamentos = append(lancamentos, &lancamento)

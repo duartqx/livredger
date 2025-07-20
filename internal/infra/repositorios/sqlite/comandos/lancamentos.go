@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	t "github.com/duartqx/livredger/internal/common/types"
+	ce "github.com/duartqx/livredger/internal/common/errors"
 	c "github.com/duartqx/livredger/internal/domain/comandos"
 	e "github.com/duartqx/livredger/internal/domain/entidade"
 	"github.com/duartqx/livredger/internal/infra/repositorios/sqlite/regex"
@@ -29,11 +29,11 @@ func (r RepositorioDeComandoLancamentos) Criar(ctx context.Context, tx *sql.Tx, 
 	)
 
 	if err := check.Scan(&exists); err != nil {
-		return nil, fmt.Errorf("%w: Não foi possível identificar se conta existe: %w", t.InternalError, err)
+		return nil, fmt.Errorf("%w: Não foi possível identificar se conta existe: %w", ce.InternalError, err)
 	}
 
 	if !exists {
-		return nil, fmt.Errorf("%w: Não encontramos uma conta aberta com essa chave '%s'", t.BusinessLogicError, comando.Chave.String())
+		return nil, fmt.Errorf("%w: Não encontramos uma conta aberta com essa chave '%s'", ce.BusinessLogicError, comando.Chave.String())
 	}
 
 	lancamento := e.Lancamento{
@@ -94,10 +94,10 @@ func (r RepositorioDeComandoLancamentos) Criar(ctx context.Context, tx *sql.Tx, 
 
 	if err := row.Scan(&lancamento.Timestamp, &lancamento.Totais); err != nil {
 		if match := regex.SqliteFalhouInserirRow.FindStringSubmatch(err.Error()); len(match) > 1 {
-			return nil, fmt.Errorf("%w: %s", t.BusinessLogicError, match[1])
+			return nil, fmt.Errorf("%w: %s", ce.BusinessLogicError, match[1])
 		}
 
-		return nil, fmt.Errorf("%w: Não foi possível inserir novo lançamento: %w", t.InternalError, err)
+		return nil, fmt.Errorf("%w: Não foi possível inserir novo lançamento: %w", ce.InternalError, err)
 	}
 
 	return &lancamento, nil
@@ -128,13 +128,13 @@ func (r RepositorioDeComandoLancamentos) RecalcularTotais(ctx context.Context, t
 	)
 
 	if err != nil {
-		return 0, fmt.Errorf("%w: Não foi possível recalcular totais: %w", t.InternalError, err)
+		return 0, fmt.Errorf("%w: Não foi possível recalcular totais: %w", ce.InternalError, err)
 	}
 
 	aff, err := res.RowsAffected()
 
 	if err != nil {
-		return 0, fmt.Errorf("%w: Não foi possível recalcular totais: %w", t.InternalError, err)
+		return 0, fmt.Errorf("%w: Não foi possível recalcular totais: %w", ce.InternalError, err)
 	}
 
 	return aff, nil

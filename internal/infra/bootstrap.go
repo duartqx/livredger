@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	ce "github.com/duartqx/livredger/internal/common/errors"
 	"github.com/duartqx/livredger/internal/common/types"
 	"github.com/duartqx/livredger/internal/domain/repositorios"
 	"github.com/duartqx/livredger/internal/infra/repositorios/sqlite"
@@ -77,7 +78,7 @@ func Connect(ctx context.Context, usuario *types.Usuario) (*sql.DB, error) {
 		case "sqlite":
 			conn.Db, conn.Err = sqlite.Connect(usuario)
 		default:
-			conn.Err = fmt.Errorf("%w: Conexão para {%s} não configurada", types.InternalError, DBMS)
+			conn.Err = fmt.Errorf("%w: Conexão para {%s} não configurada", ce.InternalError, DBMS)
 		}
 
 		dbChan <- &conn
@@ -88,6 +89,6 @@ func Connect(ctx context.Context, usuario *types.Usuario) (*sql.DB, error) {
 	case conn := <-connChan:
 		return conn.Db, conn.Err
 	case <-ctx.Done():
-		return nil, fmt.Errorf("%w: Não foi possível iniciar uma conexão para {%s}", types.TimeOutError, DBMS)
+		return nil, fmt.Errorf("%w: Não foi possível iniciar uma conexão para {%s}", ce.TimeOutError, DBMS)
 	}
 }

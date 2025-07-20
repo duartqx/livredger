@@ -3,7 +3,7 @@ package executores
 import (
 	"encoding/json"
 
-	"github.com/duartqx/livredger/internal/common/errors"
+	ce "github.com/duartqx/livredger/internal/common/errors"
 )
 
 type Response[C any] struct {
@@ -19,7 +19,7 @@ func (r Response[C]) MarshalJSON() ([]byte, error) {
 		Error *string `json:"error"`
 	}{
 		Alias: Alias(r),
-		Error: errors.Stringer(r.Error),
+		Error: ce.Stringer(r.Error),
 	})
 }
 

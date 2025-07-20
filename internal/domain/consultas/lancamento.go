@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
+	ce "github.com/duartqx/livredger/internal/common/errors"
 	"github.com/duartqx/livredger/internal/common/types"
 	"github.com/duartqx/livredger/internal/domain/eventos"
 )
@@ -41,7 +42,7 @@ func (cl *ConsultaLancamentos) UnmarshalJSON(data []byte) error {
 	if aux.Evento != "" && !slices.Contains(eventos.EVENTOS_DE_LANCAMENTOS, aux.Evento) {
 		return fmt.Errorf(
 			"%w: %s não é um evento válido [%s]",
-			types.BusinessLogicError,
+			ce.BusinessLogicError,
 			aux.Evento,
 			strings.Join(eventos.EVENTOS_DE_LANCAMENTOS, ", "),
 		)

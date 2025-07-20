@@ -3,7 +3,7 @@ package command
 import (
 	"cmp"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"io"
 	"net/http"
 
@@ -13,6 +13,7 @@ import (
 
 	"github.com/duartqx/livredger/internal/domain"
 
+	ce "github.com/duartqx/livredger/internal/common/errors"
 	"github.com/duartqx/livredger/internal/common/types"
 
 	"github.com/duartqx/livredger/internal/infra"
@@ -20,7 +21,7 @@ import (
 
 func ComandoFromJson[Command domain.Command](body io.ReadCloser, comando *Command) error {
 	if err := json.NewDecoder(body).Decode(comando); err != nil {
-		return fmt.Errorf("%w: %w", types.RequestError, err)
+		return errors.Join(ce.RequestError, err)
 	}
 	return nil
 }

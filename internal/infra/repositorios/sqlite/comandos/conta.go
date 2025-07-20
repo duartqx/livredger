@@ -5,11 +5,12 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/duartqx/livredger/internal/common/types"
+	"github.com/google/uuid"
+
+	ce "github.com/duartqx/livredger/internal/common/errors"
 	c "github.com/duartqx/livredger/internal/domain/comandos"
 	e "github.com/duartqx/livredger/internal/domain/entidade"
 	"github.com/duartqx/livredger/internal/infra/repositorios/sqlite/regex"
-	"github.com/google/uuid"
 )
 
 type RepositorioDeComandoContas struct{}
@@ -35,10 +36,10 @@ func (r RepositorioDeComandoContas) Abrir(ctx context.Context, tx *sql.Tx, coman
 
 	if err != nil {
 		if match := regex.SqliteFalhouInserirRow.FindStringSubmatch(err.Error()); len(match) > 1 {
-			return nil, fmt.Errorf("%w: %s", types.BusinessLogicError, match[1])
+			return nil, fmt.Errorf("%w: %s", ce.BusinessLogicError, match[1])
 		}
 
-		return nil, fmt.Errorf("%w: Não foi possível abrir uma nova conta: %w", types.InternalError, err)
+		return nil, fmt.Errorf("%w: Não foi possível abrir uma nova conta: %w", ce.InternalError, err)
 	}
 
 	return &conta, nil

@@ -2,7 +2,7 @@ package routers
 
 import (
 	"cmp"
-	"fmt"
+	"errors"
 	"io/fs"
 	"net/http"
 
@@ -10,6 +10,7 @@ import (
 	"github.com/duartqx/livredger/internal/api/decoders"
 	"github.com/duartqx/livredger/internal/api/response"
 	"github.com/duartqx/livredger/internal/application/services/visualizadores"
+	ce "github.com/duartqx/livredger/internal/common/errors"
 	"github.com/duartqx/livredger/internal/common/types"
 	"github.com/duartqx/livredger/internal/domain/consultas"
 	"github.com/duartqx/livredger/internal/domain/entidade"
@@ -48,7 +49,7 @@ func getDemonstrativosHandler[C interface {
 		defer uow.Close()
 
 		if err := cmp.Or(r.ParseForm(), decoders.Decoder().Decode(&consulta, r.Form), consulta.Validar()); err != nil {
-			response.QueryJsonResponse(r.Context(), w, res.WithError(fmt.Errorf("%w: %w", types.RequestError, err)))
+			response.QueryJsonResponse(r.Context(), w, res.WithError(errors.Join(ce.RequestError, err)))
 			return
 		}
 

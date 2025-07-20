@@ -14,6 +14,7 @@ import (
 	"github.com/duartqx/livredger/internal/application/services/executores"
 	"github.com/duartqx/livredger/internal/application/services/visualizadores"
 
+	ce "github.com/duartqx/livredger/internal/common/errors"
 	"github.com/duartqx/livredger/internal/common/types"
 
 	"github.com/duartqx/livredger/internal/domain/consultas"
@@ -41,7 +42,7 @@ func ContasRouter(fs fs.FS) *common.RouterMap {
 			defer uow.Close()
 
 			if err := cmp.Or(r.ParseForm(), decoders.Decoder().Decode(consulta, r.Form)); err != nil {
-				response.QueryJsonResponse(r.Context(), w, res.WithError(fmt.Errorf("%w: %w", types.RequestError, err)))
+				response.QueryJsonResponse(r.Context(), w, res.WithError(fmt.Errorf("%w: %w", ce.RequestError, err)))
 				return
 			}
 

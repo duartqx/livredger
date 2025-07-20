@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/duartqx/livredger/internal/common/types"
+	ce "github.com/duartqx/livredger/internal/common/errors"
 	"github.com/duartqx/livredger/internal/domain/consultas"
 	"github.com/duartqx/livredger/internal/domain/entidade"
 	"github.com/duartqx/livredger/internal/infra/repositorios/sqlite/helpers"
@@ -32,7 +32,7 @@ func (r RepositorioDeConsultaContas) Buscar(
 		if errors.Is(err, sql.ErrNoRows) {
 			return &contas, nil
 		}
-		return nil, fmt.Errorf("%w: %w", types.InternalError, err)
+		return nil, fmt.Errorf("%w: %w", ce.InternalError, err)
 	}
 
 	defer rows.Close()
@@ -49,7 +49,7 @@ func (r RepositorioDeConsultaContas) Buscar(
 		)
 
 		if err != nil {
-			return nil, fmt.Errorf("%w: Não foi possível mapear uma conta: %w", types.InternalError, err)
+			return nil, fmt.Errorf("%w: Não foi possível mapear uma conta: %w", ce.InternalError, err)
 		}
 
 		contas = append(contas, &conta)

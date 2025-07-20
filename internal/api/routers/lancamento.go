@@ -2,6 +2,7 @@ package routers
 
 import (
 	"cmp"
+	"errors"
 	"fmt"
 	"io/fs"
 	"net/http"
@@ -17,6 +18,7 @@ import (
 	"github.com/duartqx/livredger/internal/application/services/executores"
 	"github.com/duartqx/livredger/internal/application/services/visualizadores"
 
+	ce "github.com/duartqx/livredger/internal/common/errors"
 	"github.com/duartqx/livredger/internal/common/types"
 
 	"github.com/duartqx/livredger/internal/domain/consultas"
@@ -46,7 +48,7 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 			defer uow.Close()
 
 			if err := cmp.Or(r.ParseForm(), decoders.Decoder().Decode(consulta, r.Form)); err != nil {
-				response.QueryJsonResponse(r.Context(), w, res.WithError(fmt.Errorf("%w: %w", types.RequestError, err)))
+				response.QueryJsonResponse(r.Context(), w, res.WithError(fmt.Errorf("%w: %w", ce.RequestError, err)))
 				return
 			}
 
@@ -79,7 +81,7 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 				consulta := consultas.ConsultaLancamentosPadrao()
 
 				if err := cmp.Or(r.ParseForm(), decoders.Decoder().Decode(consulta, r.Form)); err != nil {
-					return nil, fmt.Errorf("%w: %w", types.RequestError, err)
+					return nil, errors.Join(ce.RequestError, err)
 				}
 
 				resultado, err := visualizadores.BuscarLancamentos(uow, consulta)
@@ -116,7 +118,7 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 				chave, err := uuid.Parse(r.PathValue("chave"))
 
 				if err != nil {
-					return nil, fmt.Errorf("%w: UUID Inválido: %w", types.RequestError, err)
+					return nil, fmt.Errorf("%w: UUID Inválido: %w", ce.RequestError, err)
 				}
 
 				resultado, err := visualizadores.BuscarLancamentos(uow, &consultas.ConsultaLancamentos{

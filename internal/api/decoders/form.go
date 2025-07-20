@@ -4,13 +4,14 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/duartqx/livredger/internal/common/types"
 	"github.com/go-playground/form"
 	"github.com/google/uuid"
+
+	ce "github.com/duartqx/livredger/internal/common/errors"
 )
 
 var (
-	DecoderError = fmt.Errorf("%w: DecoderError", types.RequestError)
+	DecoderError = fmt.Errorf("%w: DecoderError", ce.RequestError)
 	decoder      *form.Decoder
 )
 
