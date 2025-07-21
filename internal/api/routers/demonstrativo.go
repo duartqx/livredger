@@ -48,7 +48,7 @@ func queryDemonstrativosHandler[Q interface {
 		}
 		defer uow.Close()
 
-		if err := cmp.Or(r.ParseForm(), decoders.Decoder().Decode(&query, r.Form), query.Validate()); err != nil {
+		if err := cmp.Or(r.ParseForm(), decoders.NewFormDecoder().Decode(&query, r.Form), query.Validate()); err != nil {
 			response.QueryJsonResponse(r.Context(), w, res.WithError(errors.Join(ce.RequestError, err)))
 			return
 		}

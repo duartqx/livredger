@@ -47,7 +47,7 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 			}
 			defer uow.Close()
 
-			if err := cmp.Or(r.ParseForm(), decoders.Decoder().Decode(consulta, r.Form)); err != nil {
+			if err := cmp.Or(r.ParseForm(), decoders.NewFormDecoder().Decode(consulta, r.Form)); err != nil {
 				response.QueryJsonResponse(r.Context(), w, res.WithError(errors.Join(ce.RequestError, err)))
 				return
 			}
@@ -80,7 +80,7 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 
 				consulta := consultas.ConsultaLancamentosPadrao()
 
-				if err := cmp.Or(r.ParseForm(), decoders.Decoder().Decode(consulta, r.Form)); err != nil {
+				if err := cmp.Or(r.ParseForm(), decoders.NewFormDecoder().Decode(consulta, r.Form)); err != nil {
 					return nil, errors.Join(ce.RequestError, err)
 				}
 

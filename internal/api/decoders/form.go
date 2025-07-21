@@ -2,37 +2,48 @@ package decoders
 
 import (
 	"errors"
-	"fmt"
+	"net/url"
 
 	"github.com/go-playground/form"
 	"github.com/google/uuid"
-
-	ce "github.com/duartqx/livredger/internal/common/errors"
 )
 
 var (
-	DecoderError = fmt.Errorf("%w: DecoderError", ce.RequestError)
-	decoder      *form.Decoder
+	FormDecoderError = errors.New("DecoderError")
 )
 
-func Decoder() *form.Decoder {
-	if decoder != nil {
-		return decoder
+type formDecoder struct {
+	wrapped *form.Decoder
+}
+
+func (d formDecoder) Decode(v interface{}, values url.Values) error {
+	err := d.wrapped.Decode(v, values)
+
+	switch {
+	case err == nil:
+		return nil
+	case errors.Is(err, &form.InvalidDecoderError{}):
+		return err
+	default:
+		return errors.Join(FormDecoderError, err)
+
 	}
+}
 
-	decoder = form.NewDecoder()
+func NewFormDecoder() *formDecoder {
+	dec := &formDecoder{wrapped: form.NewDecoder()}
 
-	decoder.RegisterCustomTypeFunc(func(vals []string) (any, error) {
+	dec.wrapped.RegisterCustomTypeFunc(func(vals []string) (any, error) {
 		if len(vals) == 0 || vals[0] == "" {
 			return uuid.Nil, nil
 		}
 		return uuid.Parse(vals[0])
 	}, uuid.UUID{})
 
-	return decoder
+	return dec
 }
 
-func ParseDecodeError(err error) map[string]string {
+func ParseFormDecodeError(err error) map[string]string {
 	out := make(map[string]string)
 
 	if err == nil {

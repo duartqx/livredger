@@ -55,11 +55,11 @@ func View(ctx *ViewContext) http.HandlerFunc {
 			if err := ctx.Template.ExecuteTemplate(w, "base", data); err != nil {
 				panic(err)
 			}
-		case errors.Is(err, decoders.DecoderError) && ctx.Template.Lookup("error") != nil:
+		case errors.Is(err, decoders.FormDecoderError) && ctx.Template.Lookup("error") != nil:
 
 			w.WriteHeader(400)
 
-			data = map[string]any{"Errors": decoders.ParseDecodeError(err)}
+			data = map[string]any{"Errors": decoders.ParseFormDecodeError(err)}
 
 			if err := ctx.Template.ExecuteTemplate(w, "error", data); err != nil {
 				panic(err)
