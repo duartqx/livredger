@@ -1,11 +1,9 @@
 package response
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 
-	"github.com/duartqx/livredger/internal/api/decoders"
 	ce "github.com/duartqx/livredger/internal/common/errors"
 )
 
@@ -32,6 +30,6 @@ func is(err error, errTypes ...error) bool {
 }
 
 var (
-	badRequest []error = []error{ce.BusinessLogicError, ce.RequestError, &json.UnmarshalTypeError{}, decoders.DecoderError}
+	badRequest []error = []error{ce.BusinessLogicError, ce.RequestError}
 	notFound   []error = []error{ce.NotFoundError}
 )
