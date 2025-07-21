@@ -10,11 +10,9 @@ import (
 )
 
 func GetStatusCodeFromError(err error) int {
-	if err == nil {
-		return http.StatusOK
-	}
-
 	switch {
+	case err == nil:
+		return http.StatusOK
 	case is(err, notFound...):
 		return http.StatusNotFound
 	case is(err, badRequest...):

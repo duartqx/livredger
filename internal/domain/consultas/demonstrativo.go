@@ -13,7 +13,7 @@ type ConsultaDemonstrativoMensal struct {
 	Mes   string    `json:"mes" form:"mes" help:"Date string formatted as YYYY-MM"`
 }
 
-func (c ConsultaDemonstrativoMensal) Validar() error {
+func (c ConsultaDemonstrativoMensal) Validate() error {
 	if c.Chave == uuid.Nil {
 		return fmt.Errorf("%w: É necessário informar a chave da conta para obter um demonstrativo", ce.BusinessLogicError)
 	}
@@ -29,7 +29,7 @@ type ConsultaDemonstrativoUltimosSeisMeses struct {
 	Chave uuid.UUID `json:"chave" form:"chave"`
 }
 
-func (c ConsultaDemonstrativoUltimosSeisMeses) Validar() error {
+func (c ConsultaDemonstrativoUltimosSeisMeses) Validate() error {
 	if c.Chave == uuid.Nil {
 		return fmt.Errorf("%w: É necessário informar a chave da conta para obter um demonstrativo", ce.BusinessLogicError)
 	}

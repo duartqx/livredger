@@ -3,8 +3,10 @@ package comandos
 import (
 	"context"
 	"database/sql"
-	e "errors"
+	"errors"
 	"fmt"
+
+	"github.com/google/uuid"
 
 	ce "github.com/duartqx/livredger/internal/common/errors"
 	"github.com/duartqx/livredger/internal/domain/comandos"
@@ -12,7 +14,6 @@ import (
 	"github.com/duartqx/livredger/internal/domain/entidade"
 	"github.com/duartqx/livredger/internal/infra/repositorios/sqlite/helpers"
 	"github.com/duartqx/livredger/internal/infra/repositorios/sqlite/regex"
-	"github.com/google/uuid"
 )
 
 type RepositorioDeComandoDemonstrativos struct{}
@@ -37,7 +38,7 @@ func (r RepositorioDeComandoDemonstrativos) Gerar(ctx context.Context, tx *sql.T
 	)
 
 	if err != nil {
-		if e.Is(sql.ErrNoRows, err) {
+		if errors.Is(sql.ErrNoRows, err) {
 			return nil, fmt.Errorf("%w: Chave inválida {%s}", ce.BusinessLogicError, comando.Chave.String())
 		}
 		return nil, err
@@ -46,20 +47,19 @@ func (r RepositorioDeComandoDemonstrativos) Gerar(ctx context.Context, tx *sql.T
 	err = tx.QueryRowContext(ctx, `
 		WITH calculo_do_demonstrativo AS (
 			SELECT
-				coalesce(sum(lancamentos.valores) FILTER (WHERE lancamentos.valores < 0), 0) as despesa,
-				coalesce(sum(lancamentos.valores) FILTER (WHERE lancamentos.valores > 0), 0) as receita,
-				coalesce(sum(lancamentos.valores), 0) AS saldo
+				COALESCE(SUM(lancamentos.valores) FILTER (WHERE lancamentos.valores < 0), 0) AS despesa,
+				COALESCE(SUM(lancamentos.valores) FILTER (WHERE lancamentos.valores > 0), 0) AS receita,
+				COALESCE(SUM(lancamentos.valores), 0) AS saldo
 			FROM lancamentos
 			WHERE
 				lancamentos.evento NOT IN ('LancamentoTransferido', 'ContaAberta')
 				AND lancamentos.chave = :chave
-				AND strftime('%Y-%m', lancamentos.vencimento) = :mes
-			GROUP BY lancamentos.chave, strftime('%Y-%m', lancamentos.vencimento)
+				AND STRFTIME('%Y-%m', lancamentos.vencimento) = :mes
+			GROUP BY lancamentos.chave, STRFTIME('%Y-%m', lancamentos.vencimento)
 		)
 		INSERT INTO demonstrativos_mensais (id, chave, mes, despesa, receita, saldo)
 		SELECT :id, :chave, :mes, * FROM calculo_do_demonstrativo
-		RETURNING timestamp, despesa, receita, saldo;
-		`,
+		RETURNING timestamp, despesa, receita, saldo`,
 		sql.Named("id", demonstrativo.Id.String()),
 		sql.Named("chave", demonstrativo.Conta.Chave.String()),
 		sql.Named("mes", demonstrativo.Mes),

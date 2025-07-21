@@ -2,7 +2,7 @@ package routers
 
 import (
 	"cmp"
-	"fmt"
+	"errors"
 	"io/fs"
 	"net/http"
 
@@ -30,7 +30,10 @@ func ContasRouter(fs fs.FS) *common.RouterMap {
 			consulta := consultas.ConsultaContasPadrao()
 
 			res := &visualizadores.Response[consultas.ConsultaContas]{
-				Consulta: &visualizadores.Consulta[consultas.ConsultaContas]{Parsed: consulta, Raw: &r.Form},
+				Query: &visualizadores.Query[consultas.ConsultaContas]{
+					Parsed: consulta,
+					Raw:    &r.Form,
+				},
 			}
 
 			uow, err := infra.Bootstrap(r.Context(), usuario)
@@ -42,13 +45,15 @@ func ContasRouter(fs fs.FS) *common.RouterMap {
 			defer uow.Close()
 
 			if err := cmp.Or(r.ParseForm(), decoders.Decoder().Decode(consulta, r.Form)); err != nil {
-				response.QueryJsonResponse(r.Context(), w, res.WithError(fmt.Errorf("%w: %w", ce.RequestError, err)))
+				response.QueryJsonResponse(
+					r.Context(), w, res.WithError(errors.Join(ce.RequestError, err)),
+				)
 				return
 			}
 
 			resultado, err := visualizadores.BuscarContas(uow, consulta)
 
-			response.QueryJsonResponse(r.Context(), w, res.WithResultado(resultado).WithError(err))
+			response.QueryJsonResponse(r.Context(), w, res.WithResult(resultado).WithError(err))
 
 			return
 		},

@@ -24,7 +24,7 @@ type CriarLancamento struct {
 	Descricao      string    `json:"descricao"`
 }
 
-func (c CriarLancamento) Validar() error {
+func (c CriarLancamento) Validate() error {
 	if uuid.Nil == c.Chave {
 		return fmt.Errorf("%w: Chave é obrigatória", ce.BusinessLogicError)
 	}

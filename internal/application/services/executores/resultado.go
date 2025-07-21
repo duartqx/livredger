@@ -7,9 +7,9 @@ import (
 )
 
 type Response[C any] struct {
-	Comando   *C    `json:"comando"`
-	Resultado any   `json:"resultado"`
-	Error     error `json:"error"`
+	Command *C    `json:"command"`
+	Result  any   `json:"result"`
+	Error   error `json:"error"`
 }
 
 func (r Response[C]) MarshalJSON() ([]byte, error) {
@@ -23,8 +23,8 @@ func (r Response[C]) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (r *Response[C]) WithResultado(resultado any) *Response[C] {
-	r.Resultado = resultado
+func (r *Response[C]) WithResult(result any) *Response[C] {
+	r.Result = result
 	return r
 }
 

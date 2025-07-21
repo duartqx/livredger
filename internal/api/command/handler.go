@@ -31,9 +31,9 @@ func GenericCommandHandlerFunc[Command domain.Command, Entidade entidade.Entidad
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		res := &executores.Response[Command]{Comando: new(Command)}
+		res := &executores.Response[Command]{Command: new(Command)}
 
-		if err := cmp.Or(ComandoFromJson(r.Body, res.Comando), (*res.Comando).Validar()); err != nil {
+		if err := cmp.Or(ComandoFromJson(r.Body, res.Command), (*res.Command).Validate()); err != nil {
 			response.CommandJsonResponse(w, res.WithError(err))
 			return
 		}
@@ -49,7 +49,7 @@ func GenericCommandHandlerFunc[Command domain.Command, Entidade entidade.Entidad
 		}
 		defer uow.Close()
 
-		resultado, err := executor(uow, res.Comando)
+		resultado, err := executor(uow, res.Command)
 
 		if err != nil {
 			response.CommandJsonResponse(w, res.WithError(err))
@@ -58,7 +58,7 @@ func GenericCommandHandlerFunc[Command domain.Command, Entidade entidade.Entidad
 
 		w.WriteHeader(http.StatusCreated)
 
-		response.CommandJsonResponse(w, res.WithResultado(resultado).WithError(nil))
+		response.CommandJsonResponse(w, res.WithResult(resultado).WithError(nil))
 
 		return
 	}

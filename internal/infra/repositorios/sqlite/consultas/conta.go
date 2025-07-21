@@ -32,7 +32,7 @@ func (r RepositorioDeConsultaContas) Buscar(
 		if errors.Is(err, sql.ErrNoRows) {
 			return &contas, nil
 		}
-		return nil, fmt.Errorf("%w: %w", ce.InternalError, err)
+		return nil, errors.Join(ce.InternalError, err)
 	}
 
 	defer rows.Close()

@@ -31,11 +31,11 @@ func (u UnidadeDeTrabalhoSqlite) GetRepositorios() *repositorios.Repositorios {
 	return u.Repositorios
 }
 
-func (u *UnidadeDeTrabalhoSqlite) GetDB() *sql.DB {
+func (u UnidadeDeTrabalhoSqlite) GetDB() *sql.DB {
 	return u.DB
 }
 
-func (u *UnidadeDeTrabalhoSqlite) GetTransaction() *sql.Tx {
+func (u UnidadeDeTrabalhoSqlite) GetTransaction() *sql.Tx {
 	if u.Tx == nil {
 		panic(fmt.Errorf("%w UnidadeDeTrabalho: Já existe uma transação aberta", ce.InternalError))
 	}

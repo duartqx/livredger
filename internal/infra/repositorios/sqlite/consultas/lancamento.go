@@ -47,7 +47,7 @@ func (r RepositorioDeConsultaLancamentos) Buscar(ctx context.Context, db *sql.DB
 	stmt, args, err := r.condicoes(consulta, builder).ToSql()
 
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ce.InternalError, err)
+		return nil, errors.Join(ce.InternalError, err)
 	}
 
 	rows, err := db.QueryContext(ctx, stmt, args...)
@@ -58,7 +58,7 @@ func (r RepositorioDeConsultaLancamentos) Buscar(ctx context.Context, db *sql.DB
 		if errors.Is(err, sql.ErrNoRows) {
 			return &lancamentos, nil
 		}
-		return nil, fmt.Errorf("%w: %w", ce.InternalError, err)
+		return nil, errors.Join(ce.InternalError, err)
 	}
 
 	defer rows.Close()

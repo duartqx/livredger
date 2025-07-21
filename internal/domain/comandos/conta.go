@@ -11,7 +11,7 @@ type AbrirConta struct {
 	Nome string `json:"nome"`
 }
 
-func (a AbrirConta) Validar() error {
+func (a AbrirConta) Validate() error {
 	if strings.Trim(a.Nome, " ") == "" {
 		return fmt.Errorf("%w: '%s' não é um nome de conta válido", ce.BusinessLogicError, a.Nome)
 	}

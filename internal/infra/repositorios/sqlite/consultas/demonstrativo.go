@@ -48,13 +48,13 @@ func (r RepositorioDeConsultaDemonstrativos) DemonstrativosDosUltimosSeisMeses(
 		sql.Named("chave", consulta.Chave.String()),
 	)
 
-	demonstrativos := make([]*entidade.DemonstrativoMensal, 0)
+	demonstrativos := make([]*entidade.DemonstrativoMensal, 0, 6)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return &demonstrativos, nil
 		}
-		return nil, fmt.Errorf("%w: %w", ce.InternalError, err)
+		return nil, errors.Join(ce.InternalError, err)
 	}
 
 	defer rows.Close()
@@ -104,11 +104,9 @@ func (r RepositorioDeConsultaDemonstrativos) DemonstrativoMensal(
 				demonstrativos.receita,
 				demonstrativos.saldo,
 				demonstrativos.timestamp
-			FROM demonstrativos_mensais as demonstrativos
+			FROM demonstrativos_mensais AS demonstrativos
 			JOIN contas AS contas ON demonstrativos.chave = contas.chave
-			WHERE
-				demonstrativos.chave = :chave
-				AND demonstrativos.mes = :mes
+			WHERE demonstrativos.chave = :chave AND demonstrativos.mes = :mes
 			ORDER BY demonstrativos.timestamp DESC
 			LIMIT 1`,
 			helpers.CoalesceTotaisDaConta("demonstrativos.mes", "totais"),
@@ -130,10 +128,12 @@ func (r RepositorioDeConsultaDemonstrativos) DemonstrativoMensal(
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf(
 				"%w: Não existe demonstrativo gerado para esse mês %s: %w",
-				ce.NotFoundError, consulta.Mes, err,
+				ce.NotFoundError,
+				consulta.Mes,
+				err,
 			)
 		}
-		return nil, fmt.Errorf("%w: %w", ce.InternalError, err)
+		return nil, errors.Join(ce.InternalError, err)
 	}
 
 	return &demonstrativo, nil

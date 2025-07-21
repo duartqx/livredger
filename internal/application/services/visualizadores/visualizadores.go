@@ -10,13 +10,13 @@ import (
 )
 
 func BuscarLancamentos(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaLancamentos) (
-	*Resultado[entidade.Lancamento], error,
+	*Result[entidade.Lancamento], error,
 ) {
 	lancamentos, err := uow.GetRepositorios().Lancamentos.Consulta.Buscar(uow.GetContext(), uow.GetDB(), consulta)
 
 	lancamentos = cmp.Or(lancamentos, &[]*entidade.Lancamento{})
 
-	resultado := &Resultado[entidade.Lancamento]{
+	resultado := &Result[entidade.Lancamento]{
 		Total: len(*lancamentos),
 		Itens: lancamentos,
 	}
@@ -25,13 +25,13 @@ func BuscarLancamentos(uow infra.UnidadeDeTrabalho, consulta *consultas.Consulta
 }
 
 func BuscarContas(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaContas) (
-	*Resultado[entidade.Conta], error,
+	*Result[entidade.Conta], error,
 ) {
 	contas, err := uow.GetRepositorios().Contas.Consulta.Buscar(uow.GetContext(), uow.GetDB(), consulta)
 
 	contas = cmp.Or(contas, &[]*entidade.Conta{})
 
-	resultado := &Resultado[entidade.Conta]{
+	resultado := &Result[entidade.Conta]{
 		Total: len(*contas),
 		Itens: contas,
 	}
@@ -40,7 +40,7 @@ func BuscarContas(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaConta
 }
 
 func ConsultarDemonstrativoMensal(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaDemonstrativoMensal) (
-	*Resultado[entidade.DemonstrativoMensal], error,
+	*Result[entidade.DemonstrativoMensal], error,
 ) {
 	demonstrativoSlice := make([]*entidade.DemonstrativoMensal, 0, 1)
 
@@ -52,7 +52,7 @@ func ConsultarDemonstrativoMensal(uow infra.UnidadeDeTrabalho, consulta *consult
 		demonstrativoSlice = append(demonstrativoSlice[:0], demonstrativo)
 	}
 
-	resultado := &Resultado[entidade.DemonstrativoMensal]{
+	resultado := &Result[entidade.DemonstrativoMensal]{
 		Total: len(demonstrativoSlice),
 		Itens: &demonstrativoSlice,
 	}
@@ -61,7 +61,7 @@ func ConsultarDemonstrativoMensal(uow infra.UnidadeDeTrabalho, consulta *consult
 }
 
 func ConsultarDemonstrativoDosUltimosSeisMeses(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaDemonstrativoUltimosSeisMeses) (
-	*Resultado[entidade.DemonstrativoMensal], error,
+	*Result[entidade.DemonstrativoMensal], error,
 ) {
 	demonstrativos, err := uow.GetRepositorios().Demonstrativos.Consulta.DemonstrativosDosUltimosSeisMeses(
 		uow.GetContext(), uow.GetDB(), consulta,
@@ -69,7 +69,7 @@ func ConsultarDemonstrativoDosUltimosSeisMeses(uow infra.UnidadeDeTrabalho, cons
 
 	demonstrativos = cmp.Or(demonstrativos, &[]*entidade.DemonstrativoMensal{})
 
-	resultado := &Resultado[entidade.DemonstrativoMensal]{
+	resultado := &Result[entidade.DemonstrativoMensal]{
 		Total: len(*demonstrativos),
 		Itens: demonstrativos,
 	}

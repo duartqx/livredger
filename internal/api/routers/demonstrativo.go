@@ -19,27 +19,27 @@ import (
 
 func DemonstrativosRouter(fs fs.FS) *common.RouterMap {
 	return &common.RouterMap{
-		"GET /api/demonstrativos/mensal": getDemonstrativosHandler(
+		"GET /api/demonstrativos/mensal": queryDemonstrativosHandler(
 			visualizadores.ConsultarDemonstrativoMensal,
 		),
-		"GET /api/demonstrativos/ultimos": getDemonstrativosHandler(
+		"GET /api/demonstrativos/ultimos": queryDemonstrativosHandler(
 			visualizadores.ConsultarDemonstrativoDosUltimosSeisMeses,
 		),
 	}
 }
 
-func getDemonstrativosHandler[C interface {
+func queryDemonstrativosHandler[Q interface {
 	consultas.ConsultaDemonstrativoMensal | consultas.ConsultaDemonstrativoUltimosSeisMeses
-	Validar() error
+	Validate() error
 }](
-	visualizador func(infra.UnidadeDeTrabalho, *C) (*visualizadores.Resultado[entidade.DemonstrativoMensal], error),
+	visualizador func(infra.UnidadeDeTrabalho, *Q) (*visualizadores.Result[entidade.DemonstrativoMensal], error),
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var usuario *types.Usuario
 
-		var consulta C
+		var query Q
 
-		res := &visualizadores.Response[C]{Consulta: &visualizadores.Consulta[C]{Parsed: &consulta, Raw: &r.Form}}
+		res := &visualizadores.Response[Q]{Query: &visualizadores.Query[Q]{Parsed: &query, Raw: &r.Form}}
 
 		uow, err := infra.Bootstrap(r.Context(), usuario)
 		if err != nil {
@@ -48,14 +48,14 @@ func getDemonstrativosHandler[C interface {
 		}
 		defer uow.Close()
 
-		if err := cmp.Or(r.ParseForm(), decoders.Decoder().Decode(&consulta, r.Form), consulta.Validar()); err != nil {
+		if err := cmp.Or(r.ParseForm(), decoders.Decoder().Decode(&query, r.Form), query.Validate()); err != nil {
 			response.QueryJsonResponse(r.Context(), w, res.WithError(errors.Join(ce.RequestError, err)))
 			return
 		}
 
-		resultado, err := visualizador(uow, &consulta)
+		result, err := visualizador(uow, &query)
 
-		response.QueryJsonResponse(r.Context(), w, res.WithResultado(resultado).WithError(err))
+		response.QueryJsonResponse(r.Context(), w, res.WithResult(result).WithError(err))
 
 		return
 	}

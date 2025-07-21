@@ -1,60 +1,52 @@
 package helpers
 
 import (
+	"cmp"
+	"database/sql"
 	"fmt"
 	"strings"
 
-	"github.com/Masterminds/squirrel"
-	"github.com/duartqx/livredger/internal/domain/consultas"
 	"github.com/google/uuid"
+
+	"github.com/duartqx/livredger/internal/common/op"
+	"github.com/duartqx/livredger/internal/domain/consultas"
 )
 
 func SelectContaComTotais(consulta *consultas.ConsultaContas) (string, []any) {
+	where_chave := op.Ternary(
+		consulta.Chave != uuid.Nil, "WHERE contas.chave = :contas__chave", "",
+	)
 
-	builder := squirrel.
-		Select(
-			"chave",
-			"nome",
-			"timestamp",
-			CoalesceTotaisDaConta("", "totais"),
-		).
-		From("contas").
-		OrderBy("timestamp ASC")
+	where_nome := op.Ternary(
+		strings.Trim(consulta.Nome, " ") != "", "WHERE contas.nome = :contas__nome", "",
+	)
 
-	if consulta.Chave != uuid.Nil {
-		builder = builder.Where(squirrel.Eq{"contas.chave": consulta.Chave.String()})
-	} else if strings.Trim(consulta.Nome, " ") != "" {
-		builder = builder.Where(squirrel.Eq{"contas.nome": consulta.Nome})
+	query := fmt.Sprintf(
+		`SELECT chave, nome, timestamp, %s FROM contas %s ORDER BY timestamp ASC`,
+		CoalesceTotaisDaConta("", "totais"),
+		*cmp.Or(&where_chave, &where_nome),
+	)
+
+	args := []any{
+		sql.Named("contas__chave", consulta.Chave.String()),
+		sql.Named("contas__nome", consulta.Nome),
 	}
 
-	stmt, args, _ := builder.ToSql()
-
-	return stmt, args
+	return query, args
 }
 
-func CoalesceTotaisDaConta(noMes string, alias string) string {
-
-	fMes := ""
-	if noMes != "" {
-		fMes = fmt.Sprintf("AND strftime('%%Y-%%m', lancamentos.vencimento) = %s", noMes)
-	}
-
+func CoalesceTotaisDaConta(mes string, alias string) string {
 	return fmt.Sprintf(`
 		COALESCE(
 			(
-				SELECT
-					totais
-				FROM lancamentos
-				WHERE
-					lancamentos.evento not in ('ContaAberta')
-					AND lancamentos.chave = contas.chave
-					%s
+				SELECT totais FROM lancamentos AS l
+				WHERE l.evento not in ('ContaAberta') AND l.chave = contas.chave %s
 				ORDER BY vencimento DESC
 				LIMIT 1
 			),
 			0
 		) AS %s`,
-		fMes,
+		op.Ternary(mes != "", "AND strftime('%Y-%m', l.vencimento) = "+mes, ""),
 		alias,
 	)
 }

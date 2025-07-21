@@ -13,12 +13,12 @@ type Enumerated[Item any] struct {
 	IsLast  bool
 }
 
-type Resultado[Item any] struct {
+type Result[Item any] struct {
 	Total int      `json:"total"`
 	Itens *[]*Item `json:"itens"`
 }
 
-func (r Resultado[Item]) Enumerated() *[]Enumerated[Item] {
+func (r Result[Item]) Enumerated() *[]Enumerated[Item] {
 	enumerated := []Enumerated[Item]{}
 
 	for index, item := range *r.Itens {
@@ -36,15 +36,15 @@ func (r Resultado[Item]) Enumerated() *[]Enumerated[Item] {
 	return &enumerated
 }
 
-type Consulta[C any] struct {
+type Query[C any] struct {
 	Parsed *C  `json:"parsed"`
 	Raw    any `json:"raw"`
 }
 
 type Response[C any] struct {
-	Consulta  *Consulta[C] `json:"consulta"`
-	Resultado any          `json:"resultado"`
-	Error     error        `json:"error"`
+	Query  *Query[C] `json:"query"`
+	Result any       `json:"result"`
+	Error  error     `json:"error"`
 }
 
 func (r Response[C]) MarshalJSON() ([]byte, error) {
@@ -63,12 +63,12 @@ func (r *Response[C]) WithError(err error) *Response[C] {
 	return r
 }
 
-func (r *Response[C]) WithConsulta(consulta *Consulta[C]) *Response[C] {
-	r.Consulta = consulta
+func (r *Response[C]) WithQuery(query *Query[C]) *Response[C] {
+	r.Query = query
 	return r
 }
 
-func (r *Response[C]) WithResultado(resultado any) *Response[C] {
-	r.Resultado = resultado
+func (r *Response[C]) WithResult(result any) *Response[C] {
+	r.Result = result
 	return r
 }
