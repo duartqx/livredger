@@ -4,7 +4,7 @@ go 1.24.1
 
 require (
 	github.com/Masterminds/squirrel v1.5.4
-	github.com/duartqx/ddgomiddlewares v0.0.0-20250719014645-02ec50f1192a
+	github.com/duartqx/ddgomiddlewares v0.0.0-20250722010049-2c9ff4861510
 	github.com/go-playground/form v3.1.4+incompatible
 	github.com/google/uuid v1.6.0
 	github.com/tursodatabase/go-libsql v0.0.0-20250718020542-78138886a013
