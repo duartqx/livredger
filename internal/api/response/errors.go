@@ -15,6 +15,8 @@ func GetStatusCodeFromError(err error) int {
 		return http.StatusNotFound
 	case is(err, badRequest...):
 		return http.StatusBadRequest
+	case is(err, timeout...):
+		return http.StatusGatewayTimeout
 	default:
 		panic(err)
 	}
@@ -32,4 +34,5 @@ func is(err error, errTypes ...error) bool {
 var (
 	badRequest []error = []error{ce.BusinessLogicError, ce.RequestError}
 	notFound   []error = []error{ce.NotFoundError}
+	timeout    []error = []error{ce.TimeOutError}
 )
