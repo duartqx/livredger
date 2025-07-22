@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/duartqx/livredger/internal/api"
-	"github.com/duartqx/livredger/internal/application/registry"
+	"github.com/duartqx/livredger/internal/application/services/registry"
 )
 
 const (

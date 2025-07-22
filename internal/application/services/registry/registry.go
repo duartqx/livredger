@@ -1,8 +1,6 @@
 package registry
 
 import (
-	"reflect"
-
 	"github.com/duartqx/livredger/internal/domain/mensagens"
 
 	"github.com/duartqx/livredger/internal/application/messagebus"
@@ -10,5 +8,5 @@ import (
 )
 
 func SetupEventHandlers() {
-	messagebus.MessageBus.Subscribe(reflect.TypeOf(mensagens.ContaAberta{}), executores.LancamentoContaCriada)
+	messagebus.MessageBus.Subscribe(&mensagens.ContaAberta{}, executores.LancamentoContaCriada)
 }

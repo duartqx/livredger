@@ -12,58 +12,72 @@ import (
 )
 
 type UnidadeDeTrabalhoSqlite struct {
-	Context      context.Context
-	Usuario      *types.Usuario
-	DB           *sql.DB
-	Tx           *sql.Tx
-	Repositorios *repositorios.Repositorios
+	context      context.Context
+	usuario      *types.Usuario
+	db           *sql.DB
+	tx           *sql.Tx
+	repositorios *repositorios.Repositorios
 }
 
-func (u UnidadeDeTrabalhoSqlite) GetContext() context.Context {
-	return u.Context
+func NewUnidadeDeTrabalhoSqlite(
+	context context.Context,
+	usuario *types.Usuario,
+	db *sql.DB,
+	repos *repositorios.Repositorios,
+) *UnidadeDeTrabalhoSqlite {
+	return &UnidadeDeTrabalhoSqlite{
+		context:      context,
+		usuario:      usuario,
+		db:           db,
+		repositorios: repos,
+	}
 }
 
-func (u UnidadeDeTrabalhoSqlite) GetUsuario() *types.Usuario {
-	return u.Usuario
+func (u UnidadeDeTrabalhoSqlite) Context() context.Context {
+	return u.context
 }
 
-func (u UnidadeDeTrabalhoSqlite) GetRepositorios() *repositorios.Repositorios {
-	return u.Repositorios
+func (u UnidadeDeTrabalhoSqlite) Usuario() *types.Usuario {
+	return u.usuario
 }
 
-func (u UnidadeDeTrabalhoSqlite) GetDB() *sql.DB {
-	return u.DB
+func (u UnidadeDeTrabalhoSqlite) Repositorios() *repositorios.Repositorios {
+	return u.repositorios
 }
 
-func (u UnidadeDeTrabalhoSqlite) GetTransaction() *sql.Tx {
-	if u.Tx == nil {
+func (u UnidadeDeTrabalhoSqlite) DB() *sql.DB {
+	return u.db
+}
+
+func (u UnidadeDeTrabalhoSqlite) Transaction() *sql.Tx {
+	if u.tx == nil {
 		panic(fmt.Errorf("%w UnidadeDeTrabalho: Já existe uma transação aberta", ce.InternalError))
 	}
-	return u.Tx
+	return u.tx
 }
 
 func (u *UnidadeDeTrabalhoSqlite) BeginTransaction() (tx *sql.Tx, err error) {
-	if u.Tx != nil {
+	if u.tx != nil {
 		return nil, fmt.Errorf("%w UnidadeDeTrabalho: Já existe uma transação aberta", ce.InternalError)
 	}
 
-	tx, err = u.DB.Begin()
+	tx, err = u.db.Begin()
 
 	if err != nil {
 		return nil, fmt.Errorf("%w UnidadeDeTrabalho: Não foi possível iniciar uma transação (%w)", ce.InternalError, err)
 	}
 
-	u.Tx = tx
+	u.tx = tx
 
 	return tx, nil
 }
 
 func (u *UnidadeDeTrabalhoSqlite) Commit() error {
-	if u.Tx == nil {
+	if u.tx == nil {
 		return fmt.Errorf("%w UnidadeDeTrabalho: Nenhuma transação aberta", ce.InternalError)
 	}
 
-	if err := u.Tx.Commit(); err != nil {
+	if err := u.tx.Commit(); err != nil {
 
 		if match := regex.SqliteFalhouCommitar.FindStringSubmatch(err.Error()); len(match) > 1 {
 			return fmt.Errorf("%w: %s", ce.BusinessLogicError, match[1])
@@ -76,11 +90,11 @@ func (u *UnidadeDeTrabalhoSqlite) Commit() error {
 }
 
 func (u *UnidadeDeTrabalhoSqlite) Rollback() error {
-	if u.Tx == nil {
+	if u.tx == nil {
 		return fmt.Errorf("%w UnidadeDeTrabalho: Nenhuma transação aberta", ce.InternalError)
 	}
 
-	if err := u.Tx.Rollback(); err != nil {
+	if err := u.tx.Rollback(); err != nil {
 		return fmt.Errorf("%w UnidadeDeTrabalho: Não foi possível fazer rollback (%w)", ce.InternalError, err)
 	}
 
@@ -88,7 +102,7 @@ func (u *UnidadeDeTrabalhoSqlite) Rollback() error {
 }
 
 func (u *UnidadeDeTrabalhoSqlite) Close() {
-	if u.DB != nil {
-		u.DB.Close()
+	if u.db != nil {
+		u.db.Close()
 	}
 }

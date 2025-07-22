@@ -15,6 +15,7 @@ import (
 
 	"github.com/duartqx/livredger/internal/api/common"
 	"github.com/duartqx/livredger/internal/api/routers"
+
 	ce "github.com/duartqx/livredger/internal/common/errors"
 	l "github.com/duartqx/livredger/internal/common/logger"
 )

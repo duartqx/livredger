@@ -12,7 +12,7 @@ import (
 func BuscarLancamentos(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaLancamentos) (
 	*Result[entidade.Lancamento], error,
 ) {
-	lancamentos, err := uow.GetRepositorios().Lancamentos.Consulta.Buscar(uow.GetContext(), uow.GetDB(), consulta)
+	lancamentos, err := uow.Repositorios().Lancamentos.Consulta.Buscar(uow.Context(), uow.DB(), consulta)
 
 	lancamentos = cmp.Or(lancamentos, &[]*entidade.Lancamento{})
 
@@ -27,7 +27,7 @@ func BuscarLancamentos(uow infra.UnidadeDeTrabalho, consulta *consultas.Consulta
 func BuscarContas(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaContas) (
 	*Result[entidade.Conta], error,
 ) {
-	contas, err := uow.GetRepositorios().Contas.Consulta.Buscar(uow.GetContext(), uow.GetDB(), consulta)
+	contas, err := uow.Repositorios().Contas.Consulta.Buscar(uow.Context(), uow.DB(), consulta)
 
 	contas = cmp.Or(contas, &[]*entidade.Conta{})
 
@@ -44,8 +44,8 @@ func ConsultarDemonstrativoMensal(uow infra.UnidadeDeTrabalho, consulta *consult
 ) {
 	demonstrativoSlice := make([]*entidade.DemonstrativoMensal, 0, 1)
 
-	demonstrativo, err := uow.GetRepositorios().Demonstrativos.Consulta.DemonstrativoMensal(
-		uow.GetContext(), uow.GetDB(), consulta,
+	demonstrativo, err := uow.Repositorios().Demonstrativos.Consulta.DemonstrativoMensal(
+		uow.Context(), uow.DB(), consulta,
 	)
 
 	if demonstrativo != nil {
@@ -63,8 +63,8 @@ func ConsultarDemonstrativoMensal(uow infra.UnidadeDeTrabalho, consulta *consult
 func ConsultarDemonstrativoDosUltimosSeisMeses(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaDemonstrativoUltimosSeisMeses) (
 	*Result[entidade.DemonstrativoMensal], error,
 ) {
-	demonstrativos, err := uow.GetRepositorios().Demonstrativos.Consulta.DemonstrativosDosUltimosSeisMeses(
-		uow.GetContext(), uow.GetDB(), consulta,
+	demonstrativos, err := uow.Repositorios().Demonstrativos.Consulta.DemonstrativosDosUltimosSeisMeses(
+		uow.Context(), uow.DB(), consulta,
 	)
 
 	demonstrativos = cmp.Or(demonstrativos, &[]*entidade.DemonstrativoMensal{})

@@ -15,15 +15,15 @@ import (
 const DBMS string = "sqlite"
 
 type UnidadeDeTrabalho interface {
-	GetContext() context.Context
+	Context() context.Context
 
-	GetUsuario() *types.Usuario
-	GetRepositorios() *repositorios.Repositorios
+	Usuario() *types.Usuario
+	Repositorios() *repositorios.Repositorios
 
-	GetDB() *sql.DB
+	DB() *sql.DB
 
 	BeginTransaction() (*sql.Tx, error)
-	GetTransaction() *sql.Tx
+	Transaction() *sql.Tx
 
 	Commit() error
 	Rollback() error
@@ -37,14 +37,12 @@ func Bootstrap(ctx context.Context, usuario *types.Usuario) (UnidadeDeTrabalho, 
 		return nil, err
 	}
 
-	uow := &sqlite.UnidadeDeTrabalhoSqlite{
-		Context:      ctx,
-		Usuario:      usuario,
-		DB:           db,
-		Repositorios: FabricaDeRepositorios(),
+	switch DBMS {
+	case "sqlite":
+		return sqlite.NewUnidadeDeTrabalhoSqlite(ctx, usuario, db, FabricaDeRepositorios()), nil
+	default:
+		return nil, fmt.Errorf("%w: UnidadeDeTrabalho não configurada para DBMS: {%s}", ce.InternalError, DBMS)
 	}
-
-	return uow, nil
 }
 
 func FabricaDeRepositorios() *repositorios.Repositorios {

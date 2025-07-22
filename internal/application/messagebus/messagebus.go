@@ -7,35 +7,38 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/duartqx/livredger/internal/common/events"
-	"github.com/duartqx/livredger/internal/common/logger"
-	"github.com/duartqx/livredger/internal/domain"
 	"github.com/google/uuid"
 
+	"github.com/duartqx/livredger/internal/common/logger"
+	"github.com/duartqx/livredger/internal/domain"
 	"github.com/duartqx/livredger/internal/infra"
 )
+
+var MessageBus = bus{
+	registry: make(map[domain.Message][]NamedMessageHandler),
+}
 
 type IdentifiableMessage interface {
 	GetEventIdentifier() uuid.UUID
 	GetEntityIdentifier() any
 }
 
-var MessageBus = bus{
-	registry: make(map[domain.Message][]MessageHandler),
-}
+type MessageHandler func(infra.UnidadeDeTrabalho, IdentifiableMessage) error
 
-type MessageHandler struct {
-	Handle func(infra.UnidadeDeTrabalho, any) error
+type NamedMessageHandler struct {
+	Handle MessageHandler
 	Name   string
 }
 
 type bus struct {
-	registry map[domain.Message][]MessageHandler
+	registry map[domain.Message][]NamedMessageHandler
 }
 
-func (mb *bus) Subscribe(typ reflect.Type, handler func(infra.UnidadeDeTrabalho, any) error) {
+func (mb *bus) Subscribe(message IdentifiableMessage, handler MessageHandler) {
 
-	key, err := events.GenerateMessageKey(typ)
+	typ := reflect.TypeOf(message)
+
+	key, err := GenerateMessageKey(typ)
 
 	if err != nil {
 		panic(err)
@@ -44,10 +47,10 @@ func (mb *bus) Subscribe(typ reflect.Type, handler func(infra.UnidadeDeTrabalho,
 	handlers, ok := mb.registry[domain.Message(key)]
 
 	if !ok {
-		handlers = []MessageHandler{}
+		handlers = []NamedMessageHandler{}
 	}
 
-	mb.registry[domain.Message(key)] = append(handlers, MessageHandler{
+	mb.registry[domain.Message(key)] = append(handlers, NamedMessageHandler{
 		Handle: handler,
 		Name:   runtime.FuncForPC(reflect.ValueOf(handler).Pointer()).Name(),
 	})
@@ -55,7 +58,7 @@ func (mb *bus) Subscribe(typ reflect.Type, handler func(infra.UnidadeDeTrabalho,
 
 func (mb *bus) Publish(uow infra.UnidadeDeTrabalho, mensagem IdentifiableMessage) error {
 
-	key := events.GetMessageKey(mensagem)
+	key := GetMessageKey(mensagem)
 
 	if mensagem.GetEventIdentifier() == uuid.Nil {
 		return fmt.Errorf("Mensagem com identificador inválido {%s}", key)
@@ -77,7 +80,7 @@ func (mb *bus) Publish(uow infra.UnidadeDeTrabalho, mensagem IdentifiableMessage
 		"entity", mensagem.GetEntityIdentifier(),
 	)
 
-	ctx, cancel := context.WithCancel(uow.GetContext())
+	ctx, cancel := context.WithCancel(uow.Context())
 	defer cancel()
 
 	var wg sync.WaitGroup
@@ -86,7 +89,7 @@ func (mb *bus) Publish(uow infra.UnidadeDeTrabalho, mensagem IdentifiableMessage
 
 		wg.Add(1)
 
-		go func(handler MessageHandler) {
+		go func(handler NamedMessageHandler) {
 			logger.SLogger.Debug(
 				key,
 				"status", "HANDLING",

@@ -1,9 +1,21 @@
-package events
+package messagebus
 
 import (
 	"fmt"
 	"reflect"
 )
+
+func CastMessage[M IdentifiableMessage](msg IdentifiableMessage) (*M, error) {
+	if msg == nil {
+		return nil, fmt.Errorf("Mensagem inesperada: <nil>")
+	}
+
+	if mensagem, ok := any(msg).(*M); ok {
+		return mensagem, nil
+	}
+
+	return nil, fmt.Errorf("Mensagem inesperada: %s", reflect.TypeOf(msg).Elem().Name())
+}
 
 func GenerateMessageKey(msg reflect.Type) (string, error) {
 	if msg == nil {
