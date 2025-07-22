@@ -40,7 +40,7 @@ func CoalesceTotaisDaConta(mes string, alias string) string {
 		COALESCE(
 			(
 				SELECT totais FROM lancamentos AS l
-				WHERE l.evento not in ('ContaAberta') AND l.chave = contas.chave %s
+				WHERE l.evento NOT IN ('ContaAberta') AND l.chave = contas.chave %s
 				ORDER BY vencimento DESC
 				LIMIT 1
 			),
