@@ -14,7 +14,7 @@ func CastMessage[M IdentifiableMessage](msg IdentifiableMessage) (*M, error) {
 		return mensagem, nil
 	}
 
-	return nil, fmt.Errorf("Mensagem inesperada: %s", reflect.TypeOf(msg).Elem().Name())
+	return nil, fmt.Errorf("Unexpected message type: %s", reflect.TypeOf(msg).Elem().Name())
 }
 
 func GenerateMessageKey(msg reflect.Type) (string, error) {

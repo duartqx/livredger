@@ -39,9 +39,9 @@ func BuscarContas(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaConta
 	return resultado, err
 }
 
-func ConsultarDemonstrativoMensal(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaDemonstrativoMensal) (
-	*Result[entidade.DemonstrativoMensal], error,
-) {
+func ConsultarDemonstrativoMensal(
+	uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaDemonstrativoMensal,
+) (*Result[entidade.DemonstrativoMensal], error) {
 	demonstrativoSlice := make([]*entidade.DemonstrativoMensal, 0, 1)
 
 	demonstrativo, err := uow.Repositorios().Demonstrativos.Consulta.DemonstrativoMensal(
@@ -60,9 +60,9 @@ func ConsultarDemonstrativoMensal(uow infra.UnidadeDeTrabalho, consulta *consult
 	return resultado, err
 }
 
-func ConsultarDemonstrativoDosUltimosSeisMeses(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaDemonstrativoUltimosSeisMeses) (
-	*Result[entidade.DemonstrativoMensal], error,
-) {
+func ConsultarDemonstrativoDosUltimosSeisMeses(
+	uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaDemonstrativoUltimosSeisMeses,
+) (*Result[entidade.DemonstrativoMensal], error) {
 	demonstrativos, err := uow.Repositorios().Demonstrativos.Consulta.DemonstrativosDosUltimosSeisMeses(
 		uow.Context(), uow.DB(), consulta,
 	)
