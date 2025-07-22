@@ -2,30 +2,23 @@ package messagebus
 
 import (
 	"context"
-	"log/slog"
-	"os"
+	"fmt"
 	"reflect"
 	"runtime"
 	"sync"
 
 	"github.com/duartqx/livredger/internal/common/events"
+	"github.com/duartqx/livredger/internal/common/logger"
 	"github.com/duartqx/livredger/internal/domain"
+	"github.com/google/uuid"
 
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-var logger = slog.New(
-	slog.NewJSONHandler(
-		os.Stderr,
-		&slog.HandlerOptions{
-			Level: func() *slog.LevelVar {
-				lv := slog.LevelVar{}
-				lv.Set(slog.LevelDebug)
-				return &lv
-			}(),
-		},
-	),
-)
+type IdentifiableMessage interface {
+	GetEventIdentifier() uuid.UUID
+	GetEntityIdentifier() any
+}
 
 var MessageBus = bus{
 	registry: make(map[domain.Message][]MessageHandler),
@@ -60,9 +53,13 @@ func (mb *bus) Subscribe(typ reflect.Type, handler func(infra.UnidadeDeTrabalho,
 	})
 }
 
-func (mb *bus) Publish(uow infra.UnidadeDeTrabalho, mensagem any) error {
+func (mb *bus) Publish(uow infra.UnidadeDeTrabalho, mensagem IdentifiableMessage) error {
 
 	key := events.GetMessageKey(mensagem)
+
+	if mensagem.GetEventIdentifier() == uuid.Nil {
+		return fmt.Errorf("Mensagem com identificador inválido {%s}", key)
+	}
 
 	handlers, ok := mb.registry[domain.Message(key)]
 
@@ -73,7 +70,12 @@ func (mb *bus) Publish(uow infra.UnidadeDeTrabalho, mensagem any) error {
 	errCh := make(chan error, 1)
 	defer close(errCh)
 
-	logger.Debug(key, "Status", "Publishing")
+	logger.SLogger.Debug(
+		key,
+		"status", "PUBLISHING",
+		"message", mensagem.GetEventIdentifier().String(),
+		"entity", mensagem.GetEntityIdentifier(),
+	)
 
 	ctx, cancel := context.WithCancel(uow.GetContext())
 	defer cancel()
@@ -85,7 +87,13 @@ func (mb *bus) Publish(uow infra.UnidadeDeTrabalho, mensagem any) error {
 		wg.Add(1)
 
 		go func(handler MessageHandler) {
-			logger.Debug(key, "Status", "Handling", "Handler", handler.Name)
+			logger.SLogger.Debug(
+				key,
+				"status", "HANDLING",
+				"handler", handler.Name,
+				"message", mensagem.GetEventIdentifier().String(),
+				"entity", mensagem.GetEntityIdentifier(),
+			)
 
 			defer wg.Done()
 
@@ -97,7 +105,14 @@ func (mb *bus) Publish(uow infra.UnidadeDeTrabalho, mensagem any) error {
 
 			if err := handler.Handle(uow, mensagem); err != nil {
 
-				logger.Error(key, "Status", "Error", "Reason", err.Error(), "Handler", handler.Name)
+				logger.SLogger.Error(
+					key,
+					"status", "ERROR",
+					"reason", err.Error(),
+					"handler", handler.Name,
+					"message", mensagem.GetEventIdentifier().String(),
+					"entity", mensagem.GetEntityIdentifier(),
+				)
 
 				select {
 				case errCh <- err:
@@ -108,7 +123,13 @@ func (mb *bus) Publish(uow infra.UnidadeDeTrabalho, mensagem any) error {
 				return
 			}
 
-			logger.Debug(key, "Status", "Success", "Handler", handler.Name)
+			logger.SLogger.Debug(
+				key,
+				"status", "SUCCESS",
+				"handler", handler.Name,
+				"message", mensagem.GetEventIdentifier().String(),
+				"entity", mensagem.GetEntityIdentifier(),
+			)
 		}(handler)
 	}
 

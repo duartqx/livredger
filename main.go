@@ -51,7 +51,7 @@ func main() {
 				Static: &[]api.Static{
 					{Path: "/static/", Fs: static},
 				},
-				RequestTimeout: cfg.RequestTimeout,
+				RequestTimeout: time.Duration(cfg.RequestTimeout),
 			},
 		),
 		Addr:         fmt.Sprintf(":%d", cfg.Port),
