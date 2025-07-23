@@ -18,16 +18,16 @@ import (
 
 func DemonstrativosRouter(templFS fs.FS) *RouterMap {
 	return &RouterMap{
-		"GET /api/demonstrativos/mensal": queryDemonstrativosHandler(
+		"GET /api/demonstrativos/mensal": GetApiDemonstrativos(
 			visualizadores.ConsultarDemonstrativoMensal,
 		),
-		"GET /api/demonstrativos/ultimos": queryDemonstrativosHandler(
+		"GET /api/demonstrativos/ultimos": GetApiDemonstrativos(
 			visualizadores.ConsultarDemonstrativoDosUltimosSeisMeses,
 		),
 	}
 }
 
-func queryDemonstrativosHandler[Q interface {
+func GetApiDemonstrativos[Q interface {
 	consultas.ConsultaDemonstrativoMensal | consultas.ConsultaDemonstrativoUltimosSeisMeses
 	Validate() error
 }](
