@@ -11,7 +11,7 @@ import (
 )
 
 func ErrorResponse(w http.ResponseWriter, err error) {
-	w.Header().Set("Content-Type", mimetypes.HTML)
+	w.Header().Set("Content-Type", string(mimetypes.HTML))
 
 	status := GetStatusCodeFromError(err)
 
@@ -19,9 +19,17 @@ func ErrorResponse(w http.ResponseWriter, err error) {
 	w.Write([]byte(err.Error()))
 }
 
+func ErrorJsonResponse(w http.ResponseWriter, err error) {
+	w.Header().Set("Content-Type", string(mimetypes.JSON))
+
+	w.WriteHeader(GetStatusCodeFromError(err))
+
+	json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+}
+
 func CommandJsonResponse[C any](w http.ResponseWriter, response *executores.Response[C]) {
 
-	w.Header().Set("Content-Type", mimetypes.JSON)
+	w.Header().Set("Content-Type", string(mimetypes.JSON))
 
 	w.WriteHeader(GetStatusCodeFromError(response.Error))
 
@@ -36,7 +44,7 @@ func QueryJsonResponse[C any](ctx context.Context, w http.ResponseWriter, respon
 		return
 	}
 
-	w.Header().Set("Content-Type", mimetypes.JSON)
+	w.Header().Set("Content-Type", string(mimetypes.JSON))
 
 	w.WriteHeader(GetStatusCodeFromError(response.Error))
 

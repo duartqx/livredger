@@ -18,7 +18,7 @@ func GetStatusCodeFromError(err error) int {
 	case is(err, timeout...):
 		return http.StatusGatewayTimeout
 	default:
-		panic(err)
+		return http.StatusInternalServerError
 	}
 }
 

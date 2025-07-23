@@ -6,7 +6,6 @@ import (
 	"io/fs"
 	"net/http"
 
-	"github.com/duartqx/livredger/internal/api/common"
 	"github.com/duartqx/livredger/internal/api/decoders"
 	"github.com/duartqx/livredger/internal/api/response"
 	"github.com/duartqx/livredger/internal/application/services/visualizadores"
@@ -17,8 +16,8 @@ import (
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-func DemonstrativosRouter(fs fs.FS) *common.RouterMap {
-	return &common.RouterMap{
+func DemonstrativosRouter(templFS fs.FS) *RouterMap {
+	return &RouterMap{
 		"GET /api/demonstrativos/mensal": queryDemonstrativosHandler(
 			visualizadores.ConsultarDemonstrativoMensal,
 		),

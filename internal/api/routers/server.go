@@ -1,4 +1,4 @@
-package api
+package routers
 
 import (
 	"fmt"
@@ -13,9 +13,7 @@ import (
 	"github.com/duartqx/ddgomiddlewares/timeout"
 	"github.com/duartqx/ddgomiddlewares/trailling"
 
-	"github.com/duartqx/livredger/internal/api/common"
-	"github.com/duartqx/livredger/internal/api/routers"
-
+	"github.com/duartqx/livredger/internal/api/response"
 	ce "github.com/duartqx/livredger/internal/common/errors"
 	l "github.com/duartqx/livredger/internal/common/logger"
 )
@@ -30,6 +28,8 @@ type Dependencies struct {
 	Templates      fs.FS
 	RequestTimeout time.Duration
 }
+
+type RouterMap map[string]http.HandlerFunc
 
 type Mux struct {
 	*http.ServeMux
@@ -47,7 +47,7 @@ func (m *Mux) Group(pattern string, handler http.Handler) error {
 	return nil
 }
 
-func (m *Mux) AddRoutes(rms ...*common.RouterMap) {
+func (m *Mux) AddRoutes(rms ...*RouterMap) {
 	for _, rm := range rms {
 		for pattern, router := range *rm {
 			m.HandleFunc(pattern, router)
@@ -71,10 +71,10 @@ func Router(dependencies *Dependencies) http.Handler {
 	}
 
 	mux.AddRoutes(
-		routers.LancamentosRouter(dependencies.Templates),
-		routers.ContasRouter(dependencies.Templates),
-		routers.DemonstrativosRouter(dependencies.Templates),
-		routers.ViewsRouter(dependencies.Templates),
+		LancamentosRouter(dependencies.Templates),
+		ContasRouter(dependencies.Templates),
+		DemonstrativosRouter(dependencies.Templates),
+		ViewsRouter(dependencies.Templates),
 	)
 
 	return mux.Use(
@@ -82,9 +82,7 @@ func Router(dependencies *Dependencies) http.Handler {
 		trailling.TrailingSlashMiddleware,
 		cors.CorsMiddleware,
 		timeout.TimeoutMiddleware(dependencies.RequestTimeout, func(w http.ResponseWriter) {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusGatewayTimeout)
-			panic(ce.TimeOutError)
+			response.ErrorJsonResponse(w, ce.TimeOutError)
 		}),
 		logger.SLoggerMiddleware("livredger", l.SLogger),
 	)

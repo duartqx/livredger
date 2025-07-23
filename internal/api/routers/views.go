@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/duartqx/livredger/internal/api/common"
 	"github.com/duartqx/livredger/internal/api/decoders"
 	"github.com/duartqx/livredger/internal/api/response"
 	"github.com/duartqx/livredger/internal/api/templates"
@@ -21,6 +20,16 @@ type ViewContext struct {
 	Template *template.Template
 	Data     map[string]any
 	DataFunc DataFunc
+}
+
+func ViewsRouter(templFS fs.FS) *RouterMap {
+	return &RouterMap{
+		"GET /{$}": View(&ViewContext{
+			ViewName: "Index",
+			Template: templates.Templates(templFS, "index.html", "nav.html"),
+			Data:     map[string]any{"Active": "Index"},
+		}),
+	}
 }
 
 func View(ctx *ViewContext) http.HandlerFunc {
@@ -67,15 +76,5 @@ func View(ctx *ViewContext) http.HandlerFunc {
 		default:
 			response.ErrorResponse(w, err)
 		}
-	}
-}
-
-func ViewsRouter(fs fs.FS) *common.RouterMap {
-	return &common.RouterMap{
-		"GET /{$}": View(&ViewContext{
-			ViewName: "Index",
-			Template: templates.Templates(fs, "index.html", "nav.html"),
-			Data:     map[string]any{"Active": "Index"},
-		}),
 	}
 }

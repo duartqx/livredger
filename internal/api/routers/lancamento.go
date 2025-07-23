@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/duartqx/livredger/internal/api/command"
-	"github.com/duartqx/livredger/internal/api/common"
 	"github.com/duartqx/livredger/internal/api/decoders"
 	"github.com/duartqx/livredger/internal/api/response"
 	"github.com/duartqx/livredger/internal/api/templates"
@@ -26,8 +25,8 @@ import (
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-func LancamentosRouter(fs fs.FS) *common.RouterMap {
-	return &common.RouterMap{
+func LancamentosRouter(templFS fs.FS) *RouterMap {
+	return &RouterMap{
 		"GET /api/lancamentos": func(w http.ResponseWriter, r *http.Request) {
 			var usuario *types.Usuario
 
@@ -62,7 +61,7 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 		"GET /lancamentos": View(&ViewContext{
 			ViewName: "ConsultarLancamentos",
 			Template: templates.Templates(
-				fs,
+				templFS,
 				"index.html",
 				"nav.html",
 				"lancamentos/consulta/lancamento.html",
@@ -99,7 +98,7 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 		"GET /lancamentos/{chave}": View(&ViewContext{
 			ViewName: "DetalhesLancamentos",
 			Template: templates.Templates(
-				fs,
+				templFS,
 				"index.html",
 				"nav.html",
 				"lancamentos/comando/form.html",
@@ -140,7 +139,7 @@ func LancamentosRouter(fs fs.FS) *common.RouterMap {
 		"GET /lancamentos/criar": View(&ViewContext{
 			ViewName: "CriarLancamento",
 			Template: templates.Templates(
-				fs,
+				templFS,
 				"index.html",
 				"nav.html",
 				"lancamentos/comando/form.html",

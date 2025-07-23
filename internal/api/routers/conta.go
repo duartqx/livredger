@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/duartqx/livredger/internal/api/command"
-	"github.com/duartqx/livredger/internal/api/common"
 	"github.com/duartqx/livredger/internal/api/decoders"
 	"github.com/duartqx/livredger/internal/api/response"
 
@@ -22,8 +21,8 @@ import (
 	"github.com/duartqx/livredger/internal/infra"
 )
 
-func ContasRouter(fs fs.FS) *common.RouterMap {
-	return &common.RouterMap{
+func ContasRouter(templFS fs.FS) *RouterMap {
+	return &RouterMap{
 		"GET /api/contas": func(w http.ResponseWriter, r *http.Request) {
 			var usuario *types.Usuario
 
