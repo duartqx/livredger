@@ -14,14 +14,14 @@ import (
 )
 
 type CriarLancamento struct {
-	Evento         string    `json:"evento"`
-	Chave          uuid.UUID `json:"chave"`
-	Versao         int       `json:"versao"`
-	Valores        float64   `json:"valores"`
-	Natureza       string    `json:"natureza"`
-	MeioFinanceiro string    `json:"meio_financeiro"`
-	Vencimento     time.Time `json:"vencimento"`
-	Descricao      string    `json:"descricao"`
+	Evento         string               `json:"evento"`
+	Chave          uuid.UUID            `json:"chave"`
+	Versao         int                  `json:"versao"`
+	Valores        float64              `json:"valores"`
+	Natureza       naturezas.Natureza   `json:"natureza"`
+	MeioFinanceiro meios.MeioFinanceiro `json:"meio_financeiro"`
+	Vencimento     time.Time            `json:"vencimento"`
+	Descricao      string               `json:"descricao"`
 }
 
 func (c CriarLancamento) Validate() error {
@@ -52,11 +52,11 @@ func (c CriarLancamento) Validate() error {
 		return fmt.Errorf("%w: Versão não pode ser igual a 0", ce.BusinessLogicError)
 	}
 
-	if !slices.Contains(meios.MEIOS_FINANCEIRO, c.MeioFinanceiro) {
+	if !slices.Contains(meios.MEIOS_FINANCEIRO, meios.MeioFinanceiro(c.MeioFinanceiro)) {
 		return fmt.Errorf("%w: Meio Financeiro inválido: %s", ce.BusinessLogicError, c.MeioFinanceiro)
 	}
 
-	if !slices.Contains(naturezas.NATUREZAS, c.Natureza) {
+	if !slices.Contains(naturezas.NATUREZAS, naturezas.Natureza(c.Natureza)) {
 		return fmt.Errorf("%w: Natureza da transação inválida: %s", ce.BusinessLogicError, c.Natureza)
 	}
 

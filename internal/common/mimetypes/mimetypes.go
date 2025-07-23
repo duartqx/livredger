@@ -1,11 +1,13 @@
 package mimetypes
 
+type MimeType string
+
 const (
-	JSON              = "application/json"
-	HTML              = "text/html; charset=utf-8"
-	HTMX              = "text/htmx"
-	PlainText         = "text/plain; charset=utf-8"
-	XML               = "application/xml"
-	FormURLEncoded    = "application/x-www-form-urlencoded"
-	MultipartFormData = "multipart/form-data"
+	JSON              MimeType = "application/json"
+	HTML              MimeType = "text/html; charset=utf-8"
+	HTMX              MimeType = "text/htmx"
+	PlainText         MimeType = "text/plain; charset=utf-8"
+	XML               MimeType = "application/xml"
+	FormURLEncoded    MimeType = "application/x-www-form-urlencoded"
+	MultipartFormData MimeType = "multipart/form-data"
 )

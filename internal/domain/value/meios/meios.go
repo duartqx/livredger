@@ -1,18 +1,20 @@
 package meios
 
+type MeioFinanceiro string
+
 const (
-	BENEFICIOS             = "Cartão de Benefícios"
-	BOLETO_BANCARIO        = "Boleto Bancário"
-	CARAO_DEBITO           = "Cartão de Débito"
-	CARTAO_CREDITO         = "Cartão de Crédito"
-	DINHEIRO               = "Dinheiro"
-	PIX                    = "PIX"
-	POUPANCA               = "Poupança"
-	TRANSFERENCIA_BANCARIA = "Transferência Bancária"
-	OUTRO                  = "Outro"
+	BENEFICIOS             MeioFinanceiro = "Cartão de Benefícios"
+	BOLETO_BANCARIO        MeioFinanceiro = "Boleto Bancário"
+	CARAO_DEBITO           MeioFinanceiro = "Cartão de Débito"
+	CARTAO_CREDITO         MeioFinanceiro = "Cartão de Crédito"
+	DINHEIRO               MeioFinanceiro = "Dinheiro"
+	PIX                    MeioFinanceiro = "PIX"
+	POUPANCA               MeioFinanceiro = "Poupança"
+	TRANSFERENCIA_BANCARIA MeioFinanceiro = "Transferência Bancária"
+	OUTRO                  MeioFinanceiro = "Outro"
 )
 
-var MEIOS_FINANCEIRO []string = []string{
+var MEIOS_FINANCEIRO []MeioFinanceiro = []MeioFinanceiro{
 	BENEFICIOS,
 	BOLETO_BANCARIO,
 	CARAO_DEBITO,
