@@ -9,9 +9,9 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/duartqx/livredger/internal/application"
 	"github.com/duartqx/livredger/internal/common/logger"
 	"github.com/duartqx/livredger/internal/domain"
-	"github.com/duartqx/livredger/internal/infra"
 )
 
 var MessageBus = bus{
@@ -23,7 +23,7 @@ type IdentifiableMessage interface {
 	GetEntityIdentifier() any
 }
 
-type MessageHandler func(infra.UnidadeDeTrabalho, IdentifiableMessage) error
+type MessageHandler func(application.UnidadeDeTrabalho, IdentifiableMessage) error
 
 type NamedMessageHandler struct {
 	Handle MessageHandler
@@ -56,7 +56,7 @@ func (mb *bus) Subscribe(message IdentifiableMessage, handler MessageHandler) {
 	})
 }
 
-func (mb *bus) Publish(uow infra.UnidadeDeTrabalho, mensagem IdentifiableMessage) error {
+func (mb *bus) Publish(uow application.UnidadeDeTrabalho, mensagem IdentifiableMessage) error {
 
 	key := GetMessageKey(mensagem)
 

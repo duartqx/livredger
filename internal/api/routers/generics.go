@@ -12,12 +12,12 @@ import (
 
 	"github.com/duartqx/livredger/internal/api/decoders"
 	"github.com/duartqx/livredger/internal/api/response"
+	"github.com/duartqx/livredger/internal/application"
 	"github.com/duartqx/livredger/internal/application/services/executores"
 	ce "github.com/duartqx/livredger/internal/common/errors"
 	"github.com/duartqx/livredger/internal/common/types"
 	"github.com/duartqx/livredger/internal/domain"
 	"github.com/duartqx/livredger/internal/domain/entidade"
-	"github.com/duartqx/livredger/internal/infra"
 )
 
 type DataFunc func(r *http.Request) (map[string]any, error)
@@ -84,7 +84,7 @@ func ComandoFromJson[Command domain.Command](body io.ReadCloser, comando *Comman
 }
 
 func GenericCommandHandlerFunc[Command domain.Command, Entidade entidade.Entidade](
-	executor func(infra.UnidadeDeTrabalho, *Command) (*Entidade, error),
+	executor func(application.UnidadeDeTrabalho, *Command) (*Entidade, error),
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -98,7 +98,7 @@ func GenericCommandHandlerFunc[Command domain.Command, Entidade entidade.Entidad
 
 		var usuario *types.Usuario
 
-		uow, err := infra.Bootstrap(r.Context(), usuario)
+		uow, err := application.NovaUnidadeDeTrabalho(r.Context(), usuario)
 		if err != nil {
 			response.CommandJsonResponse(w, res.WithError(err))
 

@@ -7,6 +7,8 @@ import (
 
 	ce "github.com/duartqx/livredger/internal/common/errors"
 	"github.com/duartqx/livredger/internal/common/types"
+
+	"github.com/duartqx/livredger/internal/application"
 	"github.com/duartqx/livredger/internal/domain/repositorios"
 	"github.com/duartqx/livredger/internal/infra/repositorios/sqlite"
 )
@@ -14,23 +16,7 @@ import (
 // TODO: Refatorar para ser Build target
 const DBMS string = "sqlite"
 
-type UnidadeDeTrabalho interface {
-	Context() context.Context
-
-	Usuario() *types.Usuario
-	Repositorios() *repositorios.Repositorios
-
-	DB() *sql.DB
-
-	BeginTransaction() (*sql.Tx, error)
-	Transaction() *sql.Tx
-
-	Commit() error
-	Rollback() error
-	Close()
-}
-
-func Bootstrap(ctx context.Context, usuario *types.Usuario) (UnidadeDeTrabalho, error) {
+func FabricaDeUnidadeDeTrabalho(ctx context.Context, usuario *types.Usuario) (application.UnidadeDeTrabalho, error) {
 	db, err := Connect(ctx, usuario)
 
 	if err != nil {

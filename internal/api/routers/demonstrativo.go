@@ -8,12 +8,14 @@ import (
 
 	"github.com/duartqx/livredger/internal/api/decoders"
 	"github.com/duartqx/livredger/internal/api/response"
+
+	"github.com/duartqx/livredger/internal/application"
 	"github.com/duartqx/livredger/internal/application/services/visualizadores"
+
 	ce "github.com/duartqx/livredger/internal/common/errors"
 	"github.com/duartqx/livredger/internal/common/types"
 	"github.com/duartqx/livredger/internal/domain/consultas"
 	"github.com/duartqx/livredger/internal/domain/entidade"
-	"github.com/duartqx/livredger/internal/infra"
 )
 
 func DemonstrativosRouter(templFS fs.FS) *RouterMap {
@@ -31,7 +33,7 @@ func GetApiDemonstrativos[Q interface {
 	consultas.ConsultaDemonstrativoMensal | consultas.ConsultaDemonstrativoUltimosSeisMeses
 	Validate() error
 }](
-	visualizador func(infra.UnidadeDeTrabalho, *Q) (*visualizadores.Result[entidade.DemonstrativoMensal], error),
+	visualizador func(application.UnidadeDeTrabalho, *Q) (*visualizadores.Result[entidade.DemonstrativoMensal], error),
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var usuario *types.Usuario
@@ -40,7 +42,7 @@ func GetApiDemonstrativos[Q interface {
 
 		res := &visualizadores.Response[Q]{Query: &visualizadores.Query[Q]{Parsed: &query, Raw: &r.Form}}
 
-		uow, err := infra.Bootstrap(r.Context(), usuario)
+		uow, err := application.NovaUnidadeDeTrabalho(r.Context(), usuario)
 		if err != nil {
 			response.QueryJsonResponse(r.Context(), w, res.WithError(err))
 			return
@@ -48,13 +50,13 @@ func GetApiDemonstrativos[Q interface {
 		defer uow.Close()
 
 		if err := cmp.Or(r.ParseForm(), decoders.NewFormDecoder().Decode(&query, r.Form), query.Validate()); err != nil {
-			response.QueryJsonResponse(r.Context(), w, res.WithError(errors.Join(ce.RequestError, err)))
+			response.QueryJsonResponse(uow.Context(), w, res.WithError(errors.Join(ce.RequestError, err)))
 			return
 		}
 
 		result, err := visualizador(uow, &query)
 
-		response.QueryJsonResponse(r.Context(), w, res.WithResult(result).WithError(err))
+		response.QueryJsonResponse(uow.Context(), w, res.WithResult(result).WithError(err))
 
 		return
 	}

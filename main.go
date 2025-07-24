@@ -13,7 +13,9 @@ import (
 	"time"
 
 	"github.com/duartqx/livredger/internal/api/routers"
-	"github.com/duartqx/livredger/internal/application/services/registry"
+	"github.com/duartqx/livredger/internal/application"
+	"github.com/duartqx/livredger/internal/application/messagebus/registry"
+	"github.com/duartqx/livredger/internal/infra"
 )
 
 const (
@@ -42,6 +44,7 @@ func main() {
 
 	flag.Parse()
 
+	application.SetupApplication(infra.FabricaDeUnidadeDeTrabalho)
 	registry.SetupEventHandlers()
 
 	srv := &http.Server{

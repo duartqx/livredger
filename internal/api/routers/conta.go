@@ -8,6 +8,7 @@ import (
 
 	"github.com/duartqx/livredger/internal/api/decoders"
 	"github.com/duartqx/livredger/internal/api/response"
+	"github.com/duartqx/livredger/internal/application"
 
 	"github.com/duartqx/livredger/internal/application/services/executores"
 	"github.com/duartqx/livredger/internal/application/services/visualizadores"
@@ -16,8 +17,6 @@ import (
 	"github.com/duartqx/livredger/internal/common/types"
 
 	"github.com/duartqx/livredger/internal/domain/consultas"
-
-	"github.com/duartqx/livredger/internal/infra"
 )
 
 func ContasRouter(templFS fs.FS) *RouterMap {
@@ -39,7 +38,7 @@ func GetApiContas(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	uow, err := infra.Bootstrap(r.Context(), usuario)
+	uow, err := application.NovaUnidadeDeTrabalho(r.Context(), usuario)
 	if err != nil {
 		response.QueryJsonResponse(r.Context(), w, res.WithError(err))
 
@@ -49,14 +48,14 @@ func GetApiContas(w http.ResponseWriter, r *http.Request) {
 
 	if err := cmp.Or(r.ParseForm(), decoders.NewFormDecoder().Decode(consulta, r.Form)); err != nil {
 		response.QueryJsonResponse(
-			r.Context(), w, res.WithError(errors.Join(ce.RequestError, err)),
+			uow.Context(), w, res.WithError(errors.Join(ce.RequestError, err)),
 		)
 		return
 	}
 
 	resultado, err := visualizadores.BuscarContas(uow, consulta)
 
-	response.QueryJsonResponse(r.Context(), w, res.WithResult(resultado).WithError(err))
+	response.QueryJsonResponse(uow.Context(), w, res.WithResult(resultado).WithError(err))
 
 	return
 }

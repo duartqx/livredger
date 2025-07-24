@@ -12,6 +12,7 @@ import (
 	"github.com/duartqx/livredger/internal/api/decoders"
 	"github.com/duartqx/livredger/internal/api/response"
 	"github.com/duartqx/livredger/internal/api/templates"
+	"github.com/duartqx/livredger/internal/application"
 
 	"github.com/duartqx/livredger/internal/application/services/executores"
 	"github.com/duartqx/livredger/internal/application/services/visualizadores"
@@ -20,8 +21,6 @@ import (
 	"github.com/duartqx/livredger/internal/common/types"
 
 	"github.com/duartqx/livredger/internal/domain/consultas"
-
-	"github.com/duartqx/livredger/internal/infra"
 )
 
 func LancamentosRouter(templFS fs.FS) *RouterMap {
@@ -78,7 +77,7 @@ func GetApiLancamentos(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	uow, err := infra.Bootstrap(r.Context(), usuario)
+	uow, err := application.NovaUnidadeDeTrabalho(r.Context(), usuario)
 	if err != nil {
 		response.QueryJsonResponse(r.Context(), w, res.WithError(err))
 		return
@@ -86,13 +85,13 @@ func GetApiLancamentos(w http.ResponseWriter, r *http.Request) {
 	defer uow.Close()
 
 	if err := cmp.Or(r.ParseForm(), decoders.NewFormDecoder().Decode(consulta, r.Form)); err != nil {
-		response.QueryJsonResponse(r.Context(), w, res.WithError(errors.Join(ce.RequestError, err)))
+		response.QueryJsonResponse(uow.Context(), w, res.WithError(errors.Join(ce.RequestError, err)))
 		return
 	}
 
 	resultado, err := visualizadores.BuscarLancamentos(uow, consulta)
 
-	response.QueryJsonResponse(r.Context(), w, res.WithResult(resultado).WithError(err))
+	response.QueryJsonResponse(uow.Context(), w, res.WithResult(resultado).WithError(err))
 
 	return
 }
@@ -101,7 +100,7 @@ func GetLancamentosDataFunc(r *http.Request) (map[string]any, error) {
 
 	var usuario *types.Usuario
 
-	uow, err := infra.Bootstrap(r.Context(), usuario)
+	uow, err := application.NovaUnidadeDeTrabalho(r.Context(), usuario)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +128,7 @@ func GetLancamentosPorChaveDataFunc(r *http.Request) (map[string]any, error) {
 
 	var usuario *types.Usuario
 
-	uow, err := infra.Bootstrap(r.Context(), usuario)
+	uow, err := application.NovaUnidadeDeTrabalho(r.Context(), usuario)
 	if err != nil {
 		return nil, err
 	}

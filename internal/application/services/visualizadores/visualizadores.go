@@ -3,13 +3,12 @@ package visualizadores
 import (
 	"cmp"
 
+	"github.com/duartqx/livredger/internal/application"
 	"github.com/duartqx/livredger/internal/domain/consultas"
 	"github.com/duartqx/livredger/internal/domain/entidade"
-
-	"github.com/duartqx/livredger/internal/infra"
 )
 
-func BuscarLancamentos(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaLancamentos) (
+func BuscarLancamentos(uow application.UnidadeDeTrabalho, consulta *consultas.ConsultaLancamentos) (
 	*Result[entidade.Lancamento], error,
 ) {
 	lancamentos, err := uow.Repositorios().Lancamentos.Consulta.Buscar(uow.Context(), uow.DB(), consulta)
@@ -24,7 +23,7 @@ func BuscarLancamentos(uow infra.UnidadeDeTrabalho, consulta *consultas.Consulta
 	return resultado, err
 }
 
-func BuscarContas(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaContas) (
+func BuscarContas(uow application.UnidadeDeTrabalho, consulta *consultas.ConsultaContas) (
 	*Result[entidade.Conta], error,
 ) {
 	contas, err := uow.Repositorios().Contas.Consulta.Buscar(uow.Context(), uow.DB(), consulta)
@@ -40,7 +39,7 @@ func BuscarContas(uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaConta
 }
 
 func ConsultarDemonstrativoMensal(
-	uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaDemonstrativoMensal,
+	uow application.UnidadeDeTrabalho, consulta *consultas.ConsultaDemonstrativoMensal,
 ) (*Result[entidade.DemonstrativoMensal], error) {
 	demonstrativoSlice := make([]*entidade.DemonstrativoMensal, 0, 1)
 
@@ -61,7 +60,7 @@ func ConsultarDemonstrativoMensal(
 }
 
 func ConsultarDemonstrativoDosUltimosSeisMeses(
-	uow infra.UnidadeDeTrabalho, consulta *consultas.ConsultaDemonstrativoUltimosSeisMeses,
+	uow application.UnidadeDeTrabalho, consulta *consultas.ConsultaDemonstrativoUltimosSeisMeses,
 ) (*Result[entidade.DemonstrativoMensal], error) {
 	demonstrativos, err := uow.Repositorios().Demonstrativos.Consulta.DemonstrativosDosUltimosSeisMeses(
 		uow.Context(), uow.DB(), consulta,

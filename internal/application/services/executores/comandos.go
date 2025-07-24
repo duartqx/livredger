@@ -3,6 +3,7 @@ package executores
 import (
 	"database/sql"
 
+	"github.com/duartqx/livredger/internal/application"
 	"github.com/duartqx/livredger/internal/application/messagebus"
 	"github.com/google/uuid"
 
@@ -10,12 +11,10 @@ import (
 	"github.com/duartqx/livredger/internal/domain/comandos"
 	"github.com/duartqx/livredger/internal/domain/entidade"
 	"github.com/duartqx/livredger/internal/domain/mensagens"
-
-	"github.com/duartqx/livredger/internal/infra"
 )
 
 func TransactionalScript[Entidade entidade.Entidade](
-	uow infra.UnidadeDeTrabalho, fn func(*sql.Tx) (*Entidade, error),
+	uow application.UnidadeDeTrabalho, fn func(*sql.Tx) (*Entidade, error),
 ) (*Entidade, error) {
 	tx, err := uow.BeginTransaction()
 
@@ -38,7 +37,7 @@ func TransactionalScript[Entidade entidade.Entidade](
 	return resultado, nil
 }
 
-func CriarLancamento(uow infra.UnidadeDeTrabalho, comando *comandos.CriarLancamento) (*entidade.Lancamento, error) {
+func CriarLancamento(uow application.UnidadeDeTrabalho, comando *comandos.CriarLancamento) (*entidade.Lancamento, error) {
 	return TransactionalScript(
 		uow,
 		func(tx *sql.Tx) (*entidade.Lancamento, error) {
@@ -66,7 +65,7 @@ func CriarLancamento(uow infra.UnidadeDeTrabalho, comando *comandos.CriarLancame
 	)
 }
 
-func AbrirConta(uow infra.UnidadeDeTrabalho, comando *comandos.AbrirConta) (*entidade.Conta, error) {
+func AbrirConta(uow application.UnidadeDeTrabalho, comando *comandos.AbrirConta) (*entidade.Conta, error) {
 	return TransactionalScript(
 		uow,
 		func(tx *sql.Tx) (*entidade.Conta, error) {

@@ -1,6 +1,7 @@
 package executores
 
 import (
+	"github.com/duartqx/livredger/internal/application"
 	"github.com/duartqx/livredger/internal/application/messagebus"
 
 	"github.com/duartqx/livredger/internal/domain/comandos"
@@ -8,11 +9,9 @@ import (
 	"github.com/duartqx/livredger/internal/domain/mensagens"
 	"github.com/duartqx/livredger/internal/domain/value/meios"
 	"github.com/duartqx/livredger/internal/domain/value/naturezas"
-
-	"github.com/duartqx/livredger/internal/infra"
 )
 
-func LancamentoContaCriada(uow infra.UnidadeDeTrabalho, mensagem messagebus.IdentifiableMessage) error {
+func LancamentoContaCriada(uow application.UnidadeDeTrabalho, mensagem messagebus.IdentifiableMessage) error {
 	evento, err := messagebus.CastMessage[mensagens.ContaAberta](mensagem)
 
 	if err != nil {
