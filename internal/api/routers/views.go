@@ -10,7 +10,7 @@ func ViewsRouter(templFS fs.FS) *RouterMap {
 	return &RouterMap{
 		"GET /{$}": View(&ViewContext{
 			ViewName: "Index",
-			Template: templates.Templates(templFS, "index.html", "nav.html"),
+			Template: templates.Compose(templFS, "index.html", "nav.html"),
 			Data:     map[string]any{"Active": "Index"},
 		}),
 	}

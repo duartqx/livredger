@@ -5,7 +5,7 @@ import (
 	"io/fs"
 )
 
-func Templates(fs fs.FS, templates ...string) *template.Template {
+func Compose(fs fs.FS, templates ...string) *template.Template {
 	if len(templates) == 0 {
 		panic("É necessário passar ao menos um template para compose")
 	}

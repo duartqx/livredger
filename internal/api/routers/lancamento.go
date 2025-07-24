@@ -29,7 +29,7 @@ func LancamentosRouter(templFS fs.FS) *RouterMap {
 		"POST /api/lancamentos": GenericCommandHandlerFunc(executores.CriarLancamento),
 		"GET /lancamentos": View(&ViewContext{
 			ViewName: "ConsultarLancamentos",
-			Template: templates.Templates(
+			Template: templates.Compose(
 				templFS,
 				"index.html",
 				"nav.html",
@@ -41,7 +41,7 @@ func LancamentosRouter(templFS fs.FS) *RouterMap {
 		}),
 		"GET /lancamentos/{chave}": View(&ViewContext{
 			ViewName: "DetalhesLancamentos",
-			Template: templates.Templates(
+			Template: templates.Compose(
 				templFS,
 				"index.html",
 				"nav.html",
@@ -52,7 +52,7 @@ func LancamentosRouter(templFS fs.FS) *RouterMap {
 		}),
 		"GET /lancamentos/criar": View(&ViewContext{
 			ViewName: "CriarLancamento",
-			Template: templates.Templates(
+			Template: templates.Compose(
 				templFS,
 				"index.html",
 				"nav.html",
