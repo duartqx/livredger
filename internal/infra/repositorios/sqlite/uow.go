@@ -61,7 +61,7 @@ func (u *UnidadeDeTrabalhoSqlite) BeginTransaction() (tx *sql.Tx, err error) {
 		return nil, fmt.Errorf("%w UnidadeDeTrabalho: Já existe uma transação aberta", ce.InternalError)
 	}
 
-	tx, err = u.db.Begin()
+	tx, err = u.db.BeginTx(u.Context(), nil)
 
 	if err != nil {
 		return nil, fmt.Errorf("%w UnidadeDeTrabalho: Não foi possível iniciar uma transação (%w)", ce.InternalError, err)

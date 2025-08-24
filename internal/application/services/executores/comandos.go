@@ -14,7 +14,7 @@ import (
 )
 
 func TransactionalScript[Entidade entidade.Entidade](
-	uow application.UnidadeDeTrabalho, fn func(*sql.Tx) (*Entidade, error),
+	uow application.UnidadeDeTrabalho, executor func(*sql.Tx) (*Entidade, error),
 ) (*Entidade, error) {
 	tx, err := uow.BeginTransaction()
 
@@ -22,15 +22,15 @@ func TransactionalScript[Entidade entidade.Entidade](
 		return nil, err
 	}
 
-	resultado, err := fn(tx)
+	defer uow.Rollback()
+
+	resultado, err := executor(tx)
 
 	if err != nil {
-		uow.Rollback()
 		return nil, err
 	}
 
 	if err := uow.Commit(); err != nil {
-		uow.Rollback()
 		return nil, err
 	}
 
